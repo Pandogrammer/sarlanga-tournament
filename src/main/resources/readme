@@ -1,0 +1,81 @@
+
+/**
+ * La vida nisman
+ * Reglas
+ * 1- Antes de que arranque la partida se define la esencia disponible para los jugadores
+ * 2- Los jugadores arman su grupo compuesto de criaturas con acciones
+ * 3- Al iniciar la partida, arranca la criatura con mayor velocidad, en caso de que criaturas de ambos jugadores
+ *    empaten, se tira una moneda.
+ * 4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
+ * 5- Sigue la criatura que no tenga cansancio y tenga mayor velocidad. En caso de que criaturas de ambos jugadores 
+ *    empaten, toma el turno la criatura del jugador que no jugo en el turno anterior
+ * 6- Si un jugador queda sin criaturas vivas, pierde.
+ * 
+ * Orden de turnos
+ * 1- Efectos duraderos
+ * 2- Criaturas
+ * #~ Entre cada turno se chequean los jugadores
+ 
+ * Avance de turnos:
+ * + Criaturas se restan cansancio (- velocidad)
+ * + Efectos duraderos aumentan cronicidad
+ * + Efectos constantes restan duracion
+ 
+ * 
+ * 
+ * Criaturas generan acciones
+ *   Origen
+ *	   Habilidades
+ *     Atributos
+ *   Efectos constantes
+ *   
+ * Acciones generan efectos
+ *   Destino
+ *     Habilidades
+ *     Atributos
+ *   Efectos constantes
+ *     
+ * Criaturas generan acciones
+ *   Se calculan habilidades, atributos, efectos constantes del origen
+ *   Acciones generan efectos
+ *     Se calculan parametros iniciales
+ *     Se ejecuta el efecto
+ *       Se calculan habiliades, atributos, efectos constantes del destino
+ *         Se calculan parametros finales
+ * 
+ * 
+ * ¿Habilidades generan efectos duraderos/constantes?
+ * 
+ *
+ 
+ * Criaturas generan acciones
+ *   Efectos constantes modifican
+ *   Habilidades modifican //falso efecto constante
+ 
+ * Acciones generan efectos constantes
+ * Acciones generan efectos duraderos
+ * Acciones generan efectos inmediatos
+ * Habilidades generan efectos constantes
+ * Habilidades generan efectos duraderos
+ * Habilidades generan efectos inmediatos
+  
+ * Efectos duraderos generan efectos inmediatos
+ 
+ * Efectos inmediatos generan resultado
+ *   Efectos constantes modifican
+ *   Habilidades modifican //falso efecto constante
+ 
+ * Calculo de una accion:
+ * criatura: habilidades, atributos 
+ * campo: efectos constantes
+ * resultado: efectos
+ * 
+ * Calculo de un efecto:
+ * accion: parametros iniciales
+ * campo: efectos constantes
+ * destino: habilidades, atributos
+ * resultado: x
+ * 
+ * @author Latharia
+ *
+ */
