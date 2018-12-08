@@ -80,5 +80,12 @@
  *
  */
  
+ * Ante cada evento puede haber disparadores (efectos constantes/habilidades)
+ Los eventos pueden ser:
+ - Generacion de una accion
+ - Ejecucion de una accion
+ - Generacion de un efecto
+ - Ejecucion de un efecto
+ - Muerte de una criatura
  
  todo lo que sea de .cards va en una base de datos.
