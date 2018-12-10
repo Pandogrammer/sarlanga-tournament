@@ -1,5 +1,6 @@
 package farguito.sarlanga.tournament.combat;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +17,25 @@ public class CombatSystem {
 	
 	State state; // estado del combate
 	Character activeCharacter; // personaje activo (turno)
-	List<Effect> activeEffects; // efectos activos
+	
+/*  Map<String,List<Effect>> se puede pasar a un mapa que tenga todos los tipos
+ *  
+	List<Effect> lastingEffects; //efectos duraderos
+	List<Effect> constantEffects; //efectos constantes
+	List<Effect> immediateEffects; //efectos inmediatos
+//*/
+	
+	EffectContainer effectContainer;
+	EventListener eventListener;
+	
+/*  Map<String,List<Listener>> se puede pasar a un mapa que tenga todos los tipos
+ *  
+	List<Listener> actionGenerationEL; //EL : event listeners
+	List<Listener> actionExecutionEL;
+	List<Listener> effectGenerationEL;
+	List<Listener> effectExecutionEL;
+	List<Listener> criatureDeathEL;
+//*/
 
 	/**
 	 * 1- Antes de que arranque la partida se define la esencia disponible para los jugadores
@@ -36,7 +55,7 @@ public class CombatSystem {
 		firstTurn();
 		
 		while (playing) {
-			switch (state) { //se puede poner un patron state... : ) CACA CACONA.
+			switch (state) { //se puede poner un patron state... : ) CACA CACONA. donde cada estado sepa cual es el siguiente /anterior?
 			case CHECKING_PLAYERS:
 				checkPlayers();
 				break;
@@ -52,13 +71,61 @@ public class CombatSystem {
 
 		}
 	}
-
-	//4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
-	public void action(Action action) {
+	
+	//chequeo previo y definicion de objetivos
+	public void prepareAction(Action action, List<Character> objectives) {
+		//se le pasan los parametros iniciales de la criatura que genera la accion
+		//se definen los objetivos
+		//se chequean que sean validos (ataque melee, etc)
+		action.setActor(activeCharacter);
+		action.setObjectives(objectives);
+		action.validate();
 		
-		this.state = State.ADVANCING_TURNS;
 	}
+	
+	//4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
+	//el chequeo del objetivo en que momento se hace?
+	public void executeAction(Action action) {
+		//habilidades y efectos constantes la modifican
+		List<Modifier> actionModifiers = eventListener.getActionGenerationModifiers();
+		//se aplica esa modificacion
+		actionModifiers.stream().forEach(am -> {
+			am.apply(action);
+		});		
+		//se ejecuta la accion, se generan efectos
+		List<Effect> effects = action.execute();
+		
+		effectContainer.addEffects(effects);
+	}
+	
+	/* va en el effect container
+	//se define donde va cada efecto
+	private void addEffects(List<Effect> effects) {
+		effects.stream().forEach(ef -> {
+			if (ef instanceof ImmediateEffect) {
+				effectContainer.addImmediateEffect(ef);
+			} else (ef instanceof ImmediateEffect) {
+		})
+	}
+	*/
 
+	/* Se ejecuta un efecto:
+	 * accion: parametros iniciales
+	 * campo: efectos constantes
+	 * destino: habilidades, atributos
+	 * resultado: x
+	 */
+	public void executeEffect(Effect effect) {
+		/* codigo repetido con generacion de accion.. podria ser algo dentro del eventListener*/
+		List<Modifier> effectModifiers = eventListener.getEffectExecutionModifiers();
+		
+		effectModifiers.stream().forEach(em -> {
+			em.apply(effect);
+		});		
+		
+		effect.execute();
+	}
+	
 	//5- Sigue la criatura que no tenga cansancio y tenga mayor velocidad. En caso de que criaturas de ambos jugadores 
 	//   empaten, toma el turno la criatura del jugador que no jugo en el turno anterior
 	private void checkReady() {
@@ -177,8 +244,9 @@ public class CombatSystem {
 		List<Team> aliveTeams = teams.stream().filter(t -> t.someoneAlive()).collect(Collectors.toList());
 		//esto esta pensado para FFA
 		if(aliveTeams.size() == 1) {
-			this.state = State.TEAM_VICTORY;
 			Team winnerTeam = aliveTeams.get(0); //hacer algo con el ganador
+			
+			this.state = State.TEAM_VICTORY;
 		}
 	}
 

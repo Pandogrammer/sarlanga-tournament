@@ -5,6 +5,6 @@ public enum State {
 	EFFECT_TURN, //turno de un efecto
 	ADVANCING_TURNS, //avanzando turnos
 	CHECKING_PLAYERS, 
-	TEAM_VICTORY, CHECKING_READY
+	TEAM_VICTORY, CHECKING_READY, IMMEDIATE_EFFECTS
 	
 }
