@@ -1,4 +1,6 @@
-package farguito.sarlanga.tournament.cards;
+package farguito.sarlanga.tournament.cards.criatures;
+
+import farguito.sarlanga.tournament.cards.Criature;
 
 public class Sapurai extends Criature {
 	

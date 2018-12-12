@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.Action;
-import farguito.sarlanga.tournament.cards.Ortivactus;
-import farguito.sarlanga.tournament.cards.Punch;
-import farguito.sarlanga.tournament.cards.Sapurai;
+import farguito.sarlanga.tournament.cards.actions.Punch;
+import farguito.sarlanga.tournament.cards.criatures.Ortivactus;
+import farguito.sarlanga.tournament.cards.criatures.Sapurai;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;

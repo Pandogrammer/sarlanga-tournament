@@ -9,10 +9,7 @@ public abstract class Action {
 	private Character actor;
 	private List<Character> objectives;
 
-	public void validate() {
-		// TODO Auto-generated method stub
-		
-	}
+	//public abstract boolean validate();
 	
 	public abstract List<Effect> execute();
 	

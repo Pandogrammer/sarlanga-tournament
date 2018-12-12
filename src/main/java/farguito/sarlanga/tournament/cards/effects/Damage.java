@@ -1,5 +1,6 @@
-package farguito.sarlanga.tournament.cards;
+package farguito.sarlanga.tournament.cards.effects;
 
+import farguito.sarlanga.tournament.cards.Effect;
 import farguito.sarlanga.tournament.combat.Character;
 
 public class Damage extends Effect {

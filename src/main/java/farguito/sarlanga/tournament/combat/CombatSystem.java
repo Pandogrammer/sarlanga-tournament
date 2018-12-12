@@ -100,7 +100,7 @@ public class CombatSystem {
 		//se chequean que sean validos (ataque melee, etc)
 		action.setActor(activeCharacter);
 		action.setObjectives(objectives);
-		action.validate();
+		//action.validate();
 	}
 	
 	//4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
@@ -118,6 +118,8 @@ public class CombatSystem {
 		List<Effect> effects = action.execute();
 		
 		effectContainer.addEffects(effects);
+		//pasa el turno de la criatura
+		//activeCharacter = null;
 	}
 	
 	/* va en el effect container
