@@ -3,14 +3,28 @@ package farguito.sarlanga.tournament.combat;
 import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.Criature;
 
 public class Character {
 
 	private int team;
+	private String name;
 	private int hp;
 	private int speed;
 	private int fatigue;
+	private int attack;
+	
 	private List<Action> actions;
+	
+	public Character (int team, Criature criature, List<Action> actions) {
+		this.team = team;
+		this.name = criature.getName();
+		this.hp = criature.getHp();
+		this.speed = criature.getSpeed();
+		this.attack = criature.getAttack();
+		this.fatigue = 0;
+		this.actions = actions;
+	}
 	
 	public boolean isAlive() {
 		return this.hp > 0;
@@ -27,13 +41,25 @@ public class Character {
 		}
 	}
 	
-	public void fatigate(int fatigue) {
-		this.fatigue = this.fatigue + fatigue;
+	public void fatigate(int value) {
+		this.fatigue = this.fatigue + value;
+	}
+	
+	public void damage(int value) {
+		this.hp = this.hp - value;
 	}
 
 	
 	
 	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public int getTeam() {
 		return team;
 	}
@@ -64,6 +90,14 @@ public class Character {
 
 	public void setFatigue(int fatigue) {
 		this.fatigue = fatigue;
+	}
+
+	public int getAttack() {
+		return attack;
+	}
+
+	public void setAttack(int attack) {
+		this.attack = attack;
 	}
 
 	public List<Action> getActions() {

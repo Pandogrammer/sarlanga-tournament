@@ -1,9 +1,10 @@
 package farguito.sarlanga.tournament.cards;
 
 import java.util.List;
+
 import farguito.sarlanga.tournament.combat.Character;
 
-public class Action {
+public abstract class Action {
 	
 	private Character actor;
 	private List<Character> objectives;
@@ -13,9 +14,7 @@ public class Action {
 		
 	}
 	
-	
-	
-	
+	public abstract List<Effect> execute();
 	
 	public Character getActor() {
 		return actor;

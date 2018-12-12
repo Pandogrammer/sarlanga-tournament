@@ -1,6 +1,5 @@
 package farguito.sarlanga.tournament.combat;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -8,15 +7,18 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.Effect;
 
 public class CombatSystem {
+	
+	private boolean playing = false;
 
 	//se podria pasar a un map<String,List<Character>> en donde definan los equipos, se le podria meter banderas como "jugando" por si ya perdio o no
 	//pero me parece que lo voy a hacer despues, porque ahora es complicarmela (serviria para poder hacer partidas de mas de 2 jugadores)
-	List<Team> teams; // personajes en combate
+	private List<Team> teams; // personajes en combate
 	
-	State state; // estado del combate
-	Character activeCharacter; // personaje activo (turno)
+	private State state; // estado del combate
+	private Character activeCharacter; // personaje activo (turno)
 	
 /*  Map<String,List<Effect>> se puede pasar a un mapa que tenga todos los tipos
  *  
@@ -25,8 +27,8 @@ public class CombatSystem {
 	List<Effect> immediateEffects; //efectos inmediatos
 //*/
 	
-	EffectContainer effectContainer;
-	EventListener eventListener;
+	private EffectContainer effectContainer = new EffectContainer();
+	private EventListener eventListener = new EventListener();
 	
 /*  Map<String,List<Listener>> se puede pasar a un mapa que tenga todos los tipos
  *  
@@ -50,11 +52,11 @@ public class CombatSystem {
 	public CombatSystem(List<Team> teams) {
 		this.teams = teams;
 		
-		boolean playing = true;
+		this.playing = true;
 
 		firstTurn();
-		
-		while (playing) {
+		/*
+		while (this.playing) {
 			switch (state) { //se puede poner un patron state... : ) CACA CACONA. donde cada estado sepa cual es el siguiente /anterior?
 			case CHECKING_PLAYERS:
 				checkPlayers();
@@ -65,11 +67,30 @@ public class CombatSystem {
 			case ADVANCING_TURNS:
 				advancingTurns();
 				break;
+			case APPLYING_EFFECTS:
+				applyEffects();
+				break;
 			default:
 				break;
 			}
 
 		}
+		*/
+	}
+	
+	public void applyEffects() {
+		effectContainer.getEffects().forEach(e -> {
+			e.execute();
+		});
+		effectContainer.purgeEffects();
+	}
+	
+
+	public void prepareAction(Action action, Character objective) {
+		List<Character> objectives = new ArrayList<>();
+		objectives.add(objective);
+		
+		this.prepareAction(action, objectives);
 	}
 	
 	//chequeo previo y definicion de objetivos
@@ -80,18 +101,19 @@ public class CombatSystem {
 		action.setActor(activeCharacter);
 		action.setObjectives(objectives);
 		action.validate();
-		
 	}
 	
 	//4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
 	//el chequeo del objetivo en que momento se hace?
 	public void executeAction(Action action) {
+		/*
 		//habilidades y efectos constantes la modifican
 		List<Modifier> actionModifiers = eventListener.getActionGenerationModifiers();
 		//se aplica esa modificacion
 		actionModifiers.stream().forEach(am -> {
 			am.apply(action);
 		});		
+		*/
 		//se ejecuta la accion, se generan efectos
 		List<Effect> effects = action.execute();
 		
@@ -117,18 +139,18 @@ public class CombatSystem {
 	 */
 	public void executeEffect(Effect effect) {
 		/* codigo repetido con generacion de accion.. podria ser algo dentro del eventListener*/
-		List<Modifier> effectModifiers = eventListener.getEffectExecutionModifiers();
+		/* List<Modifier> effectModifiers = eventListener.getEffectExecutionModifiers();
 		
 		effectModifiers.stream().forEach(em -> {
 			em.apply(effect);
 		});		
-		
+		*/
 		effect.execute();
 	}
 	
 	//5- Sigue la criatura que no tenga cansancio y tenga mayor velocidad. En caso de que criaturas de ambos jugadores 
 	//   empaten, toma el turno la criatura del jugador que no jugo en el turno anterior
-	private void checkReady() {
+	public void checkReady() {
 		List<Character> readyCharacters = new ArrayList<>();
 		//agarro todas las criaturas listas
 		teams.stream().forEach(t -> {
@@ -143,7 +165,7 @@ public class CombatSystem {
 		if(readyCharacters.size() > 1) {
 
 			//tomo las mas rapidas
-			readyCharacters.sort(Comparator.comparing(Character::getSpeed));
+			readyCharacters.sort(Comparator.comparing(Character::getSpeed).reversed());
 					
 			int fastestSpeed = readyCharacters.get(0).getSpeed();
 			boolean search = true;
@@ -186,14 +208,14 @@ public class CombatSystem {
 
 	//3- Al iniciar la partida, arranca la criatura con mayor velocidad, en caso de que criaturas de ambos jugadores
 	//    empaten, se tira una moneda.
-	private void firstTurn() {		
+	public void firstTurn() {		
 		List<Character> fastestCharacters = new ArrayList<>();
 		
 		teams.stream().forEach(team -> {
 			fastestCharacters.add(team.fastestCharacter());
 		});
 		
-		fastestCharacters.sort(Comparator.comparing(Character::getSpeed));
+		fastestCharacters.sort(Comparator.comparing(Character::getSpeed).reversed());
 				
 		int fastestSpeed = fastestCharacters.get(0).getSpeed();
 		boolean search = true;
@@ -214,6 +236,10 @@ public class CombatSystem {
 		}
 		
 		activeCharacter = fastestCharacters.get(amount);		
+		
+		this.state = State.CHARACTER_TURN;
+		
+		System.out.println(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
 	}
 	
 	
@@ -223,7 +249,7 @@ public class CombatSystem {
 	 * + Efectos duraderos aumentan cronicidad 
 	 * + Efectos constantes restan duracion
 	 */
-	private void advancingTurns() {
+	public void advancingTurns() {
 		//para no comparar en cada iteracion voy a hacer una chanchada
 		//en vez de ver si cada criatura es la activa, voy a restarle el cansancio a la activa y se lo voy a re-sumar
 		teams.stream().forEach(t -> {
@@ -240,7 +266,7 @@ public class CombatSystem {
 	}
 
 	// 6- Si solo queda un jugador con criaturas vivas, gana. (se revierte)
-	private void checkPlayers() {
+	public void checkPlayers() {
 		List<Team> aliveTeams = teams.stream().filter(t -> t.someoneAlive()).collect(Collectors.toList());
 		//esto esta pensado para FFA
 		if(aliveTeams.size() == 1) {
@@ -249,5 +275,14 @@ public class CombatSystem {
 			this.state = State.TEAM_VICTORY;
 		}
 	}
+
+	public List<Team> getTeams() {
+		return teams;
+	}
+
+	public Character getActiveCharacter() {
+		return activeCharacter;
+	}
+	
 
 }

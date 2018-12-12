@@ -89,3 +89,27 @@
  - Muerte de una criatura
  
  todo lo que sea de .cards va en una base de datos.
+ 
+ 
+ 
+ 
+ Codea el ejemplo mas basico:
+ 1- Criatura
+ 2- Generacion Accion
+ 3- Ejecucion Accion
+ 4- Creacion de Efectos
+ 5- Ejecucion de Efectos
+ 6- Modificacion de estado
+ 
+ Sapurai ataca Ortivactus con Golpe
+ Sapurai genera Golpe < pre
+ Golpe se ejecuta > post
+ Golpe genera Daño < pre
+ Daño se ejecuta > post
+ Vida de Ortivactus se modifica > previo a la modificacion deberia saltar el evento
+ 
+ Que el control del estado este del lado del controlador? O sea, que el sistema no tenga 
+ control del tiempo de la partida, no le importe el estado en el que esta, sino que solo avance, accione, etc.
+ Que las validaciones se hagan del lado del controlador?
+ Sacar los sout
+ Separar Action en dos, como Criature -> Character, hay que separar Cartas de Objetos vivos en combate
