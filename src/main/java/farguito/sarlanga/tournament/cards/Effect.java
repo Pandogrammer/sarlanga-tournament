@@ -6,8 +6,6 @@ public abstract class Effect {
 
 	private Character objective;
 	
-	public abstract void execute();
-	
 	public Character getObjective() {
 		return objective;
 	}

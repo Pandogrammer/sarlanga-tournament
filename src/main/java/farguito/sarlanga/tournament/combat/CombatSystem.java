@@ -78,10 +78,9 @@ public class CombatSystem {
 		*/
 	}
 	
-	public void applyEffects() {
-		effectContainer.getEffects().forEach(e -> {
-			e.execute();
-		});
+	public void applyImmediateEffects() {
+		effectContainer.getImmediateEffects().stream().forEach(e -> e.execute());
+		
 		effectContainer.purgeEffects();
 	}
 	
@@ -120,16 +119,6 @@ public class CombatSystem {
 		effectContainer.addEffects(effects);
 	}
 	
-	public void nextTurn() {
-		advancingTurns();
-		checkReady();
-		while(activeCharacter == null) {
-			advancingTurns();
-			checkReady();
-		}
-
-		System.out.println(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
-	}
 	
 	/* va en el effect container
 	//se define donde va cada efecto
@@ -156,17 +145,25 @@ public class CombatSystem {
 			em.apply(effect);
 		});		
 		*/
-		effect.execute();
+		//effect.execute();
+	}
+	
+	public void checkLastingEffectReady() {
+		
+		effectContainer.getLastingEffects().stream().forEach(e -> {
+			if(e.isReady()) effectContainer.addEffects(e.execute());
+		});
+		
 	}
 	
 	//5- Sigue la criatura que no tenga cansancio y tenga mayor velocidad. En caso de que criaturas de ambos jugadores 
 	//   empaten, toma el turno la criatura del jugador que no jugo en el turno anterior
-	public void checkReady() {
+	public void checkCharacterReady() {
 		List<Character> readyCharacters = new ArrayList<>();
-		//agarro todas las criaturas listas
+		//agarro todas las criaturas listas (que esten vivas)
 		teams.stream().forEach(t -> {
 			t.getCharacters().stream().forEach(c -> {
-				if(c.isReady()) {
+				if(c.isReady() && c.isAlive()) {
 					readyCharacters.add(c);
 				}
 			});
@@ -234,7 +231,7 @@ public class CombatSystem {
 		while(search && amount < fastestCharacters.size()) {
 			if(fastestCharacters.get(amount).getSpeed() < fastestSpeed) {
 				search = false;
-				amount--; //el anterior fue el ultimo mas rapido, y pasa a ser el index
+				amount--; //el anterior fue el ultimo mas rapido, y amount pasa a ser el index
 			} else {
 				amount++;
 			}
@@ -276,6 +273,8 @@ public class CombatSystem {
 		 * + Efectos duraderos aumentan cronicidad 
 		 * + Efectos constantes restan duracion
 		 */
+		effectContainer.getLastingEffects().forEach(e -> e.addCooldown());
+		
 	}
 
 	// 6- Si solo queda un jugador con criaturas vivas, gana. (se revierte)
