@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.Effect;
+import farguito.sarlanga.tournament.cards.ImmediateEffect;
+import farguito.sarlanga.tournament.cards.LastingEffect;
 
 public class CombatSystem {
 	
@@ -78,8 +80,8 @@ public class CombatSystem {
 		*/
 	}
 	
-	public void applyImmediateEffects() {
-		effectContainer.getImmediateEffects().stream().forEach(e -> e.execute());
+	public void applyImmediateEffects() {		
+		effectContainer.getImmediateEffects().stream().forEach(e -> executeImmediateEffect(e));
 		
 		effectContainer.purgeEffects();
 	}
@@ -105,6 +107,8 @@ public class CombatSystem {
 	//4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
 	//el chequeo del objetivo en que momento se hace?
 	public void executeAction(Action action) {
+		eventListener.log("Executing action: "+action.getClass().getSimpleName());
+		eventListener.log(action.message());
 		/*
 		//habilidades y efectos constantes la modifican
 		List<Modifier> actionModifiers = eventListener.getActionGenerationModifiers();
@@ -137,7 +141,9 @@ public class CombatSystem {
 	 * destino: habilidades, atributos
 	 * resultado: x
 	 */
-	public void executeEffect(Effect effect) {
+	public void executeImmediateEffect(ImmediateEffect effect) {
+		eventListener.log("Executing immediate effect: "+effect.getClass().getSimpleName());
+		eventListener.log(effect.message());
 		/* codigo repetido con generacion de accion.. podria ser algo dentro del eventListener*/
 		/* List<Modifier> effectModifiers = eventListener.getEffectExecutionModifiers();
 		
@@ -145,15 +151,20 @@ public class CombatSystem {
 			em.apply(effect);
 		});		
 		*/
-		//effect.execute();
+		effect.execute();
+	}
+	public void executeLastingEffect(LastingEffect effect) {
+		eventListener.log("Executing lasting effect.");
+		
+		List<Effect> effects = effect.execute();
+		
+		effectContainer.addEffects(effects);
 	}
 	
-	public void checkLastingEffectReady() {
-		
+	public void checkLastingEffectReady() {		
 		effectContainer.getLastingEffects().stream().forEach(e -> {
-			if(e.isReady()) effectContainer.addEffects(e.execute());
+			if(e.isReady()) executeLastingEffect(e);
 		});
-		
 	}
 	
 	//5- Sigue la criatura que no tenga cansancio y tenga mayor velocidad. En caso de que criaturas de ambos jugadores 
@@ -209,7 +220,9 @@ public class CombatSystem {
 		} else if(readyCharacters.size() == 1) {
 			activeCharacter = readyCharacters.get(0);
 		}
-		
+
+		if(activeCharacter != null)
+			eventListener.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");		
 	}
 	
 
@@ -247,7 +260,7 @@ public class CombatSystem {
 		
 		this.state = State.CHARACTER_TURN;
 		
-		System.out.println(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
+		eventListener.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
 	}
 	
 	
@@ -258,6 +271,7 @@ public class CombatSystem {
 	 * + Efectos constantes restan duracion
 	 */
 	public void advancingTurns() {
+		eventListener.log("Advancing turns.");
 		//para no comparar en cada iteracion voy a hacer una chanchada
 		//en vez de ver si cada criatura es la activa, voy a restarle el cansancio a la activa y se lo voy a re-sumar
 		teams.stream().forEach(t -> {
@@ -294,6 +308,10 @@ public class CombatSystem {
 
 	public Character getActiveCharacter() {
 		return activeCharacter;
+	}
+	
+	public List<String> getMessages() {
+		return this.eventListener.getMessages();
 	}
 	
 

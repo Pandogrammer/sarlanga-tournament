@@ -8,6 +8,7 @@ public class EventListener {
 	private List<String> messages = new ArrayList<>();
 	
 	public void log(String message) {
+		System.out.println(message);
 		messages.add(message);
 	}	
 	

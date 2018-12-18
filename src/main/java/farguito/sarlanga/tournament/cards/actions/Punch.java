@@ -21,7 +21,10 @@ public class Punch extends Action {
 		
 		this.getActor().fatigate(fatigue);
 		
-		System.out.println(this.getActor().getName()+" used PUNCH");
 		return ef;
+	}
+
+	public String message() {
+		return this.getActor().getName()+" used PUNCH";
 	}
 }

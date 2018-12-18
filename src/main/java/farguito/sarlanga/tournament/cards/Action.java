@@ -13,6 +13,8 @@ public abstract class Action {
 	
 	public abstract List<Effect> execute();
 	
+	public abstract String message();
+	
 	public Character getActor() {
 		return actor;
 	}

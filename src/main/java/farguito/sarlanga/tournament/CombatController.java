@@ -25,7 +25,7 @@ public class CombatController {
 		String[] opciones = 
 			{ "iniciar", "golpear", "veneno"
 			, "efectos-duraderos", "efectos-inmediatos"
-			, "criaturas", "turnos" };
+			, "criaturas", "turnos", "mensajes" };
 		
 		StringBuilder lista = new StringBuilder();
 		
@@ -101,9 +101,6 @@ public class CombatController {
 	@GetMapping("/criaturas")
 	public String criaturas() {
 		this.system.checkCharacterReady();
-		if(this.system.getActiveCharacter() != null) {
-			System.out.println(this.system.getActiveCharacter().getName()+" from Team "+this.system.getActiveCharacter().getTeam()+" is ready.");
-		}
 		return "criaturas ok";
 	}
 	
@@ -111,5 +108,10 @@ public class CombatController {
 	public String turnos() {
 		this.system.advancingTurns();
 		return "turnos ok";
+	}
+	
+	@GetMapping("/mensajes")
+	public List<String> mensajes() {
+		return this.system.getMessages();
 	}
 }
