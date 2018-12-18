@@ -118,8 +118,17 @@ public class CombatSystem {
 		List<Effect> effects = action.execute();
 		
 		effectContainer.addEffects(effects);
-		//pasa el turno de la criatura
-		//activeCharacter = null;
+	}
+	
+	public void nextTurn() {
+		advancingTurns();
+		checkReady();
+		while(activeCharacter == null) {
+			advancingTurns();
+			checkReady();
+		}
+
+		System.out.println(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
 	}
 	
 	/* va en el effect container
@@ -258,8 +267,10 @@ public class CombatSystem {
 			t.getCharacters().stream().forEach(c -> c.rest());			
 		});
 		
-		activeCharacter.fatigate(activeCharacter.getSpeed());
-		activeCharacter = null;
+		if(activeCharacter != null) {
+			activeCharacter.fatigate(activeCharacter.getSpeed());
+			activeCharacter = null;
+		}
 		
 		/*
 		 * + Efectos duraderos aumentan cronicidad 

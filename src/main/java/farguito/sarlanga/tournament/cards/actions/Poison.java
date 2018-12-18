@@ -7,9 +7,9 @@ import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.Effect;
 import farguito.sarlanga.tournament.cards.effects.Damage;
 
-public class Punch extends Action {
+public class Poison extends Action {
 	
-	private int fatigue = 100; 
+	private int fatigue = 160; 
 	
 	public List<Effect> execute(){
 		List<Effect> ef = new ArrayList<>();

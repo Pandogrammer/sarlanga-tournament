@@ -58,4 +58,23 @@ public class CombatController {
 		
 		return "golpear ok";
 	}
+	
+	@GetMapping("/veneno")
+	public String veneno() {
+		this.system.getTeams().get(1).getCharacters().get(0);
+		Action punch = new Poison();
+		this.system.prepareAction(
+				punch, this.system.getTeams().get(1).getCharacters().get(0));
+		this.system.executeAction(punch);
+		
+		this.system.applyEffects();
+		
+		return "veneno ok";		
+	}
+	
+	@GetMapping("/next")
+	public String next() {
+		this.system.nextTurn();
+		return "proximo turno ok";
+	}
 }
