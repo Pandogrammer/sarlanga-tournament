@@ -288,6 +288,7 @@ public class CombatSystem {
 		 * + Efectos constantes restan duracion
 		 */
 		effectContainer.getLastingEffects().forEach(e -> e.addCooldown());
+		effectContainer.getConstantEffects().forEach(e -> e.removeDuration());
 		
 	}
 

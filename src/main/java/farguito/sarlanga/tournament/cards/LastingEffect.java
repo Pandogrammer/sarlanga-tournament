@@ -35,7 +35,7 @@ public class LastingEffect extends Effect {
 	}
 	
 	public boolean isReady() {
-		return counter == cooldown;
+		return counter >= cooldown;
 	}
 	
 	public void addCooldown() {

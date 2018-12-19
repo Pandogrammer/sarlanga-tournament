@@ -12,12 +12,12 @@ public class EffectContainer {
 
 	private List<ImmediateEffect> immediateEffects = new ArrayList<>();
 	private List<LastingEffect> lastingEffects = new ArrayList<>();
-	private List<Effect> constantEffects = new ArrayList<>();
+	private List<ConstantEffect> constantEffects = new ArrayList<>();
 	
 	public void addEffects(List<Effect> effects) {
 		effects.stream().forEach(e -> {
 			if (e instanceof LastingEffect) lastingEffects.add((LastingEffect) e);
-			else if (e instanceof ConstantEffect) constantEffects.add(e);
+			else if (e instanceof ConstantEffect) constantEffects.add((ConstantEffect) e);
 			else immediateEffects.add((ImmediateEffect) e);
 		});
 	}
@@ -36,7 +36,7 @@ public class EffectContainer {
 		return lastingEffects;
 	}
 	
-	public List<Effect> getConstantEffects() {
+	public List<ConstantEffect> getConstantEffects() {
 		return constantEffects;
 	}
 

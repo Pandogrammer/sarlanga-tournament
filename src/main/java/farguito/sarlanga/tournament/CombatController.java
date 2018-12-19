@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.actions.BattleCry;
 import farguito.sarlanga.tournament.cards.actions.PoisonSpit;
 import farguito.sarlanga.tournament.cards.actions.Punch;
 import farguito.sarlanga.tournament.cards.criatures.Ortivactus;
@@ -73,7 +74,7 @@ public class CombatController {
 		
 		return "golpear ok";
 	}
-	
+
 	@GetMapping("/veneno")
 	public String veneno() {
 		this.system.getTeams().get(1).getCharacters().get(0);
@@ -81,6 +82,17 @@ public class CombatController {
 		this.system.prepareAction(
 				poisonSpit, this.system.getTeams().get(1).getCharacters().get(0));
 		this.system.executeAction(poisonSpit);
+				
+		return "veneno ok";		
+	}
+
+	@GetMapping("/grito")
+	public String grito() {
+		this.system.getTeams().get(1).getCharacters().get(0);
+		Action battleCry = new BattleCry();
+		this.system.prepareAction(
+				battleCry, this.system.getTeams().get(1).getCharacters().get(0));
+		this.system.executeAction(battleCry);
 				
 		return "veneno ok";		
 	}
@@ -94,7 +106,7 @@ public class CombatController {
 	@GetMapping("/efectos-inmediatos")
 	public String efectosInmediatos() {
 		this.system.applyImmediateEffects();
-		return "efectos duraderos ok";
+		return "efectos inmediatos ok";
 	}
 	
 	

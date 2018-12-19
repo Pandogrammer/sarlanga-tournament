@@ -5,6 +5,7 @@ import java.util.List;
 
 public class EventListener {
 	
+	//parte logger, podria ir en otra clase incluso
 	private List<String> messages = new ArrayList<>();
 	
 	public void log(String message) {
@@ -19,5 +20,7 @@ public class EventListener {
 	public void deleteMessages() {
 		this.messages.clear();
 	}
+	
+	//parte piola
 
 }
