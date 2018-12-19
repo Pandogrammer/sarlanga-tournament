@@ -122,6 +122,22 @@ public class CombatController {
 		return "turnos ok";
 	}
 	
+	
+	@GetMapping("/proximo-turno")
+	public List<String> proximoTurno() {
+		this.system.applyImmediateEffects();
+		this.system.advancingTurns();
+		do {
+			this.system.checkLastingEffectReady();
+			this.system.applyImmediateEffects();
+			this.system.checkCharacterReady();
+			if(this.system.getActiveCharacter() == null)
+				this.system.advancingTurns();
+		} while(this.system.getActiveCharacter() == null);
+			
+		return this.system.getMessages();
+	}
+	
 	@GetMapping("/mensajes")
 	public List<String> mensajes() {
 		return this.system.getMessages();

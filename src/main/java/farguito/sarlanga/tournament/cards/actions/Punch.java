@@ -9,7 +9,7 @@ import farguito.sarlanga.tournament.cards.effects.immediate.Damage;
 
 public class Punch extends Action {
 	
-	private int fatigue = 100; 
+	private int fatigue = 12; 
 	
 	public List<Effect> execute(){
 		int damage = this.getActor().getAttack();
