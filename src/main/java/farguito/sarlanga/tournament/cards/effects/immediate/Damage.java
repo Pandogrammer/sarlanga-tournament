@@ -5,7 +5,6 @@ import farguito.sarlanga.tournament.combat.Character;
 
 public class Damage extends ImmediateEffect {
 	
-	private int value;
 	
 	public Damage(int value, Character objective) {
 		this.setObjective(objective);
@@ -15,14 +14,6 @@ public class Damage extends ImmediateEffect {
 	public void execute() {
 		this.getObjective().damage(value);
 	}
-	
-	public int getValue() {
-		return value;
-	}
-
-	public void setValue(int value) {
-		this.value = value;
-	}	
 	
 	public String message() {		
 		return this.getObjective().getName() + " received "+this.value+" damage.";

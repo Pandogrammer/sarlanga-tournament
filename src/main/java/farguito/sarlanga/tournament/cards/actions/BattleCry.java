@@ -7,20 +7,18 @@ import farguito.sarlanga.tournament.cards.Effect;
 
 public class BattleCry extends Action {
 
-	private int fatigue = 180;
+	private int fatigue = 18;
 	private int duration = 10;
-	private int damageBonus = 3;
+	private double damageBonus = 1.10;
 	
 	@Override
 	public List<Effect> execute() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String message() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getActor().getName()+" used BATTLE CRY";
 	}
 
 }

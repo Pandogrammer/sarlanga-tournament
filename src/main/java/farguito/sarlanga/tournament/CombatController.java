@@ -2,18 +2,22 @@ package farguito.sarlanga.tournament;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.ImmediateEffect;
 import farguito.sarlanga.tournament.cards.actions.BattleCry;
 import farguito.sarlanga.tournament.cards.actions.PoisonSpit;
 import farguito.sarlanga.tournament.cards.actions.Punch;
 import farguito.sarlanga.tournament.cards.criatures.Ortivactus;
 import farguito.sarlanga.tournament.cards.criatures.Sapurai;
+import farguito.sarlanga.tournament.cards.effects.immediate.Damage;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
+import farguito.sarlanga.tournament.combat.ImmediateEffectModifier;
 import farguito.sarlanga.tournament.combat.Team;
 
 @RestController
@@ -142,4 +146,19 @@ public class CombatController {
 	public List<String> mensajes() {
 		return this.system.getMessages();
 	}
+	
+	@GetMapping("/iem")
+	public String iem() {		
+		ImmediateEffectModifier iem = new ImmediateEffectModifier(e -> e instanceof Damage, 1.10f); //biutiful
+		
+		this.system.addEffectModifier(iem);
+		return "iem ok";
+	}
 }
+
+
+
+
+
+
+

@@ -28,7 +28,7 @@ public class CombatSystem {
 	List<Effect> constantEffects; //efectos constantes
 	List<Effect> immediateEffects; //efectos inmediatos
 //*/
-	
+	private Logger logger = new Logger();
 	private EffectContainer effectContainer = new EffectContainer();
 	private EventListener eventListener = new EventListener();
 	
@@ -57,27 +57,11 @@ public class CombatSystem {
 		this.playing = true;
 
 		firstTurn();
-		/*
-		while (this.playing) {
-			switch (state) { //se puede poner un patron state... : ) CACA CACONA. donde cada estado sepa cual es el siguiente /anterior?
-			case CHECKING_PLAYERS:
-				checkPlayers();
-				break;
-			case CHECKING_READY:
-				checkReady();
-				break;
-			case ADVANCING_TURNS:
-				advancingTurns();
-				break;
-			case APPLYING_EFFECTS:
-				applyEffects();
-				break;
-			default:
-				break;
-			}
-
-		}
-		*/
+	}
+	
+	//test
+	public void addEffectModifier(ImmediateEffectModifier iem) {
+		eventListener.addImmediateEffectModifier(iem);
 	}
 	
 	public void applyImmediateEffects() {		
@@ -107,8 +91,8 @@ public class CombatSystem {
 	//4- La criatura realiza una accion y pasa su turno (la accion genera cansancio).
 	//el chequeo del objetivo en que momento se hace?
 	public void executeAction(Action action) {
-		eventListener.log("Executing action: "+action.getClass().getSimpleName());
-		eventListener.log(action.message());
+		logger.log("Executing action: "+action.getClass().getSimpleName());
+		logger.log(action.message());
 		/*
 		//habilidades y efectos constantes la modifican
 		List<Modifier> actionModifiers = eventListener.getActionGenerationModifiers();
@@ -124,17 +108,6 @@ public class CombatSystem {
 	}
 	
 	
-	/* va en el effect container
-	//se define donde va cada efecto
-	private void addEffects(List<Effect> effects) {
-		effects.stream().forEach(ef -> {
-			if (ef instanceof ImmediateEffect) {
-				effectContainer.addImmediateEffect(ef);
-			} else (ef instanceof ImmediateEffect) {
-		})
-	}
-	*/
-
 	/* Se ejecuta un efecto:
 	 * accion: parametros iniciales
 	 * campo: efectos constantes
@@ -142,8 +115,7 @@ public class CombatSystem {
 	 * resultado: x
 	 */
 	public void executeImmediateEffect(ImmediateEffect effect) {
-		eventListener.log("Executing immediate effect: "+effect.getClass().getSimpleName());
-		eventListener.log(effect.message());
+		logger.log("Executing immediate effect: "+effect.getClass().getSimpleName());
 		/* codigo repetido con generacion de accion.. podria ser algo dentro del eventListener*/
 		/* List<Modifier> effectModifiers = eventListener.getEffectExecutionModifiers();
 		
@@ -151,10 +123,13 @@ public class CombatSystem {
 			em.apply(effect);
 		});		
 		*/
+		eventListener.modifyImmediateEffect(effect);
+		logger.log(effect.message());
 		effect.execute();
 	}
+	
 	public void executeLastingEffect(LastingEffect effect) {
-		eventListener.log("Executing lasting effect.");
+		logger.log("Executing lasting effect.");
 		
 		List<Effect> effects = effect.execute();
 		
@@ -222,7 +197,7 @@ public class CombatSystem {
 		}
 
 		if(activeCharacter != null)
-			eventListener.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");		
+			logger.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");		
 	}
 	
 
@@ -260,7 +235,7 @@ public class CombatSystem {
 		
 		this.state = State.CHARACTER_TURN;
 		
-		eventListener.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
+		logger.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
 	}
 	
 	
@@ -271,7 +246,7 @@ public class CombatSystem {
 	 * + Efectos constantes restan duracion
 	 */
 	public void advancingTurns() {
-		eventListener.log("Advancing turns.");
+		logger.log("Advancing turns.");
 		//para no comparar en cada iteracion voy a hacer una chanchada
 		//en vez de ver si cada criatura es la activa, voy a restarle el cansancio a la activa y se lo voy a re-sumar
 		teams.stream().forEach(t -> {
@@ -312,7 +287,7 @@ public class CombatSystem {
 	}
 	
 	public List<String> getMessages() {
-		return this.eventListener.getMessages();
+		return this.logger.getMessages();
 	}
 	
 

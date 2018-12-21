@@ -3,24 +3,18 @@ package farguito.sarlanga.tournament.combat;
 import java.util.ArrayList;
 import java.util.List;
 
+import farguito.sarlanga.tournament.cards.ImmediateEffect;
+
 public class EventListener {
+
+	private List<ImmediateEffectModifier> immediateEffectModifiers = new ArrayList<>();
 	
-	//parte logger, podria ir en otra clase incluso
-	private List<String> messages = new ArrayList<>();
-	
-	public void log(String message) {
-		System.out.println(message);
-		messages.add(message);
-	}	
-	
-	public List<String> getMessages(){
-		return messages;
+	public void modifyImmediateEffect(ImmediateEffect effect) {
+		immediateEffectModifiers.stream().forEach(iem -> iem.modify(effect));
 	}
 	
-	public void deleteMessages() {
-		this.messages.clear();
+	public void addImmediateEffectModifier(ImmediateEffectModifier iem) {
+		this.immediateEffectModifiers.add(iem);
 	}
-	
-	//parte piola
 
 }
