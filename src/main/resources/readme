@@ -113,3 +113,35 @@
  Que las validaciones se hagan del lado del controlador?
  Sacar los sout
  Separar Action en dos, como Criature -> Character, hay que separar Cartas de Objetos vivos en combate
+
+ 
+ 
+ 
+ 
+ 
+ 
+ Modificadores
+
++ Accion
+  ~ Actor
+  ~ Objetivos
+
++ Efectos
+  ~ Objetivo
+
+  + Inmediatos
+  	~ Valor
+  + Duraderos
+    ~ Duracion
+    ~ Cooldown
+    ~ Contador
+  + Constantes
+    ~ Duracion
+    ~ Condicion de ejecucion
+
+
+Los efectos constantes (y las habilidades) escuchan a los eventos 
+y si se cumple la condicion, generan la modificacion
+
+Los modificadores se generan durante la ejecucion de un evento (mediante efectos constantes/habilidades) 
+y una vez consumado el evento desaparecen.  
