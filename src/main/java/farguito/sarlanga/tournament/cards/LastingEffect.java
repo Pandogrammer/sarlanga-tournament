@@ -41,6 +41,22 @@ public class LastingEffect extends Effect {
 	public void addCooldown() {
 		counter++;
 	}
+
+	
+	
+	public int getCooldown() {
+		return cooldown;
+	}
+
+	public int getCounter() {
+		return counter;
+	}
+
+	public List<Effect> getEffects() {
+		return effects;
+	}
+	
+	
 	
 	
 }

@@ -20,8 +20,10 @@ public class BattleCry extends Action {
 		
 		List<Effect> ef = new ArrayList<>();
 		this.getObjectives().stream().forEach(o -> {
+			/*
 			ef.add(new ConstantEffect(duration, cooldown, new Damage(lastingDamage, o)));
 			ef.add(new Damage(damage, o));
+			*/
 		});
 		
 		this.getActor().fatigate(fatigue);

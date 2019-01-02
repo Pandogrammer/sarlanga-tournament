@@ -1,14 +1,15 @@
 package farguito.sarlanga.tournament;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.Action;
-import farguito.sarlanga.tournament.cards.ImmediateEffect;
+import farguito.sarlanga.tournament.cards.LastingEffect;
 import farguito.sarlanga.tournament.cards.actions.BattleCry;
 import farguito.sarlanga.tournament.cards.actions.PoisonSpit;
 import farguito.sarlanga.tournament.cards.actions.Punch;
@@ -30,7 +31,8 @@ public class CombatController {
 		String[] opciones = 
 			{ "iniciar", "golpear", "veneno"
 			, "efectos-duraderos", "efectos-inmediatos"
-			, "criaturas", "turnos", "mensajes" };
+			, "criaturas", "avanzar-turnos", "mensajes"
+			, "turnos" };
 		
 		StringBuilder lista = new StringBuilder();
 		
@@ -120,8 +122,8 @@ public class CombatController {
 		return "criaturas ok";
 	}
 	
-	@GetMapping("/turnos")
-	public String turnos() {
+	@GetMapping("/avanzar-turnos")
+	public String avanzarTurnos() {
 		this.system.advancingTurns();
 		return "turnos ok";
 	}
@@ -154,8 +156,39 @@ public class CombatController {
 		this.system.addEffectModifier(iem);
 		return "iem ok";
 	}
+	
+	
+	@GetMapping("/turnos")
+	public Map<String, String> turnos(){
+		Map<String, String> turnos = new LinkedHashMap<>();
+		
+		this.system.getTeams().stream().forEach(t -> {
+			t.getCharacters().stream().forEach(c -> {
+				int fatiga = c.getFatigue();
+				int velocidad = c.getSpeed();
+				
+				int turnosFaltantes = fatiga / velocidad;
+				if (fatiga % velocidad != 0) {
+					turnosFaltantes++;
+				}
+				turnos.put(c.getName()+" del equipo: "+c.getTeam(), ""+turnosFaltantes);
+			});
+		});
+		
+		for(int i = 0; i < this.system.getEffectContainer().getLastingEffects().size(); i++) {
+			LastingEffect e = this.system.getEffectContainer().getLastingEffects().get(i);
+			StringBuilder efectos = new StringBuilder("");
+			e.getEffects().stream().forEach(ef -> {
+				efectos.append(ef.getClass().getSimpleName()+" sobre "+ef.getObjective().getName()+" ");
+			});
+			turnos.put((i+1)+": "+efectos.toString(), e.getCounter()+"/"+e.getCooldown()+"");
+		};
+		
+		
+		return turnos;
+	}
+	
 }
-
 
 
 

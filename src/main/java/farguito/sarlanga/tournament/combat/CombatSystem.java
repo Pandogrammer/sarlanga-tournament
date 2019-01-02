@@ -289,6 +289,12 @@ public class CombatSystem {
 	public List<String> getMessages() {
 		return this.logger.getMessages();
 	}
+
+	public EffectContainer getEffectContainer() {
+		return effectContainer;
+	}
+	
+	
 	
 
 }
