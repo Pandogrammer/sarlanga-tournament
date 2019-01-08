@@ -1,7 +1,7 @@
-package farguito.sarlanga.tournament.cards.effects.immediate;
+package farguito.sarlanga.tournament.combat.effects.immediate;
 
-import farguito.sarlanga.tournament.cards.ImmediateEffect;
 import farguito.sarlanga.tournament.combat.Character;
+import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
 
 public class Damage extends ImmediateEffect {
 	

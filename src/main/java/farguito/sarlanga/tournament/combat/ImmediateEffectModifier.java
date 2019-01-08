@@ -2,7 +2,7 @@ package farguito.sarlanga.tournament.combat;
 
 import java.util.function.Predicate;
 
-import farguito.sarlanga.tournament.cards.ImmediateEffect;
+import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
 
 /**
  * los modificadores tienen:
@@ -10,7 +10,8 @@ import farguito.sarlanga.tournament.cards.ImmediateEffect;
  * un predicado que si se cumple lo modifica
  * la modificacion que aplican
  */
-public class ImmediateEffectModifier {	//crear el EffectModifier generico
+@Deprecated
+public class ImmediateEffectModifier extends Modifier {	//crear el EffectModifier generico
 	
 	private Predicate<ImmediateEffect> predicate;
 	private float modifier;

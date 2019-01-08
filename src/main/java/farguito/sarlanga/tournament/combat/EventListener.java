@@ -3,7 +3,7 @@ package farguito.sarlanga.tournament.combat;
 import java.util.ArrayList;
 import java.util.List;
 
-import farguito.sarlanga.tournament.cards.ImmediateEffect;
+import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
 
 public class EventListener {
 

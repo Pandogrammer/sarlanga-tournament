@@ -10,6 +10,7 @@ public abstract class Criature {
 	
 	//private Skill skill; //habilidad
 	
+	
 	public String getName() {
 		return name;
 	}

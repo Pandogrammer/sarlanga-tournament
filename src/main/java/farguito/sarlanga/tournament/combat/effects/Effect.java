@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.cards;
+package farguito.sarlanga.tournament.combat.effects;
 
 import farguito.sarlanga.tournament.combat.Character;
 

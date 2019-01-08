@@ -3,10 +3,10 @@ package farguito.sarlanga.tournament.combat;
 import java.util.ArrayList;
 import java.util.List;
 
-import farguito.sarlanga.tournament.cards.ConstantEffect;
-import farguito.sarlanga.tournament.cards.Effect;
-import farguito.sarlanga.tournament.cards.ImmediateEffect;
-import farguito.sarlanga.tournament.cards.LastingEffect;
+import farguito.sarlanga.tournament.combat.effects.ConstantEffect;
+import farguito.sarlanga.tournament.combat.effects.Effect;
+import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
+import farguito.sarlanga.tournament.combat.effects.LastingEffect;
 
 public class EffectContainer {
 

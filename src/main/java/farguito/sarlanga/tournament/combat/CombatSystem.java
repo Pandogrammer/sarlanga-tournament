@@ -7,9 +7,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import farguito.sarlanga.tournament.cards.Action;
-import farguito.sarlanga.tournament.cards.Effect;
-import farguito.sarlanga.tournament.cards.ImmediateEffect;
-import farguito.sarlanga.tournament.cards.LastingEffect;
+import farguito.sarlanga.tournament.combat.effects.Effect;
+import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
+import farguito.sarlanga.tournament.combat.effects.LastingEffect;
 
 public class CombatSystem {
 	
@@ -21,6 +21,7 @@ public class CombatSystem {
 	
 	private State state; // estado del combate
 	private Character activeCharacter; // personaje activo (turno)
+	private int lastTeamTurn;
 	
 /*  Map<String,List<Effect>> se puede pasar a un mapa que tenga todos los tipos
  *  
@@ -105,6 +106,9 @@ public class CombatSystem {
 		List<Effect> effects = action.execute();
 		
 		effectContainer.addEffects(effects);
+		
+		//pobreza intensifies
+		lastTeamTurn = action.getActor().getTeam();
 	}
 	
 	
@@ -179,7 +183,7 @@ public class CombatSystem {
 				int j = 0;
 				boolean found = false;
 				while(!found && j < amount) {
-					if (readyCharacters.get(j).getTeam() != activeCharacter.getTeam())
+					if (readyCharacters.get(j).getTeam() != lastTeamTurn)
 						found = true;
 				}	
 				

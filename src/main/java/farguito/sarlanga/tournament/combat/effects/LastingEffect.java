@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.cards;
+package farguito.sarlanga.tournament.combat.effects;
 
 import java.util.ArrayList;
 import java.util.List;

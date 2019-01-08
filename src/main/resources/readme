@@ -145,3 +145,54 @@ y si se cumple la condicion, generan la modificacion
 
 Los modificadores se generan durante la ejecucion de un evento (mediante efectos constantes/habilidades) 
 y una vez consumado el evento desaparecen.  
+
+
+
+############
+07/01/19 
+
+Pasan a deprecarse los efectos constantes y los modificadores momentaneamente
+hasta que piense bien como manejar los modificadores de acciones/efectos, y el manejo de eventos 
+
+Se empieza a pensar una beta falopa.
+Que necesito?
+1- Crear partida
+	- Esencia, posiciones y cartas disponibles
+2- Entrar a partida
+3- Definir equipo
+	- Poder poner Ready
+4- Iniciar partida
+	- Generar un sistema de combate con los equipos
+5- Manejo de turnos
+
+
+--La esencia es externa al sistema de combate, es la forma de manejar el costo de entrada/definicion de un equipo
+--Las cartas son la interfaz entre el jugador y el sistema
+
+
+
+############
+08/01/19
+
+Agregarle status a los personajes :
+Bonif daño recibido
+Redux daño recibido
+Etc %
+
+=Personajes=
+Stats
+
+=Acciones=
+Origen
+Objetivos
+
+=Efectos=
+Objetivos
+Tipos de efectos
+
+^ cosas que pueden usar los modificadores
+
+
+
+
+

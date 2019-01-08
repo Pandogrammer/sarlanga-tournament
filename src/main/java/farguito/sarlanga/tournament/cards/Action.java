@@ -3,6 +3,7 @@ package farguito.sarlanga.tournament.cards;
 import java.util.List;
 
 import farguito.sarlanga.tournament.combat.Character;
+import farguito.sarlanga.tournament.combat.effects.Effect;
 
 public abstract class Action {
 	

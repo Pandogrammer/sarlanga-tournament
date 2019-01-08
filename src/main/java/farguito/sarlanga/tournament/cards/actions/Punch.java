@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
-import farguito.sarlanga.tournament.cards.Effect;
-import farguito.sarlanga.tournament.cards.effects.immediate.Damage;
+import farguito.sarlanga.tournament.combat.effects.Effect;
+import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 public class Punch extends Action {
 	
 	private int fatigue = 12; 
 	
+	private float damageModifier = 1; 
+	
 	public List<Effect> execute(){
-		int damage = this.getActor().getAttack();
+		int damage = (int) (this.getActor().getAttack() * damageModifier);
 		
 		List<Effect> ef = new ArrayList<>();
 		this.getObjectives().stream().forEach(o -> {
