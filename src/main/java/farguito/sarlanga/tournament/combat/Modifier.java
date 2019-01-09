@@ -1,6 +1,6 @@
 package farguito.sarlanga.tournament.combat;
 
 @Deprecated
-public class Modifier {
+public class Modifier<T> {
 
 }

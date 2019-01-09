@@ -13,6 +13,10 @@ public class Punch extends Action {
 	
 	private float damageModifier = 1; 
 	
+	public Punch() {
+		this.setFatigue(fatigue);
+	}
+	
 	public List<Effect> execute(){
 		int damage = (int) (this.getActor().getAttack() * damageModifier);
 		
@@ -20,8 +24,6 @@ public class Punch extends Action {
 		this.getObjectives().stream().forEach(o -> {
 			ef.add(new Damage(damage, o));
 		});
-		
-		this.getActor().fatigate(fatigue);
 		
 		return ef;
 	}

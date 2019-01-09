@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.ConstantEffect;
 import farguito.sarlanga.tournament.combat.effects.Effect;
+import farguito.sarlanga.tournament.combat.effects.ReactiveEffect;
 
 @Deprecated
 public class BattleCry extends Action {
@@ -20,7 +21,7 @@ public class BattleCry extends Action {
 		
 		List<Effect> ef = new ArrayList<>();
 		
-		ConstantEffect actionDamageBuff = new ConstantEffect(duration);
+		ReactiveEffect actionDamageBuff = new ReactiveEffect(duration);
 		Predicate<Action> sameTeam = (a) -> a.getActor().getTeam() == this.getActor().getTeam();
 		actionDamageBuff.addCondition(sameTeam);
 		

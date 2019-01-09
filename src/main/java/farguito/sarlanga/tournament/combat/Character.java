@@ -55,55 +55,42 @@ public class Character {
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	public int getTeam() {
 		return team;
 	}
-
 	public void setTeam(int team) {
 		this.team = team;
 	}
-
 	public int getHp() {
 		return hp;
 	}
-
 	public void setHp(int hp) {
 		this.hp = hp;
 	}
-
 	public int getSpeed() {
 		return speed;
 	}
-
 	public void setSpeed(int speed) {
 		this.speed = speed;
 	}
-
 	public int getFatigue() {
 		return fatigue;
 	}
-
 	public void setFatigue(int fatigue) {
 		this.fatigue = fatigue;
 	}
-
 	public int getAttack() {
 		return attack;
 	}
-
 	public void setAttack(int attack) {
 		this.attack = attack;
 	}
-
 	public List<Action> getActions() {
 		return actions;
 	}
-
 	public void setActions(List<Action> actions) {
 		this.actions = actions;
 	}

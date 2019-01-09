@@ -5,12 +5,17 @@ import java.util.List;
 
 public class Team {
 	
-	List<Character> characters;
+	private int teamNumber;
+	private List<Character> characters;
 	
 	public Team(List<Character> characters) {
 		this.characters = characters;
 	}
 	
+	public Team(int teamNumber, List<Character> characters) {
+		this.teamNumber = teamNumber;
+		this.characters = characters;
+	}	
 	
 
 	public boolean someoneAlive() {
@@ -26,9 +31,12 @@ public class Team {
 	}
 
 	
-	
-	
-	
+	public void setTeamNumber(int teamNumber) {
+		this.teamNumber = teamNumber;
+	}
+	public int getTeamNumber() {
+		return teamNumber;
+	}
 	public List<Character> getCharacters() {
 		return characters;
 	}

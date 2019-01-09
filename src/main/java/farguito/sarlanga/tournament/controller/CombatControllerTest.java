@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament;
+package farguito.sarlanga.tournament.controller;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,7 +24,7 @@ import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 @RestController
 @RequestMapping("test")
-public class CombatTester {
+public class CombatControllerTest {
 
 	private CombatSystem system;
 	

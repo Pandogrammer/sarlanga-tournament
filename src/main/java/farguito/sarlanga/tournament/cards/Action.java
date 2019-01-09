@@ -6,7 +6,7 @@ import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 
 public abstract class Action {
-	
+	private int fatigue;
 	private Character actor;
 	private List<Character> objectives;
 
@@ -27,6 +27,12 @@ public abstract class Action {
 	}
 	public void setObjectives(List<Character> objectives) {
 		this.objectives = objectives;
+	}
+	public int getFatigue() {
+		return fatigue;
+	}
+	public void setFatigue(int fatigue) {
+		this.fatigue = fatigue;
 	}
 	
 
