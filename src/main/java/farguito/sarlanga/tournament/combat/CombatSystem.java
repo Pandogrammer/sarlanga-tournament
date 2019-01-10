@@ -13,12 +13,12 @@ import farguito.sarlanga.tournament.combat.effects.LastingEffect;
 
 public class CombatSystem {
 	
-	private boolean playing = false;
-
 	private List<Team> teams; // personajes en combate
 	
 	private Character activeCharacter; // personaje activo (turno)
+	
 	private int lastTeamTurn;
+	private int winningTeam = -1;
 	
 	private Logger logger = new Logger();
 	private EffectContainer effectContainer = new EffectContainer();
@@ -37,8 +37,6 @@ public class CombatSystem {
 	 */
 	public CombatSystem(List<Team> teams) {
 		this.teams = teams;
-		
-		this.playing = true;
 
 		firstTurn();
 	}
@@ -258,8 +256,14 @@ public class CombatSystem {
 		List<Team> aliveTeams = teams.stream().filter(t -> t.someoneAlive()).collect(Collectors.toList());
 		//esto esta pensado para FFA
 		if(aliveTeams.size() == 1) {
-			Team winnerTeam = aliveTeams.get(0); //hacer algo con el ganador
+			this.winningTeam = aliveTeams.get(0).getTeamNumber(); //hacer algo con el ganador			
 		}
+	}
+
+	
+	
+	public int getWinningTeam() {
+		return winningTeam;
 	}
 
 	public List<Team> getTeams() {

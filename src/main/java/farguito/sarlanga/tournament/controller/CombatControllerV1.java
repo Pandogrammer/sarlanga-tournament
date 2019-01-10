@@ -88,7 +88,7 @@ public class CombatControllerV1 {
 								acs.add(ac);
 								i++;
 							}
-							teamCharacters.add(new Character(p.teams.size(), cr, acs));
+							teamCharacters.add(new Character(p.getTeams().size(), cr, acs));
 						}
 						
 						p.addTeam(teamCharacters);
@@ -118,7 +118,7 @@ public class CombatControllerV1 {
 		if(this.partidas.containsKey(id)) {
 			Match partida = this.partidas.get(id);
 			if(partida.getTeams().size() > 1)
-				partida.iniciar();
+				partida.start();
 			else
 				respuesta.put("Error", "Hace falta por lo menos 2 equipos para iniciar la partida.");				
 		} else {
@@ -172,7 +172,7 @@ public class CombatControllerV1 {
 			Match partida = this.partidas.get(id);
 			if(partida.getState().equals("WAITING")) {
 				respuesta.put("Esencia", partida.getEssence());
-				respuesta.put("Equipos", partida.teams.size());
+				respuesta.put("Equipos", partida.getTeams().size());
 				respuesta.put("Cartas disponibles", partida.getCards());
 			} else if (partida.getState().equals("PLAYING")) {
 				Map<String, Object> estadoEquipos = new LinkedHashMap<>();

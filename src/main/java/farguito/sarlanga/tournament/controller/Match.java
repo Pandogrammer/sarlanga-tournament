@@ -10,12 +10,13 @@ import farguito.sarlanga.tournament.combat.Team;
 
 public class Match {
 
-	int essence;
-	CombatSystem system;
-	List<Card> cards = new ArrayList<>();
-	List<Team> teams = new ArrayList<>();
+	private String owner;
+	private int essence;
+	private CombatSystem system;
+	private List<Card> cards = new ArrayList<>();
+	private List<Team> teams = new ArrayList<>();
 	
-	String state;
+	private String state;
 	
 	public Match(int essence, List<Card> cards) {
 		this.state = "WAITING";
@@ -25,7 +26,7 @@ public class Match {
 		this.cards.addAll(cards);		
 	}
 	
-	public void iniciar() {
+	public void start() {
 		this.state = "PLAYING";
 		this.system = new CombatSystem(teams);		
 	}
@@ -52,6 +53,13 @@ public class Match {
 	public void setState(String state) {
 		this.state = state;
 	}
+	public String getOwner() {
+		return owner;
+	}
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+	
 	
 	
 }
