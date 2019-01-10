@@ -7,19 +7,19 @@ import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
-public class Punch extends Action {
+public class Cleave extends Action {
 	
-	private int fatigue = 12; 
+	private int fatigue = 20; 
 	
-	private float damageModifier = 1; 
+	private float damageModifier = 0.75f; 
 	
-	public Punch() {
-		this.setTarget("OBJECTIVE");
+	public Cleave() {
+		this.setTarget("LINE");
 		this.setFatigue(fatigue);
 	}
 	
 	public List<Effect> execute(){
-		int damage = (int) ((this.getActor().getAttack() + this.getActor().getAttackBonus()) * damageModifier);
+		int damage = (int) (this.getActor().getAttack() * damageModifier);
 		
 		List<Effect> ef = new ArrayList<>();
 		this.getObjectives().stream().forEach(o -> {
@@ -30,6 +30,6 @@ public class Punch extends Action {
 	}
 
 	public String message() {
-		return this.getActor().getName()+" used PUNCH";
+		return this.getActor().getName()+" used CLEAVE";
 	}
 }

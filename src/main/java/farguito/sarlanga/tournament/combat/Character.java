@@ -8,11 +8,15 @@ import farguito.sarlanga.tournament.cards.Criature;
 public class Character {
 
 	private int team;
+	private int line;
+	private int position;
 	private String name;
 	private int hp;
 	private int speed;
+	private int speedBonus;
 	private int fatigue;
 	private int attack;
+	private int attackBonus;
 	
 	private List<Action> actions;
 	
@@ -24,6 +28,8 @@ public class Character {
 		this.attack = criature.getAttack();
 		this.fatigue = 0;
 		this.actions = actions;
+		this.attackBonus = 0;
+		this.speedBonus = 0;
 	}
 	
 	public boolean isAlive() {
@@ -35,7 +41,10 @@ public class Character {
 	}
 	
 	public void rest() {
-		this.fatigue = this.fatigue - this.speed;
+		int totalSpeed = this.speed - this.speedBonus;
+		if(totalSpeed < 1) totalSpeed = 1;
+		
+		this.fatigue = this.fatigue - totalSpeed;
 		if (this.fatigue < 0) {
 			this.fatigue = 0;
 		}
@@ -46,9 +55,19 @@ public class Character {
 	}
 	
 	public void damage(int value) {
-		this.hp = this.hp - value;
+		if(this.hp > 0 ) {
+			this.hp = this.hp - value;
+			if(this.hp < 0) this.hp = 0;
+		}
 	}
-
+	
+	public void modifyAttackBonus(int value) {
+		this.attackBonus += value;
+	}
+	
+	public void modifySpeedBonus(int value) {
+		this.speedBonus += value;
+	}
 	
 	
 	
@@ -94,6 +113,31 @@ public class Character {
 	public void setActions(List<Action> actions) {
 		this.actions = actions;
 	}
+	public int getLine() {
+		return line;
+	}
+	public void setLine(int line) {
+		this.line = line;
+	}
+	public int getPosition() {
+		return position;
+	}
+	public void setPosition(int position) {
+		this.position = position;
+	}
+	public int getAttackBonus() {
+		return attackBonus;
+	}
+	public void setAttackBonus(int attackBonus) {
+		this.attackBonus = attackBonus;
+	}
+	public int getSpeedBonus() {
+		return speedBonus;
+	}
+	public void setSpeedBonus(int speedBonus) {
+		this.speedBonus = speedBonus;
+	}
+	
 	
 	
 }

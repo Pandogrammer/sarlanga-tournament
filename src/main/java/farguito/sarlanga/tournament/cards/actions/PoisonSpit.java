@@ -16,6 +16,11 @@ public class PoisonSpit extends Action {
 
 	private float immediateDamageModifier = 0.5f;
 	private float lastingDamageModifier = 0.25f;
+	
+	public PoisonSpit() {
+		this.setTarget("OBJECTIVE");
+		this.setFatigue(fatigue);
+	}
 		
 	public List<Effect> execute() {
 		int lastingDamage = (int) (this.getActor().getAttack() * lastingDamageModifier);
@@ -27,7 +32,6 @@ public class PoisonSpit extends Action {
 			ef.add(new Damage(damage, o));
 		});
 		
-		this.getActor().fatigate(fatigue);
 		
 		return ef;
 	}

@@ -1,4 +1,6 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.cards;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Card {
 
@@ -27,6 +29,8 @@ public class Card {
 	public String getType() {
 		return type;
 	}
+	
+	@JsonIgnore
 	public Class getObject() {
 		return object;
 	}	

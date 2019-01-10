@@ -8,6 +8,6 @@ public class Ortivactus extends Criature {
 		this.setName("Ortivactus");
 		this.setAttack(8);
 		this.setHp(65);
-		this.setSpeed(6);		
+		this.setSpeed(12);		
 	}	
 }

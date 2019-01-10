@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.Criature;
 import farguito.sarlanga.tournament.cards.actions.PoisonSpit;
 import farguito.sarlanga.tournament.cards.actions.Punch;

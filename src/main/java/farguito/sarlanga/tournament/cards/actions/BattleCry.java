@@ -8,26 +8,27 @@ import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.ConstantEffect;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.ReactiveEffect;
+import farguito.sarlanga.tournament.combat.effects.immediate.AttackBonus;
+import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
-@Deprecated
 public class BattleCry extends Action {
 
-	private int fatigue = 24;
-	private int duration = 10;
-	private double damageBonus = 1.10;
+	private int fatigue = 20;	
+	
+	private float attackBonusModifier = 0.1f;
+	
+	public BattleCry() {
+		this.setTarget("SELF");
+		this.setFatigue(fatigue);
+	}
 	
 	@Override
-	public List<Effect> execute() {
-		
+	public List<Effect> execute() {		
 		List<Effect> ef = new ArrayList<>();
 		
-		ReactiveEffect actionDamageBuff = new ReactiveEffect(duration);
-		Predicate<Action> sameTeam = (a) -> a.getActor().getTeam() == this.getActor().getTeam();
-		actionDamageBuff.addCondition(sameTeam);
-		
-		ef.add(actionDamageBuff);
-		
-		this.getActor().fatigate(fatigue);
+		this.getObjectives().stream().forEach(o -> {
+			ef.add(new AttackBonus((int) (o.getAttack() * attackBonusModifier), o));
+		});
 		
 		return ef;
 	}

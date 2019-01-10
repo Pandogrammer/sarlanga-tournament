@@ -15,32 +15,15 @@ public class CombatSystem {
 	
 	private boolean playing = false;
 
-	//se podria pasar a un map<String,List<Character>> en donde definan los equipos, se le podria meter banderas como "jugando" por si ya perdio o no
-	//pero me parece que lo voy a hacer despues, porque ahora es complicarmela (serviria para poder hacer partidas de mas de 2 jugadores)
 	private List<Team> teams; // personajes en combate
 	
-	private State state; // estado del combate
 	private Character activeCharacter; // personaje activo (turno)
 	private int lastTeamTurn;
 	
-/*  Map<String,List<Effect>> se puede pasar a un mapa que tenga todos los tipos
- *  
-	List<Effect> lastingEffects; //efectos duraderos
-	List<Effect> constantEffects; //efectos constantes
-	List<Effect> immediateEffects; //efectos inmediatos
-//*/
 	private Logger logger = new Logger();
 	private EffectContainer effectContainer = new EffectContainer();
 	private EventListener eventListener = new EventListener();
 	
-/*  Map<String,List<Listener>> se puede pasar a un mapa que tenga todos los tipos
- *  
-	List<Listener> actionGenerationEL; //EL : event listeners
-	List<Listener> actionExecutionEL;
-	List<Listener> effectGenerationEL;
-	List<Listener> effectExecutionEL;
-	List<Listener> criatureDeathEL;
-//*/
 
 	/**
 	 * 1- Antes de que arranque la partida se define la esencia disponible para los jugadores
@@ -75,6 +58,7 @@ public class CombatSystem {
 	public void prepareAction(Action action, Character objective) {
 		List<Character> objectives = new ArrayList<>();
 		objectives.add(objective);
+		
 		
 		this.prepareAction(action, objectives);
 	}
@@ -237,8 +221,6 @@ public class CombatSystem {
 		
 		activeCharacter = fastestCharacters.get(amount);		
 		
-		this.state = State.CHARACTER_TURN;
-		
 		logger.log(activeCharacter.getName()+" from Team "+activeCharacter.getTeam()+" is ready.");
 	}
 	
@@ -277,8 +259,6 @@ public class CombatSystem {
 		//esto esta pensado para FFA
 		if(aliveTeams.size() == 1) {
 			Team winnerTeam = aliveTeams.get(0); //hacer algo con el ganador
-			
-			this.state = State.TEAM_VICTORY;
 		}
 	}
 

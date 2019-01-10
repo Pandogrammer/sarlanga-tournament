@@ -6,14 +6,18 @@ import java.util.List;
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
+import farguito.sarlanga.tournament.combat.effects.immediate.Fatigation;
+import farguito.sarlanga.tournament.combat.effects.immediate.SpeedBonus;
 
-public class Punch extends Action {
+public class Ensnare extends Action {
 	
-	private int fatigue = 12; 
+	private int fatigue = 24; 
 	
-	private float damageModifier = 1; 
+	private int fatigation = 10;
+	private int speedBonus = -1;
+	private float damageModifier = 0.1f; 
 	
-	public Punch() {
+	public Ensnare() {
 		this.setTarget("OBJECTIVE");
 		this.setFatigue(fatigue);
 	}
@@ -24,12 +28,14 @@ public class Punch extends Action {
 		List<Effect> ef = new ArrayList<>();
 		this.getObjectives().stream().forEach(o -> {
 			ef.add(new Damage(damage, o));
+			ef.add(new SpeedBonus(speedBonus, o));
+			ef.add(new Fatigation(fatigation, o));
 		});
 		
 		return ef;
 	}
 
 	public String message() {
-		return this.getActor().getName()+" used PUNCH";
+		return this.getActor().getName()+" used ENSNARE";
 	}
 }

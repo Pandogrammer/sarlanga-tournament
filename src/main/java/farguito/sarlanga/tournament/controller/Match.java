@@ -3,6 +3,7 @@ package farguito.sarlanga.tournament.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;

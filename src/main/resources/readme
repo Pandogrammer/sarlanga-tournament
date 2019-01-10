@@ -194,5 +194,22 @@ Tipos de efectos
 
 
 
+############
+10/01/19
+
+Hacerlo mas simple.
+Definir una beta con:
+1- 3 personajes por equipo (2 - 1)
+2- Ataques melee / rango
+3- 2-3 acciones por personaje
+4- Poder jugar contra la maquina
+5- Efectos inmediatos, efectos duraderos
+
+Handler : maneja la conexion cliente - servidor
+Controller : maneja el input hacia el sistema
+System : maneja la partida
+
+
+
 
 
