@@ -1,7 +1,9 @@
 package farguito.sarlanga.tournament.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,13 +35,14 @@ public class CombatControllerV2 {
 		response.put(""+i, ""); i++;
 		response.put(""+i, "Para generar tu cuenta anda a /generate-account"); i++;
 		response.put(""+i, "Esto te retornara un id con el cual utilizaras todos los comandos posibles"); i++;
-		response.put(""+i, "Ej: /ACCOUNT_ID/create-room"); i++;
+		response.put(""+i, "Ej: /{accountId}/create-room"); i++;
 
 		response.put(""+i, ""); i++;
 		response.put(""+i, "Listado de comandos posibles:"); i++;
-		response.put(""+i, "/{accountId}/create-room"); i++;
+		response.put(""+i, "/{accountId}/create-room?essence={amount}"); i++;
 		response.put(""+i, "/{accountId}/delete-room"); i++;
 		response.put(""+i, "/{accountId}/start-match"); i++;
+		response.put(""+i, "/rooms | /rooms?id={roomId}"); i++;
 		
 		
 		return response;
@@ -57,7 +60,8 @@ public class CombatControllerV2 {
 	
 
 	@GetMapping("{accountId}/create-room")
-	public Map<String, Object> createRoom(@PathVariable String accountId, @RequestParam int essence) {
+	public Map<String, Object> createRoom(@PathVariable String accountId
+										, @RequestParam int essence) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		
 		if(!this.user_match.containsKey(accountId)) {
@@ -96,13 +100,35 @@ public class CombatControllerV2 {
 		
 		return respuesta;
 	}
-	
+
 	
 	@GetMapping("{accountId}/start-match")
-	public Map<String, Object> iniciarPartida(@PathVariable String accountId) {
+	public Map<String, Object> startMatch(@PathVariable String accountId) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		
 		if(this.user_match.containsKey(accountId)) {
+			String roomId = this.user_match.get(accountId);
+			if(this.matchs.get(roomId).getTeams().size() > 1) {
+				this.matchs.get(roomId).start();
+			} else {
+				respuesta.put("error", "Hace falta por lo menos 2 equipos para iniciar la partida.");
+			}
+		} else {
+			respuesta.put("error", "No tenes una sala creada.");
+		}
+		
+		return respuesta;
+	}
+	
+	
+
+	
+	@GetMapping("{accountId}/enter-room")
+	public Map<String, Object> enterRoom(@PathVariable String accountId
+									   , @RequestParam("id") String roomId) {
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+		/*
+		if(this.matchs.containsKey(roomId)) {
 			String roomId = this.user_match.get(accountId);
 			if(this.matchs.get(roomId).getOwner().equals(accountId)){
 				if(this.matchs.get(roomId).getTeams().size() > 1) {
@@ -115,6 +141,55 @@ public class CombatControllerV2 {
 			}
 		} else {
 			respuesta.put("error", "La sala no existe.");
+		}
+		*/
+		return respuesta;
+	}
+	
+
+	
+	@GetMapping("/rooms")
+	public Map<String, Object> roomInformation(@RequestParam(required = false, value = "id") String roomId) {
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+		if(roomId != null) {					
+			if(this.matchs.containsKey(roomId)) {
+				Match partida = this.matchs.get(roomId);
+				if(partida.getState().equals("WAITING")) {
+					respuesta.put("esencia", partida.getEssence());
+					respuesta.put("equipos", partida.getTeams().size());
+					respuesta.put("cartas disponibles", partida.getCards());
+				} else if (partida.getState().equals("PLAYING")) {
+					Map<String, Object> estadoEquipos = new LinkedHashMap<>();
+					partida.getSystem().getTeams().stream().forEach(t -> {
+						Map<String, Object> estadoPersonajes = new LinkedHashMap<>();
+						t.getCharacters().forEach(c -> {
+							Map<String, Object> estadoPersonaje = new LinkedHashMap<>();
+							estadoPersonaje.put("HP", c.getHp());
+							estadoPersonaje.put("FATIGUE", c.getFatigue());
+							
+							estadoPersonajes.put(c.getName(), estadoPersonaje);
+						});
+						estadoEquipos.put("equipo "+t.getTeamNumber(), estadoPersonajes);
+					});
+					respuesta.put("estado", estadoEquipos);
+					respuesta.put("mensajes", partida.getSystem().getMessages());
+				}
+			} else {
+				respuesta.put("error", "La sala no existe.");
+			}
+		} else {
+
+			List<Map<String, Object>> rooms = new ArrayList<>();			
+			this.matchs.entrySet().stream().forEach(m -> {
+				Map<String, Object> roomInformation = new LinkedHashMap<>();
+				roomInformation.put("id", m.getKey());
+				roomInformation.put("essence", m.getValue().getEssence());
+				roomInformation.put("teams", m.getValue().getTeams().size());
+				roomInformation.put("state", m.getValue().getState());
+
+				rooms.add(roomInformation);
+			});			
+			respuesta.put("salas", rooms);
 		}
 		
 		return respuesta;
@@ -155,39 +230,5 @@ public class CombatControllerV2 {
 		return respuesta;
 	}
 
-	
-	@GetMapping("{id}")
-	public Map<String, Object> informacionPartida(@PathVariable Integer id) {
-		Map<String, Object> respuesta = new LinkedHashMap<>();
-		
-		if(this.matchs.containsKey(id)) {
-			Match partida = this.matchs.get(id);
-			if(partida.getState().equals("WAITING")) {
-				respuesta.put("Esencia", partida.getEssence());
-				respuesta.put("Equipos", partida.getTeams().size());
-				respuesta.put("Cartas disponibles", partida.getCards());
-			} else if (partida.getState().equals("PLAYING")) {
-				Map<String, Object> estadoEquipos = new LinkedHashMap<>();
-				partida.getSystem().getTeams().stream().forEach(t -> {
-					Map<String, Object> estadoPersonajes = new LinkedHashMap<>();
-					t.getCharacters().forEach(c -> {
-						Map<String, Object> estadoPersonaje = new LinkedHashMap<>();
-						estadoPersonaje.put("HP", c.getHp());
-						estadoPersonaje.put("FATIGUE", c.getFatigue());
-						
-						estadoPersonajes.put(c.getName(), estadoPersonaje);
-					});
-					estadoEquipos.put("Equipo "+t.getTeamNumber(), estadoPersonajes);
-				});
-				respuesta.put("Estado", estadoEquipos);
-				respuesta.put("Mensajes", partida.getSystem().getMessages());
-			}
-		} else {
-			respuesta.put("Error", "La partida no existe.");
-		}
-		
-		return respuesta;
-	}
-	
 	
 }

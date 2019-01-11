@@ -11,6 +11,7 @@ public class Card {
 	private String type;
 	
 	public Card(int id, int essence, String name, Class object, String type) {
+		this.id = id;
 		this.essence = essence;
 		this.name = name;
 		this.object = object;
