@@ -18,7 +18,7 @@ public class YaSonLasSeisController {
 		if(hora < 18) {
 			return "No, son las "+hora+":"+String.format("%02d", now.getMinute());
 		} else {
-			return "SI :D";
+			return "SEEEEEEEEEEEEEEEEEEE :D"+"\n"+"https://www.youtube.com/watch?v=oqGDHSGohjw";
 		}
 	}
 	
