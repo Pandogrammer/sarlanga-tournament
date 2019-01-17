@@ -14,10 +14,12 @@ public class YaSonLasSeisController {
 	@GetMapping
 	public String sonLasSeis() {
 		LocalDateTime now = LocalDateTime.now();
-		if(now.getHour() < 18) {
-			return "No, son las "+now.getHour()+":"+String.format("%02d", now.getMinute());
+		int hora = now.getHour() - 3;
+		if(hora < 18) {
+			return "No, son las "+hora+":"+String.format("%02d", now.getMinute());
+		} else {
+			return "SI :D";
 		}
-		return "SI :D";
 	}
 	
 
