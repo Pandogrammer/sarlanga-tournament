@@ -15,11 +15,17 @@ public class YaSonLasSeisController {
 	public String sonLasSeis() {
 		LocalDateTime now = LocalDateTime.now();
 		int hora = now.getHour() - 3;
+		int minutos = now.getMinute();
 		if(hora < 18) {
-			if(hora == 17 && now.getMinute() > 50)
-				return "NO, PERO FALTAN "+(60-now.getMinute());
-			else
-				return "No, son las "+hora+":"+String.format("%02d", now.getMinute());				
+			if(hora == 17 && minutos > 50) {
+				if (minutos == 59) {
+					return "NO, PERO FALTAN "+(60-now.getSecond());
+				} else { 
+					return "NO, PERO FALTAN "+(60-minutos);
+				}
+			} else {
+				return "No, son las "+hora+":"+String.format("%02d", now.getMinute());
+			}
 		} else {
 			return "SEEEEEEEEEEEEEEEEEEE :D"+"\n"+"https://www.youtube.com/watch?v=oqGDHSGohjw";
 		}
