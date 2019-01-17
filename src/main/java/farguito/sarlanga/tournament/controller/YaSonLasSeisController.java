@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("ya-son-las-seis")
 public class YaSonLasSeisController {
 
-	
+
 	@GetMapping
 	public String sonLasSeis() {
 		LocalDateTime now = LocalDateTime.now();
@@ -18,6 +18,13 @@ public class YaSonLasSeisController {
 			return "No, son las "+now.getHour()+":"+String.format("%02d", now.getMinute());
 		}
 		return "SI :D";
+	}
+	
+
+	@GetMapping("hora")
+	public String hora() {
+		LocalDateTime now = LocalDateTime.now();
+		return "son las "+now.getHour()+":"+String.format("%02d", now.getMinute());
 	}
 	
 }
