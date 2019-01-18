@@ -42,7 +42,8 @@ public class VamoAContarController {
 			return conteos;
 		} else {
 			Map<String, String> respuesta = new LinkedHashMap<>();
-			respuesta.put("mensaje", "Te falta registrarte, hacelo en /contando-las-horas/quien-soy?nombre=_____");
+			respuesta.put("mensaje", "Te falta registrarte, hacelo en: /contando-las-horas/quien-soy?nombre=_____");
+			respuesta.put("url", "https://sarlanga-tournament.herokuapp.com/contando-las-horas/quien-soy?nombre=TU_NOMBRE");
 			return respuesta;
 		}
     }
@@ -52,16 +53,22 @@ public class VamoAContarController {
 
 		Map<String, String> respuesta = new LinkedHashMap<>();
 		
-		String id = request.getSession().getId();
-		
-		if(!contadores.containsKey(id)) {
-			contadores.put(id, nombre);
-			respuesta.put("~", ":)");
+		if(nombre.equalsIgnoreCase("TU_NOMBRE")) {
+			respuesta.put("~", "¬¬");
+			respuesta.put("mensaje", "valía cambiarle el nombre");
 		} else {
-			contadores.put(id, nombre);
-			respuesta.put("~", ":o");
+			String id = request.getSession().getId();
+			
+			if(!contadores.containsKey(id)) {
+				contadores.put(id, nombre);
+				respuesta.put("~", ":)");
+			} else {
+				contadores.put(id, nombre);
+				respuesta.put("~", ":o");
+			}
+			respuesta.put("mensaje", "Bueno ahora volve a la url anterior:");
+			respuesta.put("url", "https://sarlanga-tournament.herokuapp.com/contando-las-horas/");			
 		}
-		respuesta.put("mensaje", "bueno ahora volve a la url anterior");
 		return respuesta;
 	}
 	
