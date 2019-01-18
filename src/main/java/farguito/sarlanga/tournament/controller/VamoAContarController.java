@@ -42,7 +42,7 @@ public class VamoAContarController {
 			return conteos;
 		} else {
 			Map<String, String> respuesta = new LinkedHashMap<>();
-			respuesta.put("mensaje", "Te falta registrarte, hacelo en: /contando-las-horas/quien-soy?nombre=_____");
+			respuesta.put("mensaje", "Te falta registrarte, hacelo en:");
 			respuesta.put("url", "https://sarlanga-tournament.herokuapp.com/contando-las-horas/quien-soy?nombre=TU_NOMBRE");
 			return respuesta;
 		}
