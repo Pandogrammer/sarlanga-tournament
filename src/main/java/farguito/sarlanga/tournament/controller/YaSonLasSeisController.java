@@ -27,7 +27,7 @@ public class YaSonLasSeisController {
 				return "No, son las "+hora+":"+String.format("%02d", now.getMinute());
 			}
 		} else {
-			return "SEEEEEEEEEEEEEEEEEEE :D"+"\n"+"https://www.youtube.com/watch?v=oqGDHSGohjw";
+			return "SEEEEEEEEEEEEEEEEEEE :D"+System.getProperty("line.separator")+"https://www.youtube.com/watch?v=oqGDHSGohjw";
 		}
 	}
 	
