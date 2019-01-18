@@ -22,7 +22,7 @@ public class VamoAContarController {
 	
 	@GetMapping
 	public String contar(HttpServletRequest request) {
-		String ip = request.getRemoteAddr();
+		String id = request.getSession().getId();
 
 		LocalDateTime now = LocalDateTime.now();
 		
@@ -31,8 +31,8 @@ public class VamoAContarController {
 		if (minutos != 60) hora--;
 		
 		StringBuilder respuesta = new StringBuilder();
-		if(contadores.containsKey(ip)) {
-			conteos.add(contadores.get(ip)+": "+hora +"."+minutos);
+		if(contadores.containsKey(id)) {
+			conteos.add(contadores.get(id)+": "+hora +"."+minutos);
 			
 			conteos.stream().forEach(c -> {
 				respuesta.append(c); respuesta.append(System.getProperty("line.separator"));
@@ -40,18 +40,20 @@ public class VamoAContarController {
 			
 			return respuesta.toString();
 		} else {
-			return "Te falta registrarte, hacelo en /quien-soy?nombre=_____";
+			return "Te falta registrarte, hacelo en /contando-las-horas/quien-soy?nombre=_____";
 		}
     }
 
 	@GetMapping("quien-soy")
 	public String registrar(@RequestParam String nombre, HttpServletRequest request) {		
-		String ip = request.getRemoteAddr();
-		if(!contadores.containsKey(ip)) {
-			contadores.put(ip, nombre);
-			return ":)";
+		String id = request.getSession().getId();
+		String ok = "bueno ahora volve a la url anterior";
+		if(!contadores.containsKey(id)) {
+			contadores.put(id, nombre);
+			return ":)       "+ok;
 		} else {
-			return ":o";
+			contadores.put(id, nombre);
+			return ":o       "+ok;
 		}
 	}
 	
