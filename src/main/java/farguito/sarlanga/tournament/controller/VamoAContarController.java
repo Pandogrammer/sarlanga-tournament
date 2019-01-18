@@ -1,9 +1,8 @@
 package farguito.sarlanga.tournament.controller;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class VamoAContarController {
 		
 	private Map<String, String> contadores = new HashMap<>();
-	private List<String> conteos = new ArrayList<>();
+	private Map<String, String> conteos = new LinkedHashMap<>();
 	
 	@GetMapping
-	public String contar(HttpServletRequest request) {
+	public Map<String, String> contar(HttpServletRequest request) {
 		String id = request.getSession().getId();
 
 		LocalDateTime now = LocalDateTime.now();
@@ -30,31 +29,36 @@ public class VamoAContarController {
 		int minutos = 60 - now.getMinute();
 		if (minutos != 60) hora--;
 		
-		StringBuilder respuesta = new StringBuilder();
 		if(contadores.containsKey(id)) {
-			conteos.add(contadores.get(id)+": "+hora +"."+minutos);
+			String contador = contadores.get(id);
+			String conteo = hora+"."+String.format("%02d",minutos);
+			if(!conteos.containsKey(conteo))
+				conteos.put(conteo, contador);
 			
-			conteos.stream().forEach(c -> {
-				respuesta.append(c); respuesta.append(System.getProperty("line.separator"));
-			});
-			
-			return respuesta.toString();
+			return conteos;
 		} else {
-			return "Te falta registrarte, hacelo en /contando-las-horas/quien-soy?nombre=_____";
+			Map<String, String> respuesta = new LinkedHashMap<>();
+			respuesta.put("mensaje", "Te falta registrarte, hacelo en /contando-las-horas/quien-soy?nombre=_____");
+			return respuesta;
 		}
     }
 
 	@GetMapping("quien-soy")
-	public String registrar(@RequestParam String nombre, HttpServletRequest request) {		
+	public Map<String, String> registrar(@RequestParam String nombre, HttpServletRequest request) {		
+
+		Map<String, String> respuesta = new LinkedHashMap<>();
+		
 		String id = request.getSession().getId();
-		String ok = "bueno ahora volve a la url anterior";
+		
 		if(!contadores.containsKey(id)) {
 			contadores.put(id, nombre);
-			return ":)       "+ok;
+			respuesta.put("~", ":)");
 		} else {
 			contadores.put(id, nombre);
-			return ":o       "+ok;
+			respuesta.put("~", ":o");
 		}
+		respuesta.put("mensaje", "bueno ahora volve a la url anterior");
+		return respuesta;
 	}
 	
 	
