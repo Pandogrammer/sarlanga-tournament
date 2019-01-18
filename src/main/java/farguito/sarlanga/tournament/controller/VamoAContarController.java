@@ -28,12 +28,16 @@ public class VamoAContarController {
 		int hora = 18 - (now.getHour() - 3);
 		int minutos = 60 - now.getMinute();
 		if (minutos != 60) hora--;
+		else minutos = 0;
 		
 		if(contadores.containsKey(id)) {
 			String contador = contadores.get(id);
 			String conteo = hora+"."+String.format("%02d",minutos);
-			if(!conteos.containsKey(conteo))
+			if(!conteos.containsKey(conteo)) {
 				conteos.put(conteo, contador);
+			} else {
+				conteos.put(conteo, conteos.get(conteo)+", "+contador);
+			}
 			
 			return conteos;
 		} else {
