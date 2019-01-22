@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.falopa;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.SarlangaTournamentApplication;
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 
@@ -28,8 +29,9 @@ public class CombatControllerV3 {
 	
 	private CardFactory cards = new CardFactory();
 	private Map<String, Match> matchs = new HashMap<>();
-	private Map<String, String> account_match = new HashMap<>();
+	private Map<String, String> accountOwner_match = new HashMap<>();
 	private Map<String, String> session_account = new HashMap<>();
+	private Map<String, String> account_room = new HashMap<>();
 	
 	@GetMapping
 	public Map<String, Object> information() {
@@ -40,24 +42,25 @@ public class CombatControllerV3 {
 
 		response.put(""+i, ""); i++;
 		response.put(""+i, "Para generar tu cuenta anda a /generate-account"); i++;
-		response.put(""+i, "Esto te retornara un id con el cual utilizaras todos los comandos posibles"); i++;
-		response.put(""+i, "Ej: /{accountId}/create-room"); i++;
+		response.put(""+i, "Esto te retornara un id, es importante que lo guardes"); i++;
+		response.put(""+i, "En caso de desloguearte, podes reconectarte con /account?id={accountId} "); i++;
 
 		response.put(""+i, ""); i++;
 		response.put(""+i, "Listado de comandos posibles:"); i++;
-		response.put(""+i, "/{accountId}/create-room?essence={amount}"); i++;
-		response.put(""+i, "/{accountId}/delete-room"); i++;
-		response.put(""+i, "/{accountId}/start-match"); i++;
+		response.put(""+i, "/create-room?essence={amount}"); i++;
+		response.put(""+i, "/delete-room"); i++;
+		response.put(""+i, "/start-match"); i++;
 		response.put(""+i, "/rooms | /rooms?id={roomId}"); i++;
+		response.put(""+i, "/enter-room?id={roomId}"); i++;
 		
 		
 		return response;
 	}
 	
 	
-	@GetMapping("generate-account")
-	public Map<String, Object> generateAccount(HttpServletRequest request
-											 , @RequestParam(required = false) String accountId) {
+	@GetMapping("account")
+	public Map<String, Object> account(HttpServletRequest request
+								     , @RequestParam(value = "id", required = false) String accountId) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		
 		String sessionId = request.getSession().getId();
@@ -93,18 +96,20 @@ public class CombatControllerV3 {
 		
 		String accountId = this.session_account.get(sessionId);
 		
-		if(!this.account_match.containsKey(accountId)) {
+		if(!this.accountOwner_match.containsKey(accountId)) {
 			Match match = new Match(essence, cards.getCards());
 			match.setOwner(accountId);
+			match.addPlayer(accountId);
 			String roomId = ""+(this.matchs.size()+1);
 			this.matchs.put(roomId, match);
-			this.account_match.put(accountId, roomId);
+			this.accountOwner_match.put(accountId, roomId);
+			this.account_room.put(accountId, roomId);
 			
 			respuesta.put("exito", "Sala creada.");
 			respuesta.put("id", roomId);
 		} else {
 			respuesta.put("error", "Ya tenes una sala creada.");
-			respuesta.put("id", this.account_match.get(accountId));
+			respuesta.put("id", this.accountOwner_match.get(accountId));
 		}
 		
 		return respuesta;
@@ -120,11 +125,11 @@ public class CombatControllerV3 {
 		
 		String accountId = this.session_account.get(sessionId);
 		
-		if(this.account_match.containsKey(accountId)) {
-			String roomId = this.account_match.get(accountId);
+		if(this.accountOwner_match.containsKey(accountId)) {
+			String roomId = this.accountOwner_match.get(accountId);
 			if(this.matchs.get(roomId).getOwner().equals(accountId)){
 				this.matchs.remove(roomId);	
-				this.account_match.remove(accountId);		
+				this.accountOwner_match.remove(accountId);
 				
 				respuesta.put("exito", "Sala eliminada.");
 			}
@@ -146,8 +151,8 @@ public class CombatControllerV3 {
 		
 		String accountId = this.session_account.get(sessionId);
 		
-		if(this.account_match.containsKey(accountId)) {
-			String roomId = this.account_match.get(accountId);
+		if(this.accountOwner_match.containsKey(accountId)) {
+			String roomId = this.accountOwner_match.get(accountId);
 			if(this.matchs.get(roomId).getTeams().size() > 1) {
 				this.matchs.get(roomId).start();
 			} else {
@@ -162,27 +167,98 @@ public class CombatControllerV3 {
 	
 	
 
-	
-	@GetMapping("enter-room")
+
+	@GetMapping("rooms/{roomId}/enter")
 	public Map<String, Object> enterRoom(HttpServletRequest request
-									   , @RequestParam("id") String roomId) {
+									   , @PathVariable String roomId) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		
 		String sessionId = request.getSession().getId();		
 		if(!this.session_account.containsKey(sessionId))
 			return notLoggedError(); 
-		
 		String accountId = this.session_account.get(sessionId);
-		
-		
+
+		if(this.accountOwner_match.containsKey(accountId)) {
+			respuesta.put("error", "No podes entrar a una sala si tenés una creada.");			
+		} else if(!this.matchs.containsKey(roomId)) {
+			respuesta.put("error", "La sala no existe.");
+		} else {
+			Match partida = this.matchs.get(roomId);
+			if(!partida.getState().equals("WAITING")) { 
+				respuesta.put("error", "No podes entrar en una partida que ya inició.");
+			} else {
+				partida.addPlayer(accountId);
+				this.account_room.put(accountId, roomId);
+			}
+		}
 		
 		return respuesta;
 	}
 	
+	@GetMapping("team")
+	public Map<String, Object> team(HttpServletRequest request){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+		String roomId = this.account_room.get(accountId);
+		TeamDTO team = this.matchs.get(roomId).getPlayerTeam(accountId);
+		
+		respuesta.put("team", team);
+		return respuesta;
+	}
+	
+
+	@GetMapping("team/add/{cardId}")
+	public Map<String, Object> teamAddCharacter(HttpServletRequest request
+											  , @PathVariable int cardId){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+		String roomId = this.account_room.get(accountId);
+		Match match = this.matchs.get(roomId);
+		TeamDTO team = match.getPlayerTeam(accountId);
+		
+		Card card = match.getCards().get(cardId); 
+		if(card.getType().equals("Criature"))
+			team.addCharacter(card);
+		else
+			respuesta.put("error", "La carta no es una criatura");
+		
+		respuesta.put("team", team);
+		return respuesta;
+	}
 
 	
 	@GetMapping("rooms")
-	public Map<String, Object> roomInformation(@RequestParam(required = false, value = "id") String roomId) {
+	public Map<String, Object> roomsInformation() {
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		List<Map<String, Object>> rooms = new ArrayList<>();			
+		this.matchs.entrySet().stream().forEach(m -> {
+			Map<String, Object> roomInformation = new LinkedHashMap<>();
+			roomInformation.put("id", m.getKey());
+			roomInformation.put("essence", m.getValue().getEssence());
+			roomInformation.put("teams", m.getValue().getTeams().size());
+			roomInformation.put("state", m.getValue().getState());
+
+			rooms.add(roomInformation);
+		});			
+		respuesta.put("salas", rooms);
+		
+		return respuesta;
+	}
+	
+	
+	@GetMapping("rooms/{roomId}")
+	public Map<String, Object> roomInformation(@PathVariable String roomId) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		if(roomId != null) {					
 			if(this.matchs.containsKey(roomId)) {
@@ -268,9 +344,9 @@ public class CombatControllerV3 {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 
 		respuesta.put("1", "No estás logueado, anda a:");
-		respuesta.put("2", controllerUri+"generate-account");
+		respuesta.put("2", controllerUri+"account");
 		respuesta.put("3", "si te querés reconectar usá:");
-		respuesta.put("4", controllerUri+"generate-account?accountId=");
+		respuesta.put("4", controllerUri+"account?id=");
 		
 		return  respuesta;
 	}

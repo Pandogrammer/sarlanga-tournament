@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Team {
 	
+	private String owner;
 	private int teamNumber;
 	private List<Character> characters;
 	
@@ -42,6 +43,13 @@ public class Team {
 	}
 	public void setCharacters(List<Character> characters) {
 		this.characters = characters;
+	}
+	public String getOwner() {
+		return owner;
+	}
+	public void setOwner(String owner) {
+		this.owner = owner;
 	}	
+	
 	
 }

@@ -91,7 +91,7 @@ public class CombatControllerV1 {
 							teamCharacters.add(new Character(p.getTeams().size(), cr, acs));
 						}
 						
-						p.addTeam(teamCharacters);
+						p.addTeam("",teamCharacters);
 						respuesta.put("Acceso", "Ingresaste a la partida.");
 					} catch (Exception e) {
 						e.printStackTrace();
