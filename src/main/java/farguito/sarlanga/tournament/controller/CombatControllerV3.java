@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +23,12 @@ import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 
+@CrossOrigin
 @RestController
 @RequestMapping("v3")
 public class CombatControllerV3 {
 
-	private String controllerUri = SarlangaTournamentApplication.URI_LOCAL+"v3/";
+	private String controllerUri = SarlangaTournamentApplication.URI+"v3/";
 	
 	private CardFactory cards = new CardFactory();
 	private Map<String, Match> matchs = new HashMap<>();
@@ -48,11 +50,17 @@ public class CombatControllerV3 {
 
 		response.put(""+i, ""); i++;
 		response.put(""+i, "Listado de comandos posibles:"); i++;
-		response.put(""+i, "/create-room?essence={amount}"); i++;
-		response.put(""+i, "/delete-room"); i++;
-		response.put(""+i, "/start-match"); i++;
-		response.put(""+i, "/rooms | /rooms?id={roomId}"); i++;
-		response.put(""+i, "/enter-room?id={roomId}"); i++;
+		response.put(""+i, "CREAR CUENTA : /account"); i++;
+		response.put(""+i, "CREAR SALA : /rooms/create?essence={cantidad}"); i++;
+		response.put(""+i, "VER SALAS : /rooms"); i++;
+		response.put(""+i, "VER INFORMACION EN LA SALA : /rooms/{id-sala}"); i++;
+		response.put(""+i, "ENTRAR A SALA : /rooms/{id-sala}/enter"); i++;
+		response.put(""+i, "VER EQUIPO : /team"); i++;
+		response.put(""+i, "AGREGAR CRIATURA : /team/add/{id-carta-criatura}"); i++;
+		response.put(""+i, "AGREGAR ACCION A CRIATURA : /team/add/{id-criatura}/{id-carta-accion}"); i++;
+		response.put(""+i, "CONFIRMAR EQUIPO : /team/confirm"); i++;
+		response.put(""+i, "VER PARTIDA :  /match"); i++;
+		response.put(""+i, "EJECUTAR ACCION : /match/action/{id-accion}/{id-objetivo}"); i++;
 		
 		
 		return response;

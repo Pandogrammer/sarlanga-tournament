@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src='js/script.js'> </script>
+</head>
+<body>
+	<button onclick="inicio()">INICIO</button>
+	<button onclick="cuenta()">CUENTA</button>
+	<button onclick="salas()">SALAS</button>
+	<div id="salas" style="display: none;">
+		<br>
+		:: SALAS ::
+		<button onclick="toggle('crear-sala')">CREAR</button>
+		<button onclick="toggle('info-sala')">INFO</button>
+	</div>
+	
+	<div id="info-sala" style="display: none;">
+		<br>:: INFO-SALA ::
+		<form id="info">
+	  		Numero de sala: <input id="numero-sala" type="text" name="numero-sala"/>
+			<input type="button" value="BUSCAR" onclick="infoSala(document.getElementById('numero-sala').value)" />
+  		</form>
+	</div>
+	<p>
+		<div id="container">
+			<pre id="json">
+				<div id="output"></div>
+			</pre>
+		</div>
+	</p>
+</body>
+</html>
