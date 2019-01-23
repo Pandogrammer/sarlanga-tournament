@@ -16,6 +16,8 @@ public class Cleave extends Action {
 	public Cleave() {
 		this.setTarget("LINE");
 		this.setFatigue(fatigue);
+
+		this.setDescription("Inflicts damage in a line of objectives.");
 	}
 	
 	public List<Effect> execute(){

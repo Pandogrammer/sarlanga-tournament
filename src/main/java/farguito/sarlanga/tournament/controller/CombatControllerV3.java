@@ -19,6 +19,7 @@ import farguito.sarlanga.tournament.SarlangaTournamentApplication;
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
+import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 
 @RestController
@@ -85,7 +86,7 @@ public class CombatControllerV3 {
 	}
 	
 
-	@GetMapping("create-room")
+	@GetMapping("rooms/create")
 	public Map<String, Object> createRoom(HttpServletRequest request
 										, @RequestParam int essence) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
@@ -115,7 +116,7 @@ public class CombatControllerV3 {
 		return respuesta;
 	}
 
-	@GetMapping("delete-room")
+	@GetMapping("rooms/delete")
 	public Map<String, Object> deleteRoom(HttpServletRequest request) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		
@@ -141,7 +142,7 @@ public class CombatControllerV3 {
 	}
 
 	
-	@GetMapping("start-match")
+	@GetMapping("rooms/start")
 	public Map<String, Object> startMatch(HttpServletRequest request) {
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 		
@@ -151,15 +152,16 @@ public class CombatControllerV3 {
 		
 		String accountId = this.session_account.get(sessionId);
 		
-		if(this.accountOwner_match.containsKey(accountId)) {
-			String roomId = this.accountOwner_match.get(accountId);
-			if(this.matchs.get(roomId).getTeams().size() > 1) {
-				this.matchs.get(roomId).start();
-			} else {
-				respuesta.put("error", "Hace falta por lo menos 2 equipos para iniciar la partida.");
-			}
-		} else {
+		if(!this.accountOwner_match.containsKey(accountId)) {
 			respuesta.put("error", "No tenes una sala creada.");
+		} else {
+			String roomId = this.accountOwner_match.get(accountId);
+			if(this.matchs.get(roomId).getTeams().size() < 2) {
+				respuesta.put("error", "Hace falta por lo menos 2 equipos para iniciar la partida.");
+			} else {
+				this.matchs.get(roomId).start();
+				respuesta.put("mensaje", "Partida iniciada.");
+			}
 		}
 		
 		return respuesta;
@@ -189,11 +191,131 @@ public class CombatControllerV3 {
 			} else {
 				partida.addPlayer(accountId);
 				this.account_room.put(accountId, roomId);
+				respuesta.put("mensaje", "Ingresaste a la partida.");
 			}
 		}
 		
 		return respuesta;
 	}
+
+	@GetMapping("match")
+	public Map<String, Object> match(HttpServletRequest request){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+
+		if(!this.account_room.containsKey(accountId)) {
+			respuesta.put("error", "No estas en ninguna partida.");			
+		} else {
+			String roomId = this.account_room.get(accountId);
+			Match match = this.matchs.get(roomId);
+			if(!match.getState().equals("PLAYING")) {
+				respuesta.put("error", "La partida todavia no inició.");
+			} else if (match.getState().equals("PLAYING")) {
+				CombatSystem sistema = match.getSystem();
+				Map<String, Object> estadoEquipos = new LinkedHashMap<>();
+				sistema.getTeams().stream().forEach(t -> {
+					Map<String, Object> estadoPersonajes = new LinkedHashMap<>();
+					List<Character> personajes = t.getCharacters();
+					for(int i = 0; i < personajes.size(); i++){
+						Character c = personajes.get(i);
+						Map<String, Object> estadoPersonaje = new LinkedHashMap<>();
+						estadoPersonaje.put("NOMBRE", c.getName());
+						estadoPersonaje.put("HP", c.getHp());
+						estadoPersonaje.put("FATIGUE", c.getFatigue());
+						
+						estadoPersonajes.put(t.getTeamNumber()+""+(i+1), estadoPersonaje);
+					}
+					estadoEquipos.put("equipo "+t.getTeamNumber(), estadoPersonajes);
+				});
+				if(sistema.getWinningTeam() != -1) {
+					respuesta.put("turno", "::: Victoria del equipo "+sistema.getWinningTeam()+" :::");
+				} else {
+					Character character = sistema.getActiveCharacter();
+					if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
+						respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
+					} else {
+						respuesta.put("turno", "Es tu turno.");
+						Map<String, Object> accionesPosibles = new LinkedHashMap<>();
+						List<Action> acciones = character.getActions();
+						for(int i = 0; i < acciones.size(); i++) {
+							accionesPosibles.put(""+i, acciones.get(i));
+						}
+						respuesta.put("acciones", accionesPosibles);
+					}
+				}
+				respuesta.put("estado", estadoEquipos);
+				Map<Integer, String> mensajes = new LinkedHashMap<>();			
+				for(int i = 0; i < match.getSystem().getMessages().size(); i++) {
+					mensajes.put(i, match.getSystem().getMessages().get(i));
+				}
+				respuesta.put("mensajes", mensajes);
+			}
+		}
+		
+		return respuesta;
+	}	
+
+	
+
+	@GetMapping("match/action/{actionId}/{objectiveId}")
+	public Map<String, Object> matchExecuteAction(HttpServletRequest request												
+												, @PathVariable String actionId
+												, @PathVariable String objectiveId){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+		
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+
+		if(!this.account_room.containsKey(accountId)) {
+			respuesta.put("error", "No estas en ninguna partida.");			
+		} else {
+			String roomId = this.account_room.get(accountId);
+			Match match = this.matchs.get(roomId);
+			if(!match.getState().equals("PLAYING")) {
+				respuesta.put("error", "La partida todavia no inició.");
+			} else if (match.getState().equals("PLAYING")) {				
+				CombatSystem sistema = match.getSystem();
+				if(match.getPlayerTeamNumber(accountId) == sistema.getActiveCharacter().getTeam()) {
+					try {
+						int team = java.lang.Character.getNumericValue(objectiveId.charAt(0));
+						int obj = java.lang.Character.getNumericValue(objectiveId.charAt(1));
+						int ac = Integer.parseInt(actionId);
+						Action action = sistema.getActiveCharacter().getActions().get(ac);
+						sistema.prepareAction(
+								action, sistema.getTeams().get(team-1).getCharacters().get(obj-1));
+						sistema.executeAction(action);			
+						
+						sistema.applyImmediateEffects();
+						sistema.advancingTurns();
+						do {
+							sistema.checkLastingEffectReady();
+							sistema.applyImmediateEffects();
+							sistema.checkCharacterReady();
+							if(sistema.getActiveCharacter() == null)
+								sistema.advancingTurns();
+						} while(sistema.getActiveCharacter() == null);
+
+						respuesta.put("mensaje", "Accion ejecutada.");
+					} catch (Exception e) {
+						respuesta.put("error", "La accion no se pudo ejecutar.");
+					}
+					
+				}
+					
+			}
+		}
+		
+		return respuesta;
+	}
+	
 	
 	@GetMapping("team")
 	public Map<String, Object> team(HttpServletRequest request){
@@ -205,16 +327,14 @@ public class CombatControllerV3 {
 		String accountId = this.session_account.get(sessionId);
 		
 		String roomId = this.account_room.get(accountId);
-		TeamDTO team = this.matchs.get(roomId).getPlayerTeam(accountId);
+		TeamDTO team = this.matchs.get(roomId).getPlayerTeamDTO(accountId);
 		
 		respuesta.put("team", team);
 		return respuesta;
 	}
-	
 
-	@GetMapping("team/add/{cardId}")
-	public Map<String, Object> teamAddCharacter(HttpServletRequest request
-											  , @PathVariable int cardId){
+	@GetMapping("team/confirm")
+	public Map<String, Object> teamReady(HttpServletRequest request){
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 
 		String sessionId = request.getSession().getId();		
@@ -224,16 +344,111 @@ public class CombatControllerV3 {
 		
 		String roomId = this.account_room.get(accountId);
 		Match match = this.matchs.get(roomId);
-		TeamDTO team = match.getPlayerTeam(accountId);
+		TeamDTO team = match.getPlayerTeamDTO(accountId);
 		
-		Card card = match.getCards().get(cardId); 
-		if(card.getType().equals("Criature"))
-			team.addCharacter(card);
-		else
-			respuesta.put("error", "La carta no es una criatura");
+		if(team.getEssence() > match.getEssence()) {
+			respuesta.put("error-1", "El equipo supera la cantidad de esencia maxima");
+			respuesta.put("error-2", "Equipo: "+team.getEssence()+" | Partida: "+match.getEssence());			
+		} else if (team.getCharacters().isEmpty()) {
+			respuesta.put("error", "El equipo no tiene personajes.");
+		} else if (!team.validateCharacters()) {
+			respuesta.put("error", "Una criatura no tiene acciones.");			
+		} else {
+			match.addTeam(accountId, team.create());
+			respuesta.put("mensaje", "Equipo confirmado.");
+		}
+		
+		return respuesta;
+	}
+
+	@GetMapping("team/add/{cardId}")
+	public Map<String, Object> teamAddCharacter(HttpServletRequest request
+											  , @PathVariable Integer cardId){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+		String roomId = this.account_room.get(accountId);
+		Match match = this.matchs.get(roomId);
+		TeamDTO team = match.getPlayerTeamDTO(accountId);
+		
+		if(!match.getCards().containsKey(cardId)) {
+			respuesta.put("error", "La carta no existe.");
+		} else {
+			Card card = match.getCards().get(cardId); 
+			if(!card.getType().equals("Criature"))
+				respuesta.put("error", "La carta no es una criatura");
+			else
+				team.addCharacter(card);
+		}
 		
 		respuesta.put("team", team);
 		return respuesta;
+	}
+
+	@GetMapping("team/remove/{characterId}")
+	public Map<String, Object> teamRemoveCharacter(HttpServletRequest request
+										   , @PathVariable Integer characterId){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+		String roomId = this.account_room.get(accountId);
+		Match match = this.matchs.get(roomId);
+		TeamDTO team = match.getPlayerTeamDTO(accountId);
+		
+		team.removeCharacter(characterId);		
+		
+		respuesta.put("team", team);
+		return respuesta;		
+	}
+	
+	
+	@GetMapping("team/{method}/{characterId}/{cardId}")
+	public Map<String, Object> teamAddCharacterAction(HttpServletRequest request
+										   , @PathVariable String method
+										   , @PathVariable Integer characterId
+										   , @PathVariable Integer cardId){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+		String roomId = this.account_room.get(accountId);
+		Match match = this.matchs.get(roomId);
+		TeamDTO team = match.getPlayerTeamDTO(accountId);
+		if(!team.getCharacters().containsKey(characterId)) {
+			respuesta.put("error", "El personaje no existe.");						
+		} else if(!match.getCards().containsKey(cardId)) {
+			respuesta.put("error", "La carta no existe.");
+		} else {
+			CharacterDTO character = team.getCharacter(characterId);
+			Card card = match.getCards().get(cardId); 
+			if(method.equalsIgnoreCase("add")) {
+				if(!card.getType().equals("Action")) {
+					respuesta.put("error", "La carta no es una acción.");
+				} else {
+					if(character.containsAction(card)) {
+						respuesta.put("error", "El personaje ya posee esa acción.");					
+					} else {
+						character.addAction(card);
+					}
+				}
+			} else if(method.equalsIgnoreCase("remove")) {
+				character.removeAction(card);				
+			}
+		}
+		
+		respuesta.put("team", team);
+		return respuesta;		
 	}
 
 	
@@ -304,41 +519,8 @@ public class CombatControllerV3 {
 		return respuesta;
 	}
 	
-
-
-	@GetMapping("{accountId}/{roomId}/accion/{ac}:{team}:{obj}")
-	public Map<String, Object> accion(@PathVariable Integer id
-			  						  , @PathVariable Integer ac
-			  						  , @PathVariable Integer team
-									  , @PathVariable Integer obj) {
-		Map<String, Object> respuesta = new LinkedHashMap<>();
-		
-		if(this.matchs.containsKey(id)) {
-			Match partida = this.matchs.get(id);
-			CombatSystem sistema = partida.getSystem();
-
-			Action action = sistema.getActiveCharacter().getActions().get(ac);
-			sistema.prepareAction(
-					action, sistema.getTeams().get(team).getCharacters().get(obj));
-			sistema.executeAction(action);			
-			
-			sistema.applyImmediateEffects();
-			sistema.advancingTurns();
-			do {
-				sistema.checkLastingEffectReady();
-				sistema.applyImmediateEffects();
-				sistema.checkCharacterReady();
-				if(sistema.getActiveCharacter() == null)
-					sistema.advancingTurns();
-			} while(sistema.getActiveCharacter() == null);
-			
-		} else {
-			respuesta.put("Error", "La partida no existe.");
-		}
-		
-		return respuesta;
-	}
-
+	
+	
 	
 	private Map<String, Object> notLoggedError(){
 		Map<String, Object> respuesta = new LinkedHashMap<>();

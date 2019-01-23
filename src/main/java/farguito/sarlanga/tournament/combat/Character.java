@@ -20,16 +20,20 @@ public class Character {
 	
 	private List<Action> actions;
 	
-	public Character (int team, Criature criature, List<Action> actions) {
-		this.team = team;
+	public Character (Criature criature) {
 		this.name = criature.getName();
 		this.hp = criature.getHp();
 		this.speed = criature.getSpeed();
 		this.attack = criature.getAttack();
 		this.fatigue = 0;
-		this.actions = actions;
 		this.attackBonus = 0;
 		this.speedBonus = 0;
+	}
+	
+	public Character (int team, Criature criature, List<Action> actions) {
+		this(criature);
+		this.team = team;
+		this.actions = actions;		
 	}
 	
 	public boolean isAlive() {

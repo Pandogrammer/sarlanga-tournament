@@ -20,6 +20,8 @@ public class Ensnare extends Action {
 	public Ensnare() {
 		this.setTarget("OBJECTIVE");
 		this.setFatigue(fatigue);
+
+		this.setDescription("Inflicts damage, slow and fatigation in the objective.");
 	}
 	
 	public List<Effect> execute(){

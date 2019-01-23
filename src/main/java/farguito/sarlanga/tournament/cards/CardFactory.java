@@ -19,16 +19,16 @@ public class CardFactory {
 	private List<Card> cards = new ArrayList<>();
 	
 	public CardFactory() {
-		this.cards.add(new Card(this.cards.size(), 1, "Ortivactus", Ortivactus.class,  "Criature"));
-		this.cards.add(new Card(this.cards.size(), 1, "Sapurai", Sapurai.class, "Criature"));
-		this.cards.add(new Card(this.cards.size(), 1, "Peludientes", Peludientes.class, "Criature"));
-		this.cards.add(new Card(this.cards.size(), 1, "Lombrisable", Lombrisable.class, "Criature"));
+		this.cards.add(new Card(this.cards.size(), 1, "Ortivactus", Ortivactus.class, "Criature", "HIGH HP, LOW SPEED."));
+		this.cards.add(new Card(this.cards.size(), 1, "Sapurai", Sapurai.class, "Criature", "HIGH SPEED."));
+		this.cards.add(new Card(this.cards.size(), 1, "Peludientes", Peludientes.class, "Criature", "HIGH ATTACK."));
+		this.cards.add(new Card(this.cards.size(), 1, "Lombrisable", Lombrisable.class, "Criature", "LOW HP, VERY HIGH SPEED."));
 		
-		this.cards.add(new Card(this.cards.size(), 1, "Punch", Punch.class, "Action"));
-		this.cards.add(new Card(this.cards.size(), 2, "Poison Spit", PoisonSpit.class, "Action"));	
-		this.cards.add(new Card(this.cards.size(), 2, "Battle Cry", BattleCry.class, "Action"));	
-		this.cards.add(new Card(this.cards.size(), 2, "Ensnare", Ensnare.class, "Action"));	
-		this.cards.add(new Card(this.cards.size(), 2, "Cleave", Cleave.class, "Action"));		
+		this.cards.add(new Card(this.cards.size(), 1, "Punch", Punch.class, "Action", "Inflicts damage in the objective."));
+		this.cards.add(new Card(this.cards.size(), 2, "Poison Spit", PoisonSpit.class, "Action", "Inflicts damage and poison in the objective."));	
+		this.cards.add(new Card(this.cards.size(), 2, "Battle Cry", BattleCry.class, "Action", "Boosts user attack bonus."));	
+		this.cards.add(new Card(this.cards.size(), 2, "Ensnare", Ensnare.class, "Action", "Inflicts damage, slow and fatigation in the objective."));	
+		this.cards.add(new Card(this.cards.size(), 2, "Cleave", Cleave.class, "Action", "Inflicts damage in a line of objectives."));		
 		
 	}
 

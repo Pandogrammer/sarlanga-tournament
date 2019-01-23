@@ -2,6 +2,7 @@ package farguito.sarlanga.tournament.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +18,10 @@ public class Match {
 	private List<String> players = new ArrayList<>();
 	private int essence;
 	private CombatSystem system;
-	private List<Card> cards = new ArrayList<>();
+	private Map<Integer, Card> cards = new LinkedHashMap<>();
 	private List<Team> teams = new ArrayList<>();
-	private Map<String, TeamDTO> player_team = new HashMap<>();
+	private Map<String, TeamDTO> player_teamDto = new HashMap<>();
+	private Map<String, Integer> player_teamNumber = new HashMap<>();
 	
 	private String state;
 	
@@ -28,7 +30,9 @@ public class Match {
 		this.essence = essence;
 		
 		//generacion random iria aca
-		this.cards.addAll(cards);		
+		for(Card c : cards) {
+			this.cards.put(c.getId(), c);
+		}
 	}
 	
 	public void start() {
@@ -36,36 +40,46 @@ public class Match {
 		this.system = new CombatSystem(teams);		
 	}
 	
-	public void addTeam(String accountId, List<Character> teamCharacters) {
-		Team newTeam = new Team(teamCharacters);
-		newTeam.setTeamNumber(this.teamNumber);		this.teamNumber++;		
-		newTeam.setOwner(accountId);
-		this.teams.add(newTeam);
+	public void addTeam(String accountId, Team team) {
+		//hacer la validacion mas piola
+		if(!this.player_teamNumber.containsKey(accountId)) {
+			team.setTeamNumber(this.teamNumber);		
+			team.getCharacters().stream().forEach(c -> { c.setTeam(this.teamNumber); });
+			team.setOwner(accountId);
+			this.teams.add(team);
+			this.player_teamNumber.put(accountId, this.teamNumber);
+			this.teamNumber++;
+		}			
 	}
 	
 	public void addPlayer(String accountId) {
 		this.players.add(accountId);
-		this.player_team.put(accountId, new TeamDTO());
+		this.player_teamDto.put(accountId, new TeamDTO());
 	}
 	
 	public void deletePlayer(String accountId) {
 		this.players.remove(accountId);
-		if(this.player_team.containsKey(accountId)) {
-			this.teams.remove(this.player_team.get(accountId));
-			this.player_team.remove(accountId);
+		if(this.player_teamNumber.containsKey(accountId)) {
+			this.teams.remove(this.player_teamNumber.get(accountId).intValue());
+			this.player_teamNumber.remove(accountId);
+			this.player_teamDto.remove(accountId);
 		}
 	}
+
+	public Integer getPlayerTeamNumber(String accountId) {
+		return this.player_teamNumber.get(accountId);
+	}	
 	
-	public TeamDTO getPlayerTeam(String accountId) {
-		return this.player_team.get(accountId);
+	public TeamDTO getPlayerTeamDTO(String accountId) {
+		return this.player_teamDto.get(accountId);
 	}
 	
 	public int getEssence() {
 		return essence;
 	}		
-	public List<Card> getCards() {
+	public Map<Integer, Card> getCards() {
 		return cards;
-	}	
+	}
 	public List<Team> getTeams() {
 		return teams;
 	}

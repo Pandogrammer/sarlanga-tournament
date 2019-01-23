@@ -20,6 +20,8 @@ public class BattleCry extends Action {
 	public BattleCry() {
 		this.setTarget("SELF");
 		this.setFatigue(fatigue);
+		
+		this.setDescription("Boosts user attack bonus.");
 	}
 	
 	@Override

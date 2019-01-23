@@ -20,6 +20,8 @@ public class PoisonSpit extends Action {
 	public PoisonSpit() {
 		this.setTarget("OBJECTIVE");
 		this.setFatigue(fatigue);
+
+		this.setDescription("Inflicts damage and poison in the objective.");
 	}
 		
 	public List<Effect> execute() {

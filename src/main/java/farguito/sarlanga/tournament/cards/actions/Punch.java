@@ -16,6 +16,8 @@ public class Punch extends Action {
 	public Punch() {
 		this.setTarget("OBJECTIVE");
 		this.setFatigue(fatigue);
+
+		this.setDescription("Inflicts damage in the objective.");
 	}
 	
 	public List<Effect> execute(){
