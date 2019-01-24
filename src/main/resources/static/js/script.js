@@ -1,5 +1,5 @@
-//const URI = "https://sarlanga-tournament.herokuapp.com/v3";
-const URI = "http://localhost:8080/v3";
+const URI = "https://sarlanga-tournament.herokuapp.com/v3";
+//const URI = "http://localhost:8080/v3";
 
 function inicio() {
 	get("/");	
@@ -52,6 +52,8 @@ function get(url){
 	url = URI + url;
 	const req = new XMLHttpRequest();
 	req.open("GET", url);
+	req.setRequestHeader('Access-Control-Allow-Headers', '*');
+	req.setRequestHeader('Access-Control-Allow-Origin', '*');
 	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	req.withCredentials = true;
 	req.send();
