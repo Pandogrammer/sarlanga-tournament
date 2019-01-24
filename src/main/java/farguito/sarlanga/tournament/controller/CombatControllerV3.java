@@ -23,7 +23,6 @@ import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 
-@CrossOrigin
 @RestController
 @RequestMapping("v3")
 public class CombatControllerV3 {

@@ -16,9 +16,17 @@
 	
 	<div id="info-sala" style="display: none;">
 		<br>:: INFO-SALA ::
-		<form id="info">
+		<form id="form-info-sala">
 	  		Numero de sala: <input id="numero-sala" type="text" name="numero-sala"/>
 			<input type="button" value="BUSCAR" onclick="infoSala(document.getElementById('numero-sala').value)" />
+  		</form>
+	</div>
+	
+	<div id="crear-sala" style="display: none;">
+		<br>:: CREAR-SALA ::
+		<form id="form-crear-sala">
+	  		Esencia: <input id="esencia" type="text" name="esencia"/>
+			<input type="button" value="CREAR" onclick="crearSala(document.getElementById('esencia').value)" />
   		</form>
 	</div>
 	<p>

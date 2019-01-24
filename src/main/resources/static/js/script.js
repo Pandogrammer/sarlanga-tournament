@@ -1,4 +1,5 @@
-const URI = "http://localhost:8080/v3"; 
+//const URI = "https://sarlanga-tournament.herokuapp.com/v3";
+const URI = "http://localhost:8080/v3";
 
 function inicio() {
 	get("/");	
@@ -10,6 +11,10 @@ function cuenta(){
 
 function infoSala(num){
 	get("/rooms/"+num);
+}
+
+function crearSala(num){
+	get("/rooms/create?essence="+num);
 }
 
 function salas(){
@@ -45,10 +50,16 @@ function output(mensaje) {
 
 function get(url){
 	url = URI + url;
-	const Http = new XMLHttpRequest();
-	Http.open("GET", url);
-	Http.send();
-	Http.onreadystatechange=(e)	=>	{
-		output(Http.responseText);
+	const req = new XMLHttpRequest();
+	req.open("GET", url);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	req.withCredentials = true;
+	req.send();
+	req.onreadystatechange=(e)	=>	{
+	    if (req.readyState == 4 && req.status == 200) {
+	    	output(req.responseText);
+	    }
 	}
+	console.log(document.cookie);
+	
 }
