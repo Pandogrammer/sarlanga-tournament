@@ -1,5 +1,5 @@
-//const URI = "https://sarlanga-tournament.herokuapp.com/v3";
-const URI = "http://localhost:8080/v3";
+const URI = "https://sarlanga-tournament.herokuapp.com/v3";
+//const URI = "http://localhost:8080/v3";
 
 function inicio() {
 	get("/");	
