@@ -2,30 +2,77 @@ const URI = "https://sarlanga-tournament.herokuapp.com/v3";
 //const URI = "http://localhost:8080/v3";
 
 function inicio() {
+	hideByType("submenu");
 	get("/");	
 }
 
 function cuenta(){
+	hideByType("submenu");
 	get("/account");
 }
 
-function infoSala(num){
-	get("/rooms/"+num);
-}
-
-function crearSala(num){
-	get("/rooms/create?essence="+num);
-}
-
 function salas(){
+	hideByType("submenu");
 	get("/rooms");
 	toggle("salas");
 }
 
+function salaInfo(num){
+	get("/rooms/"+num);
+}
+
+function salaEntrar(num){
+	get("/rooms/"+num+"/enter");
+}
+
+function salaCrear(num){
+	get("/rooms/create?essence="+num);
+}
+
+function salaIniciar(num){
+	get("/rooms/start");
+}
+
+
+function equipo(){
+	hideByType("submenu");
+	get("/team")
+	toggle("equipo");
+}
+
+function equipoCriatura(metodo, idCriatura){
+	get("/team/"+metodo+"/"+idCriatura);	
+}
+
+function equipoAccion(metodo, idCriatura, idCarta){
+	get("/team/"+metodo+"/"+idCriatura+"/"+idCarta);	
+}
+
+function equipoConfirmar(){
+	get("/team/confirm");
+}
+
+function partida(){
+	hideByType("submenu");
+	get("/match");
+	toggle("partida");
+}
+
+function partidaEjecutarAccion(idAccion, idObjetivo){
+	get("/match/action/"+idAccion+"/"+idObjetivo);	
+}
+
+function hideByType(type){
+	var x = document.getElementsByClassName(type);
+	var i;
+	for (i = 0; i < x.length; i++) { 
+		x[i].style.display = "none";
+	}
+}
 
 function hide(element){
 	var x = document.getElementById(element);
-	x.style.display = "none";	
+	x.style.display = "none";
 }
 
 

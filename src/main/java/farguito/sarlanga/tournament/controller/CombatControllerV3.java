@@ -243,16 +243,18 @@ public class CombatControllerV3 {
 					respuesta.put("turno", "::: Victoria del equipo "+sistema.getWinningTeam()+" :::");
 				} else {
 					Character character = sistema.getActiveCharacter();
-					if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
-						respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
-					} else {
-						respuesta.put("turno", "Es tu turno.");
-						Map<String, Object> accionesPosibles = new LinkedHashMap<>();
-						List<Action> acciones = character.getActions();
-						for(int i = 0; i < acciones.size(); i++) {
-							accionesPosibles.put(""+i, acciones.get(i));
+					if(character != null) {
+						if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
+							respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
+						} else {
+							respuesta.put("turno", "Es tu turno.");
+							Map<String, Object> accionesPosibles = new LinkedHashMap<>();
+							List<Action> acciones = character.getActions();
+							for(int i = 0; i < acciones.size(); i++) {
+								accionesPosibles.put(""+i, acciones.get(i));
+							}
+							respuesta.put("acciones", accionesPosibles);
 						}
-						respuesta.put("acciones", accionesPosibles);
 					}
 				}
 				respuesta.put("estado", estadoEquipos);
@@ -418,7 +420,7 @@ public class CombatControllerV3 {
 	
 	
 	@GetMapping("team/{method}/{characterId}/{cardId}")
-	public Map<String, Object> teamAddCharacterAction(HttpServletRequest request
+	public Map<String, Object> teamModifyCharacterAction(HttpServletRequest request
 										   , @PathVariable String method
 										   , @PathVariable Integer characterId
 										   , @PathVariable Integer cardId){
