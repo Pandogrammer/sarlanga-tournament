@@ -9,7 +9,7 @@ import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 public class Cleave extends Action {
 	
-	private int fatigue = 20; 
+	private int fatigue = 100; 
 	
 	private float damageModifier = 0.75f; 
 	

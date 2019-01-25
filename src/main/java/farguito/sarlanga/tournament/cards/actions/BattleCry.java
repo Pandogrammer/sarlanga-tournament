@@ -13,9 +13,9 @@ import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 public class BattleCry extends Action {
 
-	private int fatigue = 20;	
+	private int fatigue = 120;	
 	
-	private float attackBonusModifier = 0.1f;
+	private float attackBonusModifier = 0.3f;
 	
 	public BattleCry() {
 		this.setTarget("SELF");

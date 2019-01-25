@@ -9,7 +9,7 @@ import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 public class Punch extends Action {
 	
-	private int fatigue = 12; 
+	private int fatigue = 60; 
 	
 	private float damageModifier = 1; 
 	

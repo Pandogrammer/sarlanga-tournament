@@ -11,11 +11,11 @@ import farguito.sarlanga.tournament.combat.effects.immediate.SpeedBonus;
 
 public class Ensnare extends Action {
 	
-	private int fatigue = 24; 
+	private int fatigue = 110; 
 	
 	private int fatigation = 10;
 	private int speedBonus = -1;
-	private float damageModifier = 0.1f; 
+	private float damageModifier = 0.3f; 
 	
 	public Ensnare() {
 		this.setTarget("OBJECTIVE");

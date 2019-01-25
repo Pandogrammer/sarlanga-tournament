@@ -29,8 +29,12 @@ function salaCrear(num){
 	get("/rooms/create?essence="+num);
 }
 
-function salaIniciar(num){
+function salaIniciar(){
 	get("/rooms/start");
+}
+
+function salaEliminar(){
+	get("/rooms/delete");
 }
 
 
@@ -56,6 +60,14 @@ function partida(){
 	hideByType("submenu");
 	get("/match");
 	toggle("partida");
+}
+
+function partidaEstado(){
+	get("/match/status");	
+}
+
+function partidaMensajes(){
+	get("/match/messages");	
 }
 
 function partidaEjecutarAccion(idAccion, idObjetivo){
@@ -109,6 +121,5 @@ function get(url){
 	    	output(req.responseText);
 	    }
 	}
-	console.log(document.cookie);
-	
 }
+

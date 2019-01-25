@@ -247,7 +247,7 @@ public class CombatControllerV3 {
 						if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
 							respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
 						} else {
-							respuesta.put("turno", "Es tu turno.");
+							respuesta.put("turno", "Es tu turno. Equipo "+character.getTeam()+" - "+character.getName());
 							Map<String, Object> accionesPosibles = new LinkedHashMap<>();
 							List<Action> acciones = character.getActions();
 							for(int i = 0; i < acciones.size(); i++) {
@@ -269,7 +269,7 @@ public class CombatControllerV3 {
 		return respuesta;
 	}	
 
-	
+
 
 	@GetMapping("match/action/{actionId}/{objectiveId}")
 	public Map<String, Object> matchExecuteAction(HttpServletRequest request												
@@ -303,14 +303,14 @@ public class CombatControllerV3 {
 						sistema.executeAction(action);			
 						
 						sistema.applyImmediateEffects();
-						sistema.advancingTurns();
-						do {
+						sistema.removeActiveCharacter();
+						while(sistema.getActiveCharacter() == null && sistema.getWinningTeam() == -1) {
 							sistema.checkLastingEffectReady();
 							sistema.applyImmediateEffects();
 							sistema.checkCharacterReady();
 							if(sistema.getActiveCharacter() == null)
 								sistema.advancingTurns();
-						} while(sistema.getActiveCharacter() == null);
+						}
 
 						respuesta.put("mensaje", "Accion ejecutada.");
 					} catch (Exception e) {
@@ -319,6 +319,96 @@ public class CombatControllerV3 {
 					
 				}
 					
+			}
+		}
+		
+		return respuesta;
+	}
+	
+
+
+	@GetMapping("match/status")
+	public Map<String, Object> matchStatus(HttpServletRequest request){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+		
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+
+		if(!this.account_room.containsKey(accountId)) {
+			respuesta.put("error", "No estas en ninguna partida.");			
+		} else {
+			String roomId = this.account_room.get(accountId);
+			Match match = this.matchs.get(roomId);
+			if(!match.getState().equals("PLAYING")) {
+				respuesta.put("error", "La partida todavia no inició.");
+			} else if (match.getState().equals("PLAYING")) {	
+				CombatSystem sistema = match.getSystem();
+				Map<String, Object> estadoEquipos = new LinkedHashMap<>();
+				sistema.getTeams().stream().forEach(t -> {
+					Map<String, Object> estadoPersonajes = new LinkedHashMap<>();
+					List<Character> personajes = t.getCharacters();
+					for(int i = 0; i < personajes.size(); i++){
+						Character c = personajes.get(i);
+						Map<String, Object> estadoPersonaje = new LinkedHashMap<>();
+						estadoPersonaje.put("NOMBRE", c.getName());
+						estadoPersonaje.put("HP", c.getHp());
+						estadoPersonaje.put("FATIGUE", c.getFatigue());
+						
+						estadoPersonajes.put(t.getTeamNumber()+""+(i+1), estadoPersonaje);
+					}
+					estadoEquipos.put("equipo "+t.getTeamNumber(), estadoPersonajes);
+				});
+				if(sistema.getWinningTeam() != -1) {
+					respuesta.put("turno", "::: Victoria del equipo "+sistema.getWinningTeam()+" :::");
+				} else {
+					Character character = sistema.getActiveCharacter();
+					if(character != null) {
+						if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
+							respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
+						} else {
+							respuesta.put("turno", "Es tu turno. Equipo "+character.getTeam()+" - "+character.getName());
+							Map<String, Object> accionesPosibles = new LinkedHashMap<>();
+							List<Action> acciones = character.getActions();
+							for(int i = 0; i < acciones.size(); i++) {
+								accionesPosibles.put(""+i, acciones.get(i));
+							}
+							respuesta.put("acciones", accionesPosibles);
+						}
+					}
+				}
+				respuesta.put("estado", estadoEquipos);					
+			}
+		}
+		
+		return respuesta;
+	}
+
+	@GetMapping("match/messages")
+	public Map<String, Object> matchMessages(HttpServletRequest request){
+		Map<String, Object> respuesta = new LinkedHashMap<>();
+		
+		String sessionId = request.getSession().getId();		
+		if(!this.session_account.containsKey(sessionId))
+			return notLoggedError(); 
+		String accountId = this.session_account.get(sessionId);
+		
+
+		if(!this.account_room.containsKey(accountId)) {
+			respuesta.put("error", "No estas en ninguna partida.");			
+		} else {
+			String roomId = this.account_room.get(accountId);
+			Match match = this.matchs.get(roomId);
+			if(!match.getState().equals("PLAYING")) {
+				respuesta.put("error", "La partida todavia no inició.");
+			} else if (match.getState().equals("PLAYING")) {	
+				Map<Integer, String> mensajes = new LinkedHashMap<>();			
+				for(int i = 0; i < match.getSystem().getMessages().size(); i++) {
+					mensajes.put(i, match.getSystem().getMessages().get(i));
+				}
+				respuesta.put("mensajes", mensajes);					
 			}
 		}
 		
@@ -335,10 +425,15 @@ public class CombatControllerV3 {
 			return notLoggedError(); 
 		String accountId = this.session_account.get(sessionId);
 		
-		String roomId = this.account_room.get(accountId);
-		TeamDTO team = this.matchs.get(roomId).getPlayerTeamDTO(accountId);
-		
-		respuesta.put("team", team);
+
+		if(!this.account_room.containsKey(accountId)) {
+			respuesta.put("error", "No estas en ninguna partida.");			
+		} else {
+			String roomId = this.account_room.get(accountId);
+			TeamDTO team = this.matchs.get(roomId).getPlayerTeamDTO(accountId);
+			
+			respuesta.put("team", team);
+		}
 		return respuesta;
 	}
 
@@ -350,21 +445,25 @@ public class CombatControllerV3 {
 		if(!this.session_account.containsKey(sessionId))
 			return notLoggedError(); 
 		String accountId = this.session_account.get(sessionId);
-		
-		String roomId = this.account_room.get(accountId);
-		Match match = this.matchs.get(roomId);
-		TeamDTO team = match.getPlayerTeamDTO(accountId);
-		
-		if(team.getEssence() > match.getEssence()) {
-			respuesta.put("error-1", "El equipo supera la cantidad de esencia maxima");
-			respuesta.put("error-2", "Equipo: "+team.getEssence()+" | Partida: "+match.getEssence());			
-		} else if (team.getCharacters().isEmpty()) {
-			respuesta.put("error", "El equipo no tiene personajes.");
-		} else if (!team.validateCharacters()) {
-			respuesta.put("error", "Una criatura no tiene acciones.");			
+
+		if(!this.account_room.containsKey(accountId)) {
+			respuesta.put("error", "No estas en ninguna partida.");			
 		} else {
-			match.addTeam(accountId, team.create());
-			respuesta.put("mensaje", "Equipo confirmado.");
+			String roomId = this.account_room.get(accountId);
+			Match match = this.matchs.get(roomId);
+			TeamDTO team = match.getPlayerTeamDTO(accountId);
+			
+			if(team.getEssence() > match.getEssence()) {
+				respuesta.put("error-1", "El equipo supera la cantidad de esencia maxima");
+				respuesta.put("error-2", "Equipo: "+team.getEssence()+" | Partida: "+match.getEssence());			
+			} else if (team.getCharacters().isEmpty()) {
+				respuesta.put("error", "El equipo no tiene personajes.");
+			} else if (!team.validateCharacters()) {
+				respuesta.put("error", "Una criatura no tiene acciones.");			
+			} else {
+				match.addTeam(accountId, team.create());
+				respuesta.put("mensaje", "Equipo confirmado.");
+			}
 		}
 		
 		return respuesta;

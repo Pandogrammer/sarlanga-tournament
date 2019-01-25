@@ -91,6 +91,7 @@ public class CombatSystem {
 		
 		//pobreza intensifies
 		lastTeamTurn = action.getActor().getTeam();
+		action.getActor().fatigate(action.getFatigue());
 	}
 	
 	
@@ -130,7 +131,7 @@ public class CombatSystem {
 	
 	//5- Sigue la criatura que no tenga cansancio y tenga mayor velocidad. En caso de que criaturas de ambos jugadores 
 	//   empaten, toma el turno la criatura del jugador que no jugo en el turno anterior
-	public void checkCharacterReady() {
+	public void checkCharacterReady() {		
 		List<Character> readyCharacters = new ArrayList<>();
 		//agarro todas las criaturas listas (que esten vivas)
 		teams.stream().forEach(t -> {
@@ -231,16 +232,10 @@ public class CombatSystem {
 	 */
 	public void advancingTurns() {
 		logger.log("Advancing turns.");
-		//para no comparar en cada iteracion voy a hacer una chanchada
-		//en vez de ver si cada criatura es la activa, voy a restarle el cansancio a la activa y se lo voy a re-sumar
+		
 		teams.stream().forEach(t -> {
 			t.getCharacters().stream().forEach(c -> c.rest());			
 		});
-		
-		if(activeCharacter != null) {
-			activeCharacter.fatigate(activeCharacter.getSpeed());
-			activeCharacter = null;
-		}
 		
 		/*
 		 * + Efectos duraderos aumentan cronicidad 
@@ -270,6 +265,9 @@ public class CombatSystem {
 		return teams;
 	}
 
+	public void removeActiveCharacter() {
+		this.activeCharacter = null;
+	}
 	public Character getActiveCharacter() {
 		return activeCharacter;
 	}

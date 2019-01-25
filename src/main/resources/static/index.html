@@ -15,12 +15,13 @@
 	<div class="submenu" id="salas" style="display: none;">
 		<br>
 		:: SALAS :: <br>
-		<button onclick="toggle('crear-sala')">CREAR</button>
-		<button onclick="toggle('info-sala')">INFO</button>
-		<button onclick="salaIniciar()">INICIAR</button>
+		<button onclick="hideByType('sala'); show('info-sala')">INFO</button>
+		<button onclick="hideByType('sala'); show('crear-sala')">CREAR</button>
+		<button onclick="hideByType('sala'); salaEliminar()">ELIMINAR</button>
+		<button onclick="hideByType('sala'); salaIniciar()">INICIAR</button>
 	</div>
 	
-	<div class="submenu" id="info-sala" style="display: none;">
+	<div class="submenu sala"  id="info-sala" style="display: none;">
 		<br>:: INFO SALA ::
 		<form id="form-info-sala">
 	  		NUMERO: <input id="numero-sala" type="text" name="numero-sala"/>
@@ -29,7 +30,7 @@
   		</form>
 	</div>
 	
-	<div class="submenu" id="crear-sala" style="display: none;">
+	<div class="submenu sala" id="crear-sala" style="display: none;">
 		<br>:: CREAR SALA ::
 		<form id="form-crear-sala">
 	  		ESENCIA: <input id="esencia" type="text" name="esencia"/>
@@ -42,12 +43,12 @@
 	<div class="submenu" id="equipo" style="display: none;">
 		<br>
 		:: EQUIPO ::<br>
-		<button onclick="toggle('equipo-criaturas')">CRIATURAS</button>
-		<button onclick="toggle('equipo-acciones')">ACCIONES</button>
-		<button onclick="equipoConfirmar()">CONFIRMAR</button>
+		<button onclick="hideByType('equipo'); show('equipo-criaturas')">CRIATURAS</button>
+		<button onclick="hideByType('equipo'); show('equipo-acciones')">ACCIONES</button>
+		<button onclick="hideByType('equipo'); equipoConfirmar()">CONFIRMAR</button>
 	</div>
 	
-	<div class="submenu" id="equipo-criaturas" style="display: none;">
+	<div class="submenu equipo" id="equipo-criaturas" style="display: none;">
 		<br>:: CRIATURAS ::
 		<form id="form-equipo-criaturas">
 	  		ID CRIATURA: <input id="id-criatura" type="text" name="id-criatura"/>
@@ -55,7 +56,7 @@
 			<input type="button" value="QUITAR" onclick="equipoCriatura('remove', document.getElementById('id-criatura').value)" />
   		</form>
 	</div>
-	<div class="submenu" id="equipo-acciones" style="display: none;">
+	<div class="submenu equipo" id="equipo-acciones" style="display: none;">
 		<br>:: ACCIONES ::
 		<form id="form-equipo-acciones">
 	  		ID PERSONAJE: <input id="equipo-id-personaje" type="text" name="equipo-id-personaje"/> <br>
@@ -68,8 +69,15 @@
 	
 	<!-- partida -->
 	<div class="submenu" id="partida" style="display: none;">
+		<br> :: PARTIDA :: <br>
+		<button onclick="hideByType('partida'); partidaEstado();">ESTADO</button>
+		<button onclick="hideByType('partida'); partidaMensajes();">MENSAJES</button>
+		<button onclick="hideByType('partida'); show('partida-ejecutar-accion')">EJECUTAR ACCION</button>
+	</div>
+	
+	<div class="submenu partida" id="partida-ejecutar-accion" style="display: none;">
 		<br>
-		:: PARTIDA :: <br>
+		:: EJECUTAR ACCION :: <br>
 		<form id="form-partida-ejecutar-accion">
 	  		ID ACCION: <input id="partida-id-accion" type="text" name="partida-id-accion"/> <br>
 	  		ID OBJETIVO: <input id="partida-id-objetivo" type="text" name="partida-id-objetivo"/> <br>
@@ -81,7 +89,7 @@
 	<p>
 		<div id="container">
 			<pre id="json">
-				<div id="output"></div>
+				<div id="output"></div>			
 			</pre>
 		</div>
 	</p>

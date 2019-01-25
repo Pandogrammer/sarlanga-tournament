@@ -10,9 +10,9 @@ import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 public class PoisonSpit extends Action {
 	
-	private int fatigue = 20;
+	private int fatigue = 90;
 	private int duration = 3;
-	private int cooldown = 4;
+	private int cooldown = 5;
 
 	private float immediateDamageModifier = 0.5f;
 	private float lastingDamageModifier = 0.25f;
