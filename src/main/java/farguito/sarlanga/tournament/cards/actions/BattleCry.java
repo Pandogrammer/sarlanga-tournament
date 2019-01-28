@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.combat.Target;
 import farguito.sarlanga.tournament.combat.effects.ConstantEffect;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.ReactiveEffect;
@@ -18,9 +19,11 @@ public class BattleCry extends Action {
 	private float attackBonusModifier = 0.3f;
 	
 	public BattleCry() {
-		this.setTarget("SELF");
+		this.setTarget(Target.SELF);
 		this.setFatigue(fatigue);
+		this.setMelee(false);
 		
+		this.setName("Battle Cry");		
 		this.setDescription("Boosts user attack bonus.");
 	}
 	
@@ -35,9 +38,5 @@ public class BattleCry extends Action {
 		return ef;
 	}
 
-	@Override
-	public String message() {
-		return this.getActor().getName()+" used BATTLE CRY";
-	}
 
 }

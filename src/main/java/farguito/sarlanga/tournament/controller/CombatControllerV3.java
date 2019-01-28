@@ -41,26 +41,6 @@ public class CombatControllerV3 {
 
 		int i = 0;
 		response.put(""+i, "Hola :D ! Bienvenido a la BETA de Sarlanga Tournament"); i++;
-
-		response.put(""+i, ""); i++;
-		response.put(""+i, "Para generar tu cuenta anda a /generate-account"); i++;
-		response.put(""+i, "Esto te retornara un id, es importante que lo guardes"); i++;
-		response.put(""+i, "En caso de desloguearte, podes reconectarte con /account?id={accountId} "); i++;
-
-		response.put(""+i, ""); i++;
-		response.put(""+i, "Listado de comandos posibles:"); i++;
-		response.put(""+i, "CREAR CUENTA : /account"); i++;
-		response.put(""+i, "CREAR SALA : /rooms/create?essence={cantidad}"); i++;
-		response.put(""+i, "VER SALAS : /rooms"); i++;
-		response.put(""+i, "VER INFORMACION EN LA SALA : /rooms/{id-sala}"); i++;
-		response.put(""+i, "ENTRAR A SALA : /rooms/{id-sala}/enter"); i++;
-		response.put(""+i, "VER EQUIPO : /team"); i++;
-		response.put(""+i, "AGREGAR CRIATURA : /team/add/{id-carta-criatura}"); i++;
-		response.put(""+i, "AGREGAR ACCION A CRIATURA : /team/add/{id-criatura}/{id-carta-accion}"); i++;
-		response.put(""+i, "CONFIRMAR EQUIPO : /team/confirm"); i++;
-		response.put(""+i, "VER PARTIDA :  /match"); i++;
-		response.put(""+i, "EJECUTAR ACCION : /match/action/{id-accion}/{id-objetivo}"); i++;
-		
 		
 		return response;
 	}
@@ -300,18 +280,13 @@ public class CombatControllerV3 {
 						Action action = sistema.getActiveCharacter().getActions().get(ac);
 						sistema.prepareAction(
 								action, sistema.getTeams().get(team-1).getCharacters().get(obj-1));
-						sistema.executeAction(action);			
-						
-						sistema.applyImmediateEffects();
-						sistema.removeActiveCharacter();
-						while(sistema.getActiveCharacter() == null && sistema.getWinningTeam() == -1) {
-							sistema.checkLastingEffectReady();
-							sistema.applyImmediateEffects();
-							sistema.checkCharacterReady();
-							if(sistema.getActiveCharacter() == null)
-								sistema.advancingTurns();
+						if(!sistema.validateObjectives(action))
+							respuesta.put("mensaje", "Target incorrecto.");
+						else { 
+							sistema.executeAction(action);
+							sistema.nextTurn();
 						}
-
+						
 						respuesta.put("mensaje", "Accion ejecutada.");
 					} catch (Exception e) {
 						respuesta.put("error", "La accion no se pudo ejecutar.");
@@ -469,9 +444,11 @@ public class CombatControllerV3 {
 		return respuesta;
 	}
 
-	@GetMapping("team/add/{cardId}")
+	@GetMapping("team/add/{cardId}/{line}/{position}")
 	public Map<String, Object> teamAddCharacter(HttpServletRequest request
-											  , @PathVariable Integer cardId){
+											  , @PathVariable Integer cardId
+											  , @PathVariable Integer line
+											  , @PathVariable Integer position){
 		Map<String, Object> respuesta = new LinkedHashMap<>();
 
 		String sessionId = request.getSession().getId();		
@@ -487,10 +464,13 @@ public class CombatControllerV3 {
 			respuesta.put("error", "La carta no existe.");
 		} else {
 			Card card = match.getCards().get(cardId); 
-			if(!card.getType().equals("Criature"))
+			if(!card.getType().equals("Criature")) {
 				respuesta.put("error", "La carta no es una criatura");
-			else
-				team.addCharacter(card);
+			} else if (!team.validatePosition(line, position)){
+				respuesta.put("error", "La posicion ya esta ocupada");				
+			} else {
+				team.addCharacter(line, position, card);
+			}
 		}
 		
 		respuesta.put("team", team);

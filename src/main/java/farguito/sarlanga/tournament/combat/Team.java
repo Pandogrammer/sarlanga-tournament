@@ -2,6 +2,7 @@ package farguito.sarlanga.tournament.combat;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Team {
 	
@@ -18,6 +19,9 @@ public class Team {
 		this.characters = characters;
 	}	
 	
+	public List<Character> lineCharacters(int line){
+		return characters.stream().filter(c -> c.getLine() == line).collect(Collectors.toList());
+	}
 
 	public boolean someoneAlive() {
 		if (characters.stream().anyMatch(ch -> ch.isAlive())) {

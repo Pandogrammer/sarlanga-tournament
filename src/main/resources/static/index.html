@@ -4,7 +4,6 @@
     <script type="text/javascript" src='js/script.js'> </script>
 </head>
 <body>
-	<button onclick="inicio()">INICIO</button>
 	<button onclick="cuenta()">CUENTA</button>
 	<button onclick="salas()">SALAS</button>
 	<button onclick="equipo()">EQUIPO</button>
@@ -51,9 +50,11 @@
 	<div class="submenu equipo" id="equipo-criaturas" style="display: none;">
 		<br>:: CRIATURAS ::
 		<form id="form-equipo-criaturas">
-	  		ID CRIATURA: <input id="id-criatura" type="text" name="id-criatura"/>
-			<input type="button" value="AGREGAR" onclick="equipoCriatura('add', document.getElementById('id-criatura').value)" />
-			<input type="button" value="QUITAR" onclick="equipoCriatura('remove', document.getElementById('id-criatura').value)" />
+	  		ID CRIATURA: <input id="id-criatura" type="text" name="id-criatura"/><br>
+	  		LINEA: <input id="linea" type="text" name="linea"/><br>
+	  		POSICION: <input id="posicion" type="text" name="posicion"/><br>
+			<input type="button" value="AGREGAR" onclick="equipoAgregarCriatura(document.getElementById('id-criatura').value, document.getElementById('linea').value, document.getElementById('posicion').value)" />
+			<input type="button" value="QUITAR" onclick="equipoQuitarCriatura(document.getElementById('id-criatura').value)" />
   		</form>
 	</div>
 	<div class="submenu equipo" id="equipo-acciones" style="display: none;">

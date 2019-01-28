@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.combat.Target;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 import farguito.sarlanga.tournament.combat.effects.immediate.Fatigation;
@@ -18,9 +19,11 @@ public class Ensnare extends Action {
 	private float damageModifier = 0.3f; 
 	
 	public Ensnare() {
-		this.setTarget("OBJECTIVE");
+		this.setTarget(Target.OBJECTIVE);
 		this.setFatigue(fatigue);
+		this.setMelee(false);
 
+		this.setName("Ensnare");
 		this.setDescription("Inflicts damage, slow and fatigation in the objective.");
 	}
 	
@@ -37,7 +40,4 @@ public class Ensnare extends Action {
 		return ef;
 	}
 
-	public String message() {
-		return this.getActor().getName()+" used ENSNARE";
-	}
 }

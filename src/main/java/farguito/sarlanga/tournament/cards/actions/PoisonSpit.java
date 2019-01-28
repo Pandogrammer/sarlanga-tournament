@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.combat.Target;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.LastingEffect;
 import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
@@ -18,9 +19,11 @@ public class PoisonSpit extends Action {
 	private float lastingDamageModifier = 0.25f;
 	
 	public PoisonSpit() {
-		this.setTarget("OBJECTIVE");
+		this.setTarget(Target.OBJECTIVE);
 		this.setFatigue(fatigue);
+		this.setMelee(false);
 
+		this.setName("Poison Spit");
 		this.setDescription("Inflicts damage and poison in the objective.");
 	}
 		
@@ -38,8 +41,5 @@ public class PoisonSpit extends Action {
 		return ef;
 	}
 	
-	public String message() {
-		return this.getActor().getName()+" used POISON SPIT";
-	}
 	
 }

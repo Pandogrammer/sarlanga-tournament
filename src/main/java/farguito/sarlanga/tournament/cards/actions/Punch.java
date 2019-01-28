@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.combat.Target;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
@@ -14,9 +15,11 @@ public class Punch extends Action {
 	private float damageModifier = 1; 
 	
 	public Punch() {
-		this.setTarget("OBJECTIVE");
+		this.setTarget(Target.OBJECTIVE);
 		this.setFatigue(fatigue);
+		this.setMelee(true);
 
+		this.setName("Punch");
 		this.setDescription("Inflicts damage in the objective.");
 	}
 	
@@ -31,7 +34,4 @@ public class Punch extends Action {
 		return ef;
 	}
 
-	public String message() {
-		return this.getActor().getName()+" used PUNCH";
-	}
 }

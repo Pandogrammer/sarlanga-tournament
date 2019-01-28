@@ -1,11 +1,6 @@
 const URI = "https://sarlanga-tournament.herokuapp.com/v3";
 //const URI = "http://localhost:8080/v3";
 
-function inicio() {
-	hideByType("submenu");
-	get("/");	
-}
-
 function cuenta(){
 	hideByType("submenu");
 	get("/account");
@@ -44,8 +39,12 @@ function equipo(){
 	toggle("equipo");
 }
 
-function equipoCriatura(metodo, idCriatura){
-	get("/team/"+metodo+"/"+idCriatura);	
+function equipoAgregarCriatura(idCriatura, line, position){
+	console.log(idCriatura+" "+line+" "+position)
+	get("/team/add/"+idCriatura+"/"+line+"/"+position);	
+}
+function equipoQuitarCriatura(idCriatura){
+	get("/team/remove/"+idCriatura);	
 }
 
 function equipoAccion(metodo, idCriatura, idCarta){

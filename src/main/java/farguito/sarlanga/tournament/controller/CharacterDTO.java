@@ -11,6 +11,8 @@ import farguito.sarlanga.tournament.combat.Character;
 public class CharacterDTO {
 
 	private int id;
+	private int line;
+	private int position;
 	private Card character;
 	private List<Card> actions = new ArrayList<>();
 	
@@ -24,8 +26,9 @@ public class CharacterDTO {
 		List<Action> actions = new ArrayList<>();
 		
 		this.actions.stream().forEach(a -> { actions.add((Action) a.getObject()); });
-		
 		character.setActions(actions);
+		character.setPosition(position);
+		character.setLine(line);
 		return character;
 	}
 	
@@ -58,5 +61,18 @@ public class CharacterDTO {
 	}
 	public void setActions(List<Card> actions) {
 		this.actions = actions;
-	}	
+	}
+	public int getLine() {
+		return line;
+	}
+	public void setLine(int line) {
+		this.line = line;
+	}
+	public int getPosition() {
+		return position;
+	}
+	public void setPosition(int position) {
+		this.position = position;
+	}
+	
 }

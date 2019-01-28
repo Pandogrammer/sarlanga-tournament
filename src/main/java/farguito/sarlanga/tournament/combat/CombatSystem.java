@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.springframework.jmx.export.naming.SelfNaming;
+
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
@@ -95,6 +97,39 @@ public class CombatSystem {
 	}
 	
 	
+	public boolean validateObjectives(Action action) {
+		if(action.getTarget().equals(Target.SELF)) {			
+			return action.getObjectives().get(0).equals(action.getActor());
+		} else if (action.isMelee()) {
+			return !hasBlockers(action.getObjectives().get(0));
+		}
+		return true;			
+	}
+	
+	
+	public boolean hasBlockers(Character character) {
+		int line = character.getLine();
+		if(line == 0) //si esta en el frente no tiene bloqueadores
+			return false;
+		else {
+			int position = character.getPosition();
+			int teamNumber = character.getTeam();
+			
+			int i = 0;
+			boolean found = false;
+			while(!found && i < this.teams.size()) {
+				if(this.teams.get(i).getTeamNumber() == teamNumber)
+					found = true;
+				else 
+					i++;			
+			}
+			
+			Team team = this.teams.get(i);
+			
+			return team.lineCharacters(line-1).stream().anyMatch(c -> c.isAlive() && (c.getPosition() >= position-1 && c.getPosition() <= position+1));		
+		}		
+	}
+	
 	/* Se ejecuta un efecto:
 	 * accion: parametros iniciales
 	 * campo: efectos constantes
@@ -168,6 +203,8 @@ public class CombatSystem {
 				while(!found && j < amount) {
 					if (readyCharacters.get(j).getTeam() != lastTeamTurn)
 						found = true;
+					else
+						j++;
 				}	
 				
 				if(found) {
@@ -251,10 +288,35 @@ public class CombatSystem {
 		List<Team> aliveTeams = teams.stream().filter(t -> t.someoneAlive()).collect(Collectors.toList());
 		//esto esta pensado para FFA
 		if(aliveTeams.size() == 1) {
-			this.winningTeam = aliveTeams.get(0).getTeamNumber(); //hacer algo con el ganador			
+			this.winningTeam = aliveTeams.get(0).getTeamNumber(); //hacer algo con el ganador
+			logger.log("Team "+this.winningTeam+" won the match.");
+		}
+	}
+	
+	
+	public void nextTurn() {
+		applyImmediateEffects();
+		removeActiveCharacter();
+		checkPlayers();
+		if(this.winningTeam == -1) {
+			while(this.activeCharacter == null) {
+				status();
+				checkLastingEffectReady();
+				applyImmediateEffects();
+				checkCharacterReady();
+				if(this.activeCharacter == null)
+					advancingTurns();
+			}
 		}
 	}
 
+	private void status() {
+		for(Team t : this.teams) {
+			for(Character c : t.getCharacters()) {
+				logger.log(c.getName()+"["+c.getTeam()+"]: "+c.getFatigue());
+			}
+		}
+	}
 	
 	
 	public int getWinningTeam() {

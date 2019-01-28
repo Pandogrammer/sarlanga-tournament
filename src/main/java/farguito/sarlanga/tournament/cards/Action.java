@@ -5,23 +5,25 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import farguito.sarlanga.tournament.combat.Character;
+import farguito.sarlanga.tournament.combat.Target;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 
 public abstract class Action {
 	
 	private int fatigue;
-	private String target;
+	private Target target;
+	private String name;
 	private String description;
+	private boolean melee;
 	
 	private Character actor;
 	private List<Character> objectives;
-
-	private boolean melee;
-	//public abstract boolean validate();
 	
 	public abstract List<Effect> execute();
-	
-	public abstract String message();
+
+	public String message() {
+		return this.getActor().getName()+" used "+this.name+".";
+	}
 	
 	@JsonIgnore
 	public Character getActor() {
@@ -44,10 +46,10 @@ public abstract class Action {
 	public void setFatigue(int fatigue) {
 		this.fatigue = fatigue;
 	}
-	public String getTarget() {
+	public Target getTarget() {
 		return target;
 	}
-	public void setTarget(String target) {
+	public void setTarget(Target target) {
 		this.target = target;
 	}
 	public String getDescription() {
@@ -55,6 +57,18 @@ public abstract class Action {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public boolean isMelee() {
+		return melee;
+	}
+	public void setMelee(boolean melee) {
+		this.melee = melee;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	
