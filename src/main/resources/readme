@@ -219,3 +219,16 @@ hola :)
 
 xau
 
+
+####
+29/01/019
+Conexiones:
+Hacer la integracion de la pelea. en que momento usar http pelado y en que momentos sockets?
+Acciones ->
+Validacion <-
+Barra turnos x
+Estado turno <-
+Accion enemiga <-
+
+Circuito:
+Accion -> Validacion -> Animación
