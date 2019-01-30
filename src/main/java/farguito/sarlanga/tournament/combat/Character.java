@@ -7,6 +7,7 @@ import farguito.sarlanga.tournament.cards.Criature;
 
 public class Character {
 
+	private int id;
 	private int team;
 	private int line;
 	private int position;
@@ -140,6 +141,12 @@ public class Character {
 	}
 	public void setSpeedBonus(int speedBonus) {
 		this.speedBonus = speedBonus;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	

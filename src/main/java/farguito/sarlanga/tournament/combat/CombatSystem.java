@@ -3,6 +3,7 @@ package farguito.sarlanga.tournament.combat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -94,16 +95,24 @@ public class CombatSystem {
 		//pobreza intensifies
 		lastTeamTurn = action.getActor().getTeam();
 		action.getActor().fatigate(action.getFatigue());
+		logger.addResult(action);
 	}
 	
 	
 	public boolean validateObjectives(Action action) {
-		if(action.getTarget().equals(Target.SELF)) {			
-			return action.getObjectives().get(0).equals(action.getActor());
-		} else if (action.isMelee()) {
-			return !hasBlockers(action.getObjectives().get(0));
+		try {
+			if(action.getTarget().equals(Target.SELF)) {
+				return action.getObjectives().get(0).equals(action.getActor());
+			} else if(action.getTarget().equals(Target.OBJECTIVE)) {
+				return action.getObjectives().size() == 1;
+			} else if (action.isMelee()) {
+				return !hasBlockers(action.getObjectives().get(0));
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-		return true;			
 	}
 	
 	
@@ -147,6 +156,7 @@ public class CombatSystem {
 		*/
 		eventListener.modifyImmediateEffect(effect);
 		logger.log(effect.message());
+		logger.addResult(effect);
 		effect.execute();
 	}
 	
@@ -332,6 +342,10 @@ public class CombatSystem {
 	}
 	public Character getActiveCharacter() {
 		return activeCharacter;
+	}
+
+	public Logger getLogger() {
+		return this.logger;
 	}
 	
 	public List<String> getMessages() {

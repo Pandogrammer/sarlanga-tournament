@@ -3,7 +3,6 @@ package farguito.sarlanga.tournament.websocket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,13 +12,11 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.CardFactory;
+import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
 import farguito.sarlanga.tournament.controller.TeamDTO;
@@ -33,8 +30,8 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private CardFactory cards = new CardFactory();
 	private List<Team> teams = new ArrayList<>();
 	
-	private int i = 0;
-	private String session_1;
+	private Map<String, Integer> session_team = new HashMap<>();
+	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
 	private void init() {
 		
@@ -57,7 +54,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	}
 	
 	
-	private void action(int team, int id) {		
+	private void accion(int team, int id) {		
 		if(this.system.getWinningTeam() == -1) {
 			Action action = this.system.getActiveCharacter().getActions().get(0);
 			this.system.prepareAction(action, this.system.getTeams().get(team).getCharacters().get(id));
@@ -70,16 +67,68 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		} 
 	}	
 	
+	private DefoldResponse action(DefoldRequest request) {
+		DefoldResponse response = new DefoldResponse("action_response");
+		
+		Integer actionId = (int) request.get("action");
+		Integer teamId = (int) request.get("team");
+		List<Integer> objectiveIds = (List) request.get("objectives");
+		
+		Action action = this.system.getActiveCharacter().getActions().get(actionId);
+		List<Character> objectives = new ArrayList<>();
+		
+		for(int i = 0; i < objectiveIds.size(); i++) {
+			objectives.add(this.system.getTeams().get(teamId).getCharacters().get(objectiveIds.get(i)));
+		}
+			
+		
+		this.system.prepareAction(action, objectives);
+		if(this.system.validateObjectives(action)) {
+			this.system.executeAction(action);
+			this.system.nextTurn();
+			response.put("success", true);
+			sendResults();
+		} else {
+			response.put("success", false);
+			response.put("reason", "Invalid target.");
+		}	
+		
+		System.out.println(stringify(response));
+		return response;
+			
+	}
+	
+	private void sendResults() {		
+		this.system.getLogger().getResults().stream().forEach(r -> {
+			DefoldResponse response = new DefoldResponse("result_response");
+			response.put("result", r);
+			sessions.values().stream().forEach(s -> {
+				sendMessage(s, stringify(response));
+			});
+		});
+		
+		this.system.getLogger().deleteResults();
+	}
+	
+	private String stringify(Object object) {
+		try {
+			return mapper.writeValueAsString(object);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error";
+		}		
+	}
+	
+	//todo entra por aca
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws InterruptedException, IOException {
 		try { 
-			//System.out.println(message.getPayload());
-			int teamTurn = session.getId().equals(session_1) ? 1 : 3;
-			int targetTeam = teamTurn == 1 ? 1 : 0;
-			if(this.system.getActiveCharacter().getTeam() == teamTurn)				
-				action(targetTeam, Integer.valueOf(message.getPayload())-1);
-			else
-				System.out.println("no es tu turno");
+			System.out.println(message.getPayload());
+			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
+			
+			if(request.getMethod().equals("action_request")) 
+				sendMessage(session, stringify(action(request)));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(message.getPayload());
@@ -96,58 +145,21 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
-		System.out.println(sessionId);
-		if(i == 0) { 
-			init();
-			this.teams.get(0).setOwner(sessionId);
-			session_1 = sessionId;
-			i++;		
-		}  else {
-			this.teams.get(1).setOwner(sessionId);			
-		}
-		DefoldResponse response = new DefoldResponse("session");
-		response.put("session_id", sessionId);
+		sessions.put(sessionId, session);
+		System.out.println("IN: "+sessionId);
+		init();
 		
-		sendMessage(session, response.encode());
+		DefoldResponse response = new DefoldResponse("session");
+		response.put("session_id", sessionId);	
+		
+		
+		sendMessage(session, mapper.writeValueAsString(response));
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		String sessionId = session.getId();
-		System.out.println(sessionId);	
-	}
-	
-	
-	private class DefoldResponse {
-		
-		private String message_id;
-		private Map<String, Object> message;
-		
-		public DefoldResponse(String message_id) {
-			this.message_id = message_id;
-		}
-		
-		public String encode() throws JsonProcessingException {
-			return mapper.writeValueAsString(this);
-		}
-		
-		public void put(String key, Object value) {
-			if(message == null) message = new LinkedHashMap<>();
-			
-			message.put(key, value);
-		}
-
-		public String getMessage_id() {
-			return message_id;
-		}
-
-		@JsonInclude(Include.NON_NULL)
-		public Map<String, Object> getMessage() {
-			return message;
-		}
-		
-		
-		
-		
+		sessions.remove(sessionId);
+		System.out.println("OUT: "+sessionId);
 	}
 	
 	

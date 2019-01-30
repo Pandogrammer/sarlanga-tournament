@@ -20,7 +20,6 @@ public class CharacterDTO {
 	public CharacterDTO() {}
 	
 	public Character create() {
-		
 		Character character = new Character((Criature) this.character.getObject());
 		
 		List<Action> actions = new ArrayList<>();
@@ -29,6 +28,7 @@ public class CharacterDTO {
 		character.setActions(actions);
 		character.setPosition(position);
 		character.setLine(line);
+		character.setId(id);
 		return character;
 	}
 	
