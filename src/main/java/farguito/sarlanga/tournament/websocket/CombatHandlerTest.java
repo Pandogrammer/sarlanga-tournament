@@ -3,16 +3,19 @@ package farguito.sarlanga.tournament.websocket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import farguito.sarlanga.tournament.cards.Action;
@@ -28,13 +31,12 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	
 	private CombatSystem system;
 	private CardFactory cards = new CardFactory();
+	private List<Team> teams = new ArrayList<>();
 	
 	private int i = 0;
 	private String session_1;
 	
-
 	private void init() {
-		List<Team> teams = new ArrayList<>();
 		
 		teams.add(buildTeam(1));
 		teams.add(buildTeam(3));
@@ -97,13 +99,72 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		System.out.println(sessionId);
 		if(i == 0) { 
 			init();
+			this.teams.get(0).setOwner(sessionId);
 			session_1 = sessionId;
 			i++;		
-		} 
+		}  else {
+			this.teams.get(1).setOwner(sessionId);			
+		}
+		DefoldResponse response = new DefoldResponse("session");
+		response.put("session_id", sessionId);
+		
+		sendMessage(session, response.encode());
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		String sessionId = session.getId();
-		System.out.println(sessionId);		
+		System.out.println(sessionId);	
 	}
+	
+	
+	private class DefoldResponse {
+		
+		private String message_id;
+		private Map<String, Object> message;
+		
+		public DefoldResponse(String message_id) {
+			this.message_id = message_id;
+		}
+		
+		public String encode() throws JsonProcessingException {
+			return mapper.writeValueAsString(this);
+		}
+		
+		public void put(String key, Object value) {
+			if(message == null) message = new LinkedHashMap<>();
+			
+			message.put(key, value);
+		}
+
+		public String getMessage_id() {
+			return message_id;
+		}
+
+		@JsonInclude(Include.NON_NULL)
+		public Map<String, Object> getMessage() {
+			return message;
+		}
+		
+		
+		
+		
+	}
+	
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
