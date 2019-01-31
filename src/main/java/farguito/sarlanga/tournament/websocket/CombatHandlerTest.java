@@ -53,7 +53,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		return team.create();		
 	}
 	
-	
+
 	private DefoldResponse action(DefoldRequest request) {
 		DefoldResponse response = new DefoldResponse("action_response");
 		
@@ -75,6 +75,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			this.system.nextTurn();
 			response.put("success", true);
 			sendResults();
+			sendStatus();
 		} else {
 			response.put("success", false);
 			response.put("reason", "Invalid target.");
@@ -83,6 +84,22 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		System.out.println(stringify(response));
 		return response;
 			
+	}
+	
+	private void reconnect(DefoldRequest request, String newSessionId) {		
+		String oldSessionId = (String) request.get("session_id");
+		if(session_team.containsKey(oldSessionId)) {
+			Integer team = session_team.get(oldSessionId);
+			session_team.put(newSessionId, team);
+		}
+	}
+
+	private void sendStatus() {		
+		DefoldResponse response = new DefoldResponse("status_response");
+		
+		sessions.values().stream().forEach(s -> {
+			sendMessage(s, stringify(response));
+		});	
 	}
 	
 	private void sendResults() {		
@@ -112,9 +129,13 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		try { 
 			System.out.println(message.getPayload());
 			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
-			
-			if(request.getMethod().equals("action_request")) 
+
+			if(request.getMethod().equals("action_request")) {
 				sendMessage(session, stringify(action(request)));
+			} else if(request.getMethod().equals("reconnect_request")){
+				reconnect(request, session.getId());				
+				sendMessage(session, stringify(session(session)));
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -129,18 +150,30 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			e.printStackTrace();
 		}
 	}
+		
+
+	private DefoldResponse session(WebSocketSession session){
+		DefoldResponse response = new DefoldResponse("session_response");
+		response.put("session_id", session.getId());	
+		
+		return response;		
+	}
+		
 	
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
 		sessions.put(sessionId, session);
 		System.out.println("IN: "+sessionId);
-		init();
 		
-		DefoldResponse response = new DefoldResponse("session");
-		response.put("session_id", sessionId);	
-		
-		
-		sendMessage(session, mapper.writeValueAsString(response));
+		//test
+		if(session_team.isEmpty()) {
+			init();
+			session_team.put(sessionId, 0);
+		} else if (session_team.size() == 1) {
+			session_team.put(sessionId, 1);			
+		}
+				
+		sendMessage(session, stringify(session(session)));
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
