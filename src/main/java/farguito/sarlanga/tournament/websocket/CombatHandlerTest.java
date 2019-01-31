@@ -28,12 +28,12 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	
 	private CombatSystem system;
 	private CardFactory cards = new CardFactory();
-	private List<Team> teams = new ArrayList<>();
 	
 	private Map<String, Integer> session_team = new HashMap<>();
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
 	private void init() {
+		List<Team> teams = new ArrayList<>();
 		
 		teams.add(buildTeam(1));
 		teams.add(buildTeam(3));
@@ -53,19 +53,6 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		return team.create();		
 	}
 	
-	
-	private void accion(int team, int id) {		
-		if(this.system.getWinningTeam() == -1) {
-			Action action = this.system.getActiveCharacter().getActions().get(0);
-			this.system.prepareAction(action, this.system.getTeams().get(team).getCharacters().get(id));
-			if(this.system.validateObjectives(action)) {
-				this.system.executeAction(action);
-				this.system.nextTurn();
-			} else {
-				System.out.println("Target incorrecto.");
-			}					
-		} 
-	}	
 	
 	private DefoldResponse action(DefoldRequest request) {
 		DefoldResponse response = new DefoldResponse("action_response");
