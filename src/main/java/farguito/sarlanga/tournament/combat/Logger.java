@@ -7,6 +7,7 @@ import java.util.Map;
 
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
+import farguito.sarlanga.tournament.combat.effects.LastingEffect;
 
 public class Logger {
 	
@@ -23,7 +24,7 @@ public class Logger {
 	public void addResult(ImmediateEffect ef) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("type", "effect");
-		map.put("class", ef.getClass().getSimpleName());
+		map.put("class", ef.getClass().getSimpleName().toLowerCase());
 		map.put("value", ef.getValue());
 		
 		Map<String,Object> objective = new HashMap<>();

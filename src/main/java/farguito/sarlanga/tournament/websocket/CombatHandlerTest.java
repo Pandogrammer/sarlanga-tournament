@@ -3,6 +3,7 @@ package farguito.sarlanga.tournament.websocket;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,14 +59,13 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		DefoldResponse response = new DefoldResponse("action_response");
 		
 		Integer actionId = (int) request.get("action");
-		Integer teamId = (int) request.get("team");
 		List<Integer> objectiveIds = (List) request.get("objectives");
 		
 		Action action = this.system.getActiveCharacter().getActions().get(actionId);
 		List<Character> objectives = new ArrayList<>();
 		
 		for(int i = 0; i < objectiveIds.size(); i++) {
-			objectives.add(this.system.getTeams().get(teamId).getCharacters().get(objectiveIds.get(i)));
+			objectives.add(this.system.getCharacter(objectiveIds.get(i)));
 		}
 			
 		
@@ -73,55 +73,78 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		if(this.system.validateObjectives(action)) {
 			this.system.executeAction(action);
 			this.system.nextTurn();
+			broadcast(stringify(results()));
+			this.system.getLogger().deleteResults();
+			broadcast(stringify(status()));			
 			response.put("success", true);
-			sendResults();
-			sendStatus();
 		} else {
 			response.put("success", false);
 			response.put("reason", "Invalid target.");
 		}	
 		
-		System.out.println(stringify(response));
-		return response;
-			
+		return response;			
 	}
 	
-	private void reconnect(DefoldRequest request, String newSessionId) {		
-		String oldSessionId = (String) request.get("session_id");
-		if(session_team.containsKey(oldSessionId)) {
-			Integer team = session_team.get(oldSessionId);
-			session_team.put(newSessionId, team);
-		}
-	}
-
-	private void sendStatus() {		
+	private DefoldResponse status() {		
 		DefoldResponse response = new DefoldResponse("status_response");
+
+		//estado del turno
+		//estado de los personajes
+		//estado efectos duraderos
+
+		response.put("character_active", this.system.getActiveCharacter().getId());
 		
-		sessions.values().stream().forEach(s -> {
-			sendMessage(s, stringify(response));
-		});	
-	}
-	
-	private void sendResults() {		
-		this.system.getLogger().getResults().stream().forEach(r -> {
-			DefoldResponse response = new DefoldResponse("result_response");
-			response.put("result", r);
-			sessions.values().stream().forEach(s -> {
-				sendMessage(s, stringify(response));
-			});
+		List<Object> charactersStatus = new ArrayList<>();
+		this.system.getTeams().stream().forEach(t -> {
+			List<Character> character = t.getCharacters();
+			for(int i = 0; i < character.size(); i++){
+				Character c = character.get(i);
+				Map<String, Object> status = new LinkedHashMap<>();
+				status.put("id", c.getId());
+				status.put("alive", c.isAlive());
+				status.put("line", c.getLine());
+				status.put("position", c.getPosition());
+				status.put("hp", c.getHp());
+				status.put("hp_max", c.getHpMax());
+				status.put("fatigue", c.getFatigue());
+				status.put("attack", c.getAttack());
+				status.put("attack_bonus", c.getAttackBonus());				
+				status.put("speed", c.getSpeed());
+				status.put("speed_bonus", c.getSpeedBonus());
+				
+				charactersStatus.add(status);
+			}
 		});
 		
-		this.system.getLogger().deleteResults();
+		response.put("characters", charactersStatus);
+		
+		return response;
 	}
 	
-	private String stringify(Object object) {
-		try {
-			return mapper.writeValueAsString(object);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "Error";
-		}		
+	
+	private DefoldResponse results() {
+		DefoldResponse response = new DefoldResponse("result_response");
+		
+		List<Object> results = new ArrayList<>();
+		this.system.getLogger().getResults().stream().forEach(r -> {
+			results.add(r);
+		});
+		
+		response.put("results", results);
+		
+		return response;
 	}
+
+
+	private DefoldResponse session(WebSocketSession session){
+		DefoldResponse response = new DefoldResponse("session_response");
+		
+		response.put("session_id", session.getId());	
+		
+		return response;		
+	}
+			
+	
 	
 	//todo entra por aca
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
@@ -131,10 +154,14 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
 
 			if(request.getMethod().equals("action_request")) {
-				sendMessage(session, stringify(action(request)));
+				send(session, stringify(action(request)));
+
 			} else if(request.getMethod().equals("reconnect_request")){
-				reconnect(request, session.getId());				
-				sendMessage(session, stringify(session(session)));
+				reconnect(request, session.getId());	
+				
+			} else if(request.getMethod().equals("status_request")){
+				send(session, stringify(status()));
+				
 			}
 
 		} catch (Exception e) {
@@ -142,9 +169,16 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			System.out.println(message.getPayload());
 		}
 	}
+
+	private void broadcast(String message) {
+		sessions.values().stream().forEach(s -> {
+			send(s, message);
+		});
+	}
 	
-	public void sendMessage(WebSocketSession session, String message) {
+	public void send(WebSocketSession session, String message) {
 		try {
+			System.out.println(session.getId()+": "+message);
 			session.sendMessage(new TextMessage(message));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -152,18 +186,30 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	}
 		
 
-	private DefoldResponse session(WebSocketSession session){
-		DefoldResponse response = new DefoldResponse("session_response");
-		response.put("session_id", session.getId());	
-		
-		return response;		
+	private String stringify(Object object) {
+		try {
+			return mapper.writeValueAsString(object);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error";
+		}		
 	}
-		
+
+	private void reconnect(DefoldRequest request, String newSessionId) {		
+		String oldSessionId = (String) request.get("session_id");
+		if(session_team.containsKey(oldSessionId)) {
+			Integer team = session_team.get(oldSessionId);
+			session_team.put(newSessionId, team);
+		}
+
+		System.out.println(newSessionId+": RECONNECTED - WAS ["+oldSessionId+"]");
+	}
+
 	
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
 		sessions.put(sessionId, session);
-		System.out.println("IN: "+sessionId);
+		System.out.println(sessionId+": CONNECTED");
 		
 		//test
 		if(session_team.isEmpty()) {
@@ -173,13 +219,14 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			session_team.put(sessionId, 1);			
 		}
 				
-		sendMessage(session, stringify(session(session)));
+		send(session, stringify(session(session)));
+		send(session, stringify(status()));
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		String sessionId = session.getId();
 		sessions.remove(sessionId);
-		System.out.println("OUT: "+sessionId);
+		System.out.println(sessionId+": DISCONNECTED");
 	}
 	
 	

@@ -2,12 +2,11 @@ package farguito.sarlanga.tournament.combat;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
-
-import org.springframework.jmx.export.naming.SelfNaming;
 
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.Effect;
@@ -18,6 +17,7 @@ public class CombatSystem {
 	
 	private List<Team> teams; // personajes en combate
 	
+	private Map<Integer, Character> characters = new HashMap<>();
 	private Character activeCharacter; // personaje activo (turno)
 	
 	private int lastTeamTurn;
@@ -40,6 +40,15 @@ public class CombatSystem {
 	 */
 	public CombatSystem(List<Team> teams) {
 		this.teams = teams;
+		int id = 1;
+		
+		for(Team t : teams) {
+			for(Character c : t.getCharacters()) {
+				c.setId(id);
+				this.characters.put(id, c);
+				id++;
+			}
+		}
 
 		firstTurn();
 	}
@@ -354,6 +363,10 @@ public class CombatSystem {
 
 	public EffectContainer getEffectContainer() {
 		return effectContainer;
+	}
+
+	public Character getCharacter(Integer id) {
+		return this.characters.get(id);
 	}
 	
 	

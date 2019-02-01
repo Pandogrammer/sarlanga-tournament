@@ -13,6 +13,7 @@ public class Character {
 	private int position;
 	private String name;
 	private int hp;
+	private int hpMax;
 	private int speed;
 	private int speedBonus;
 	private int fatigue;
@@ -24,6 +25,7 @@ public class Character {
 	public Character (Criature criature) {
 		this.name = criature.getName();
 		this.hp = criature.getHp();
+		this.hpMax = criature.getHp();
 		this.speed = criature.getSpeed();
 		this.attack = criature.getAttack();
 		this.fatigue = 0;
@@ -76,6 +78,12 @@ public class Character {
 	
 	
 	
+	public int getHpMax() {
+		return hpMax;
+	}
+	public void setHpMax(int hpMax) {
+		this.hpMax = hpMax;
+	}
 	public String getName() {
 		return name;
 	}
