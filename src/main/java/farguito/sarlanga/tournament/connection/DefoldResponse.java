@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.websocket;
+package farguito.sarlanga.tournament.connection;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

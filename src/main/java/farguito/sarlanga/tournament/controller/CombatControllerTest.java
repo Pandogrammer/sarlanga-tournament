@@ -13,6 +13,7 @@ import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
+
 @RestController
 @RequestMapping("test")
 public class CombatControllerTest {

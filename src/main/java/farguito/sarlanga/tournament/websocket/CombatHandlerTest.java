@@ -20,6 +20,8 @@ import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
+import farguito.sarlanga.tournament.connection.DefoldRequest;
+import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.controller.TeamDTO;
 
 @Component
@@ -143,6 +145,15 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		
 		return response;		
 	}
+	
+
+	private DefoldResponse teams(){
+		DefoldResponse response = new DefoldResponse("teams_response");
+		
+		response.put("teams", this.system.getTeams());
+		
+		return response;		
+	}
 			
 	
 	
@@ -158,9 +169,12 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 
 			} else if(request.getMethod().equals("reconnect_request")){
 				reconnect(request, session.getId());	
-				
+
 			} else if(request.getMethod().equals("status_request")){
 				send(session, stringify(status()));
+
+			} else if(request.getMethod().equals("teams_request")){
+				send(session, stringify(teams()));
 				
 			}
 
