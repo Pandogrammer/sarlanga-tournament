@@ -22,16 +22,17 @@ import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
-import farguito.sarlanga.tournament.controller.TeamDTO;
+import farguito.sarlanga.tournament.connection.TeamDTO;
 
 @Component
-public class CombatHandlerTest extends TextWebSocketHandler {
-
+public class CombatHandlerTest extends TextWebSocketHandler {	
+	
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	private CombatSystem system;
 	private CardFactory cards = new CardFactory();
 	
+	private Map<String, String> session_account = new HashMap<>();
 	private Map<String, Integer> session_team = new HashMap<>();
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
@@ -141,7 +142,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private DefoldResponse session(WebSocketSession session){
 		DefoldResponse response = new DefoldResponse("session_response");
 		
-		response.put("session_id", session.getId());	
+		response.put("session_id", session.getId());
 		
 		return response;		
 	}

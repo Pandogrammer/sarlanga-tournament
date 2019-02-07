@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.connection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import farguito.sarlanga.tournament.combat.Team;
 
 public class Match {
 
+	private int id;
 	private int teamNumber = 1;
 	private String owner;
 	private List<String> players = new ArrayList<>();
@@ -97,6 +98,12 @@ public class Match {
 	}
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	

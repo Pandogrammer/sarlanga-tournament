@@ -22,6 +22,9 @@ import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
+import farguito.sarlanga.tournament.connection.CharacterDTO;
+import farguito.sarlanga.tournament.connection.Match;
+import farguito.sarlanga.tournament.connection.TeamDTO;
 
 @RestController
 @RequestMapping("v3")

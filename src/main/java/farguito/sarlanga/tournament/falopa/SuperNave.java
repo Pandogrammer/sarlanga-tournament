@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.websocket;
+package farguito.sarlanga.tournament.falopa;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
-import farguito.sarlanga.tournament.controller.TeamDTO;
+import farguito.sarlanga.tournament.connection.TeamDTO;
 
 @Component
 public class SuperNave extends TextWebSocketHandler {

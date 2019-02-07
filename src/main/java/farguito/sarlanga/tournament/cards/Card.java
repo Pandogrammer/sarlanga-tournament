@@ -2,16 +2,18 @@ package farguito.sarlanga.tournament.cards;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import farguito.sarlanga.tournament.cards.CardFactory.CardType;
+
 public class Card {
 
 	private int id;
 	private int essence;
 	private String name;
-	private Class object;
-	private String type;
+	private Class<?> object;
+	private CardType type;
 	private String description;
 	
-	public Card(int id, int essence, String name, Class object, String type, String description) {
+	public Card(int id, int essence, String name, Class<?> object, CardType type, String description) {
 		this.id = id;
 		this.essence = essence;
 		this.name = name;
@@ -29,7 +31,7 @@ public class Card {
 	public String getName() {
 		return name;
 	}
-	public String getType() {
+	public CardType getType() {
 		return type;
 	}
 	public String getDescription() {

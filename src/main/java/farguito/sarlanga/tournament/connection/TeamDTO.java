@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.connection;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
