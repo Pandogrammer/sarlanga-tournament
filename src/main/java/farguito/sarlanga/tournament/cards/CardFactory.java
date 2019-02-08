@@ -30,7 +30,7 @@ public class CardFactory {
 	private List<Card> cards = new ArrayList<>();
 		
 	@PostConstruct
-	private void init() {
+	public void init() {
 		this.cards.add(new Card(this.cards.size(), 1, "Ortivactus", Ortivactus.class, CardType.CRIATURE, "HIGH HP, LOW SPEED."));
 		this.cards.add(new Card(this.cards.size(), 1, "Sapurai", Sapurai.class, CardType.CRIATURE, "HIGH SPEED."));
 		this.cards.add(new Card(this.cards.size(), 1, "Peludientes", Peludientes.class, CardType.CRIATURE, "HIGH ATTACK."));

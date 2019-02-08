@@ -218,9 +218,9 @@ public class CombatControllerV3 {
 						estadoPersonaje.put("HP", c.getHp());
 						estadoPersonaje.put("FATIGUE", c.getFatigue());
 						
-						estadoPersonajes.put(t.getTeamNumber()+""+(i+1), estadoPersonaje);
+						estadoPersonajes.put(t.getNumber()+""+(i+1), estadoPersonaje);
 					}
-					estadoEquipos.put("equipo "+t.getTeamNumber(), estadoPersonajes);
+					estadoEquipos.put("equipo "+t.getNumber(), estadoPersonajes);
 				});
 				if(sistema.getWinningTeam() != -1) {
 					respuesta.put("turno", "::: Victoria del equipo "+sistema.getWinningTeam()+" :::");
@@ -335,9 +335,9 @@ public class CombatControllerV3 {
 						estadoPersonaje.put("HP", c.getHp());
 						estadoPersonaje.put("FATIGUE", c.getFatigue());
 						
-						estadoPersonajes.put(t.getTeamNumber()+""+(i+1), estadoPersonaje);
+						estadoPersonajes.put(t.getNumber()+""+(i+1), estadoPersonaje);
 					}
-					estadoEquipos.put("equipo "+t.getTeamNumber(), estadoPersonajes);
+					estadoEquipos.put("equipo "+t.getNumber(), estadoPersonajes);
 				});
 				if(sistema.getWinningTeam() != -1) {
 					respuesta.put("turno", "::: Victoria del equipo "+sistema.getWinningTeam()+" :::");
@@ -584,7 +584,7 @@ public class CombatControllerV3 {
 							
 							estadoPersonajes.put(c.getName(), estadoPersonaje);
 						});
-						estadoEquipos.put("equipo "+t.getTeamNumber(), estadoPersonajes);
+						estadoEquipos.put("equipo "+t.getNumber(), estadoPersonajes);
 					});
 					respuesta.put("estado", estadoEquipos);
 					respuesta.put("mensajes", partida.getSystem().getMessages());

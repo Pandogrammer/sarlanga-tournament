@@ -1,5 +1,7 @@
 package farguito.sarlanga.tournament.websocket;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	private CombatSystem system;
+	
 	private CardFactory cards = new CardFactory();
 	
 	private Map<String, String> session_account = new HashMap<>();
@@ -37,6 +40,8 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
 	private void init() {
+		cards.init();
+		
 		List<Team> teams = new ArrayList<>();
 		
 		teams.add(buildTeam(1));
@@ -50,7 +55,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		team.setTeamNumber(n);
 		int j = 1;
 		for(int i = n-1; i <= n; i++) {
-			team.addCharacter(j, 1, cards.getCriatures().get(i));
+			team.addCharacter(j, i%2+1, cards.getCriatures().get(i));
 			team.getCharacter(j).addAction(cards.getActions().get(i));
 			j++;
 		}
@@ -151,7 +156,35 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private DefoldResponse teams(){
 		DefoldResponse response = new DefoldResponse("teams_response");
 		
-		response.put("teams", this.system.getTeams());
+		List<Map<String, Object>> teams = new ArrayList<>();
+		this.system.getTeams().stream().forEach(t -> {
+			Map<String, Object> team = new HashMap<>();
+			team.put("owner", t.getOwner());
+			team.put("number", t.getNumber());
+			
+			List<Map<String, Object>> characters = new ArrayList<>();
+			t.getCharacters().stream().forEach(ch -> {
+				Map<String, Object> character = new HashMap<>();
+				
+				character.put("id", ch.getId());
+				character.put("alive", ch.isAlive());
+				character.put("line", ch.getLine());
+				character.put("position", ch.getPosition());
+				character.put("hp", ch.getHp());
+				character.put("hp_max", ch.getHpMax());
+				character.put("fatigue", ch.getFatigue());
+				character.put("attack", ch.getAttack());
+				character.put("attack_bonus", ch.getAttackBonus());
+				character.put("speed", ch.getSpeed());
+				character.put("speed_bonus", ch.getSpeedBonus());
+				
+				characters.add(character);
+			});			
+			team.put("characters", characters);
+			
+			teams.add(team);
+		});
+		response.put("teams", teams);
 		
 		return response;		
 	}
@@ -231,11 +264,11 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			init();
 			session_team.put(sessionId, 0);
 		} else if (session_team.size() == 1) {
-			session_team.put(sessionId, 1);			
+			session_team.put(sessionId, 1);
 		}
 				
 		send(session, stringify(session(session)));
-		send(session, stringify(status()));
+		//send(session, stringify(status()));
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {

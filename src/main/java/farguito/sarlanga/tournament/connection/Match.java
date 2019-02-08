@@ -44,7 +44,7 @@ public class Match {
 	public void addTeam(String accountId, Team team) {
 		//hacer la validacion mas piola
 		if(!this.player_teamNumber.containsKey(accountId)) {
-			team.setTeamNumber(this.teamNumber);		
+			team.setNumber(this.teamNumber);		
 			team.getCharacters().stream().forEach(c -> { c.setTeam(this.teamNumber); });
 			team.setOwner(accountId);
 			this.teams.add(team);

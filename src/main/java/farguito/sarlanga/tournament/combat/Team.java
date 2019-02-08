@@ -7,15 +7,15 @@ import java.util.stream.Collectors;
 public class Team {
 	
 	private String owner;
-	private int teamNumber;
+	private int number;
 	private List<Character> characters;
 	
 	public Team(List<Character> characters) {
 		this.characters = characters;
 	}
 	
-	public Team(int teamNumber, List<Character> characters) {
-		this.teamNumber = teamNumber;
+	public Team(int number, List<Character> characters) {
+		this.number = number;
 		this.characters = characters;
 	}	
 	
@@ -36,11 +36,11 @@ public class Team {
 	}
 
 	
-	public void setTeamNumber(int teamNumber) {
-		this.teamNumber = teamNumber;
+	public void setNumber(int number) {
+		this.number = number;
 	}
-	public int getTeamNumber() {
-		return teamNumber;
+	public int getNumber() {
+		return number;
 	}
 	public List<Character> getCharacters() {
 		return characters;

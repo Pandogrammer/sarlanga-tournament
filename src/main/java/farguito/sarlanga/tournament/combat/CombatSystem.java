@@ -136,7 +136,7 @@ public class CombatSystem {
 			int i = 0;
 			boolean found = false;
 			while(!found && i < this.teams.size()) {
-				if(this.teams.get(i).getTeamNumber() == teamNumber)
+				if(this.teams.get(i).getNumber() == teamNumber)
 					found = true;
 				else 
 					i++;			
@@ -307,7 +307,7 @@ public class CombatSystem {
 		List<Team> aliveTeams = teams.stream().filter(t -> t.someoneAlive()).collect(Collectors.toList());
 		//esto esta pensado para FFA
 		if(aliveTeams.size() == 1) {
-			this.winningTeam = aliveTeams.get(0).getTeamNumber(); //hacer algo con el ganador
+			this.winningTeam = aliveTeams.get(0).getNumber(); //hacer algo con el ganador
 			logger.log("Team "+this.winningTeam+" won the match.");
 		}
 	}
