@@ -1,7 +1,5 @@
 package farguito.sarlanga.tournament.websocket;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +15,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import farguito.sarlanga.tournament.SarlangaContext;
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
@@ -24,7 +23,9 @@ import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
+import farguito.sarlanga.tournament.connection.Match;
 import farguito.sarlanga.tournament.connection.TeamDTO;
+import farguito.sarlanga.tournament.controller.MatchService;
 
 @Component
 public class CombatHandlerTest extends TextWebSocketHandler {	
@@ -33,14 +34,21 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	
 	private CombatSystem system;
 	
-	private CardFactory cards = new CardFactory();
+	private CardFactory cards;
+	private MatchService matchs;
+	
+	private Match match;
+	
 	
 	private Map<String, String> session_account = new HashMap<>();
 	private Map<String, Integer> session_team = new HashMap<>();
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
 	private void init() {
-		cards.init();
+		cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
+		matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
+		
+		this.match = matchs.create(10, cards.getCards());
 		
 		List<Team> teams = new ArrayList<>();
 		
