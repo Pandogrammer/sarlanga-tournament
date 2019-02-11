@@ -35,20 +35,48 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private CombatSystem system;
 	
 	private CardFactory cards;
-	private MatchService matchs;
-	
-	private Match match;
-	
-	
+	private MatchService matchs;	
+
 	private Map<String, String> session_account = new HashMap<>();
-	private Map<String, Integer> session_team = new HashMap<>();
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
+
+	//todo entra por aca
+	public void handleTextMessage(WebSocketSession session, TextMessage message)
+			throws InterruptedException, IOException {
+		try { 
+			System.out.println(message.getPayload());
+			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
+
+			if(request.getMethod().equals("action_request")) {
+				send(session, stringify(action(request)));
+
+			} else if(request.getMethod().equals("reconnect_request")){
+				reconnect(request, session.getId());	
+
+			} else if(request.getMethod().equals("status_request")){
+				send(session, stringify(status()));
+
+			} else if(request.getMethod().equals("teams_request")){
+				send(session, stringify(teams()));
+				
+			} else if(request.getMethod().equals("connection_request")){
+				connect(request);
+				
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println(message.getPayload());
+		}
+	}
+	
+	
 	private void init() {
-		cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
-		matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
+		this.cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
+		this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
 		
-		this.match = matchs.create(10, cards.getCards());
+		matchs.create(10, cards.getCards());
 		
 		List<Team> teams = new ArrayList<>();
 		
@@ -159,7 +187,25 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		
 		return response;		
 	}
+
 	
+	private void connect(DefoldRequest request) {		
+		String sessionId = (String) request.get("session_id");
+		String accountId = (String) request.get("account_id");
+		session_account.put(sessionId, accountId);
+		
+	}
+
+	
+	private void reconnect(DefoldRequest request, String newSessionId) {		
+		String oldSessionId = (String) request.get("session_id");
+		if(session_account.containsKey(oldSessionId)) {
+			String accountId = session_account.get(oldSessionId);
+			session_account.put(newSessionId, accountId);
+		}
+
+		System.out.println(newSessionId+": RECONNECTED - WAS ["+oldSessionId+"]");
+	}
 
 	private DefoldResponse teams(){
 		DefoldResponse response = new DefoldResponse("teams_response");
@@ -199,32 +245,6 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			
 	
 	
-	//todo entra por aca
-	public void handleTextMessage(WebSocketSession session, TextMessage message)
-			throws InterruptedException, IOException {
-		try { 
-			System.out.println(message.getPayload());
-			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
-
-			if(request.getMethod().equals("action_request")) {
-				send(session, stringify(action(request)));
-
-			} else if(request.getMethod().equals("reconnect_request")){
-				reconnect(request, session.getId());	
-
-			} else if(request.getMethod().equals("status_request")){
-				send(session, stringify(status()));
-
-			} else if(request.getMethod().equals("teams_request")){
-				send(session, stringify(teams()));
-				
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(message.getPayload());
-		}
-	}
 
 	private void broadcast(String message) {
 		sessions.values().stream().forEach(s -> {
@@ -250,17 +270,6 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			return "Error";
 		}		
 	}
-
-	private void reconnect(DefoldRequest request, String newSessionId) {		
-		String oldSessionId = (String) request.get("session_id");
-		if(session_team.containsKey(oldSessionId)) {
-			Integer team = session_team.get(oldSessionId);
-			session_team.put(newSessionId, team);
-		}
-
-		System.out.println(newSessionId+": RECONNECTED - WAS ["+oldSessionId+"]");
-	}
-
 	
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
@@ -268,12 +277,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		System.out.println(sessionId+": CONNECTED");
 		
 		//test
-		if(session_team.isEmpty()) {
-			init();
-			session_team.put(sessionId, 0);
-		} else if (session_team.size() == 1) {
-			session_team.put(sessionId, 1);
-		}
+		init();
 				
 		send(session, stringify(session(session)));
 		//send(session, stringify(status()));

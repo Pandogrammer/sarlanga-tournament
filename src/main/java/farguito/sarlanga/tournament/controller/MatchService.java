@@ -16,15 +16,37 @@ public class MatchService {
 
 	private int matchId = 0;
 	private Map<Integer, Match> matchs = new HashMap<>();
+	private Map<String, Integer> account_match = new HashMap<>();
 	
 	public Match create(int essence, List<Card> cards) {
 		Match match = new Match(essence, cards);
 		int id = nextId();
 		match.setId(id);
 
-		matchs.put(id, match);
+		this.matchs.put(id, match);
 
 		return match;
+	}
+	
+	public boolean start(Integer id) {
+		Match m = get(id);
+		if(m.start()) {
+			m.getPlayers().stream().forEach(p -> {
+				this.account_match.put(p, id);
+			});
+			
+			return true;
+		}
+		return false;
+	}
+	
+	public Match findByAccount(String accountId) {
+		return this.matchs.get(this.account_match.get(accountId));
+	}
+	
+	
+	public Match get(Integer id) {
+		return this.matchs.get(id);
 	}
 
 	private int nextId() {

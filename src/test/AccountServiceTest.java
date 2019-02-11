@@ -15,7 +15,7 @@ import farguito.sarlanga.tournament.controller.AccountService;
 public class AccountServiceTest {
  
     @TestConfiguration
-    static class EmployeeServiceImplTestContextConfiguration {
+    static class AccountServiceConfig {
   
         @Bean
         public AccountService accountService() {

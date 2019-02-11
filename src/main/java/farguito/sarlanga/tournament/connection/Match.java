@@ -1,20 +1,21 @@
 package farguito.sarlanga.tournament.connection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import farguito.sarlanga.tournament.cards.Card;
-import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.combat.Team;
 
 public class Match {
 
 	private int id;
-	private int teamNumber = 1;
+	private int teamNumber = 0;
+	
 	private String owner;
 	private List<String> players = new ArrayList<>();
 	private int essence;
@@ -36,26 +37,62 @@ public class Match {
 		}
 	}
 	
-	public void start() {
-		this.state = "PLAYING";
-		this.system = new CombatSystem(teams);		
+	public boolean start() {
+		Collection<TeamDTO> teams = player_teamDto.values();
+		if(!teams.stream().anyMatch(t -> !t.isReady())) {
+			this.state = "PLAYING";
+			teams.stream().forEach(t -> {
+				t.setTeamNumber(nextTeamNumber());
+				this.teams.add(t.create());
+				this.player_teamNumber.put(t.getOwner(), t.getTeamNumber());
+			});
+			this.system = new CombatSystem(this.teams);
+			
+			return true;			
+		}		
+		return false;
+	}
+
+	public boolean confirmTeam(String accountId) {
+		if(this.player_teamDto.containsKey(accountId)) {
+			TeamDTO team = this.player_teamDto.get(accountId);
+			if(!team.getCharacters().isEmpty() 
+			&& team.validateCharacters() 
+			&& team.getEssence() <= this.essence) {
+				team.setReady(true);
+				return true;		
+			}	
+		}		
+		return false;
+	}
+	
+	public boolean unconfirmTeam(String accountId) {
+		if(this.player_teamDto.containsKey(accountId)) {
+			TeamDTO team = this.player_teamDto.get(accountId);
+			team.setReady(false);		
+			return true;			
+		}		
+		return false;
 	}
 	
 	public void addTeam(String accountId, Team team) {
 		//hacer la validacion mas piola
 		if(!this.player_teamNumber.containsKey(accountId)) {
-			team.setNumber(this.teamNumber);		
-			team.getCharacters().stream().forEach(c -> { c.setTeam(this.teamNumber); });
-			team.setOwner(accountId);
+			int teamNumber = nextTeamNumber();
+			team.setNumber(teamNumber);		
+			team.getCharacters().stream().forEach(c -> { c.setTeam(teamNumber); });
+			team.setOwner(accountId);			
 			this.teams.add(team);
-			this.player_teamNumber.put(accountId, this.teamNumber);
-			this.teamNumber++;
+			this.player_teamNumber.put(accountId, teamNumber);
 		}			
 	}
 	
-	public void addPlayer(String accountId) {
+	public TeamDTO addPlayer(String accountId) {
+		TeamDTO team = new TeamDTO();
+		team.setOwner(accountId);
 		this.players.add(accountId);
-		this.player_teamDto.put(accountId, new TeamDTO());
+		this.player_teamDto.put(accountId, team);
+		return team;
 	}
 	
 	public void deletePlayer(String accountId) {
@@ -66,7 +103,8 @@ public class Match {
 			this.player_teamDto.remove(accountId);
 		}
 	}
-
+	
+	
 	public Integer getPlayerTeamNumber(String accountId) {
 		return this.player_teamNumber.get(accountId);
 	}	
@@ -74,6 +112,15 @@ public class Match {
 	public TeamDTO getPlayerTeamDTO(String accountId) {
 		return this.player_teamDto.get(accountId);
 	}
+	
+	private Integer nextTeamNumber() {
+		this.teamNumber++;
+		return this.teamNumber;
+	}
+	
+	public List<String> getPlayers(){
+		return this.players;
+	}	
 	
 	public int getEssence() {
 		return essence;
@@ -105,6 +152,8 @@ public class Match {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	
 	
 	
 	

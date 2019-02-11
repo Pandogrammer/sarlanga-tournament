@@ -11,17 +11,24 @@ import farguito.sarlanga.tournament.combat.Team;
 
 public class TeamDTO {
 	
+	private String owner;
+	private boolean ready = false;
 	private int teamNumber;
 	private Map<Integer, CharacterDTO> characters = new LinkedHashMap<>();
 	
-	public void addCharacter(int line, int position, Card characterCard) {
-		CharacterDTO dto = new CharacterDTO();
-		dto.setCharacter(characterCard);
-		int id = characters.size()+1;
-		dto.setLine(line);
-		dto.setPosition(position);
-		dto.setId(id);
-		this.characters.put(id, dto);
+	public boolean addCharacter(int line, int position, Card characterCard) {
+		if(validatePosition(line, position)) {
+			CharacterDTO dto = new CharacterDTO();
+			dto.setCharacter(characterCard);
+			int id = characters.size()+1;
+			dto.setLine(line);
+			dto.setPosition(position);
+			dto.setId(id);
+			this.characters.put(id, dto);
+			
+			return true;			
+		}		
+		return false;
 	}
 	
 	public boolean validatePosition(int line, int position) {
@@ -36,8 +43,10 @@ public class TeamDTO {
 			ch.setTeam(teamNumber);
 			characters.add(ch);						
 		}
+		Team team = new Team(teamNumber, characters);
+		team.setOwner(this.owner);
 		
-		return new Team(teamNumber, characters);		
+		return team;
 	}
 	
 	public void removeCharacter(int id) {
@@ -78,6 +87,21 @@ public class TeamDTO {
 	public void setTeamNumber(int teamNumber) {
 		this.teamNumber = teamNumber;
 	}
+	public boolean isReady() {
+		return ready;
+	}
+	public void setReady(boolean ready) {
+		this.ready = ready;
+	}
+	public String getOwner() {
+		return owner;
+	}
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+	
+	
+	
 	
 	
 }
