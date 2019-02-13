@@ -227,7 +227,7 @@ public class CombatControllerV3 {
 				} else {
 					Character character = sistema.getActiveCharacter();
 					if(character != null) {
-						if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
+						if(match.getTeamNumber(accountId) != character.getTeam()) {
 							respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
 						} else {
 							respuesta.put("turno", "Es tu turno. Equipo "+character.getTeam()+" - "+character.getName());
@@ -275,7 +275,7 @@ public class CombatControllerV3 {
 				respuesta.put("error", "La partida todavia no inició.");
 			} else if (match.getState().equals("PLAYING")) {				
 				CombatSystem sistema = match.getSystem();
-				if(match.getPlayerTeamNumber(accountId) == sistema.getActiveCharacter().getTeam()) {
+				if(match.getTeamNumber(accountId) == sistema.getActiveCharacter().getTeam()) {
 					try {
 						int team = java.lang.Character.getNumericValue(objectiveId.charAt(0));
 						int obj = java.lang.Character.getNumericValue(objectiveId.charAt(1));
@@ -344,7 +344,7 @@ public class CombatControllerV3 {
 				} else {
 					Character character = sistema.getActiveCharacter();
 					if(character != null) {
-						if(match.getPlayerTeamNumber(accountId) != character.getTeam()) {
+						if(match.getTeamNumber(accountId) != character.getTeam()) {
 							respuesta.put("turno", "Es el turno del equipo "+character.getTeam());
 						} else {
 							respuesta.put("turno", "Es tu turno. Equipo "+character.getTeam()+" - "+character.getName());
@@ -408,7 +408,7 @@ public class CombatControllerV3 {
 			respuesta.put("error", "No estas en ninguna partida.");			
 		} else {
 			String roomId = this.account_room.get(accountId);
-			TeamDTO team = this.matchs.get(roomId).getPlayerTeamDTO(accountId);
+			TeamDTO team = this.matchs.get(roomId).getTeamDTO(accountId);
 			
 			respuesta.put("team", team);
 		}
@@ -429,7 +429,7 @@ public class CombatControllerV3 {
 		} else {
 			String roomId = this.account_room.get(accountId);
 			Match match = this.matchs.get(roomId);
-			TeamDTO team = match.getPlayerTeamDTO(accountId);
+			TeamDTO team = match.getTeamDTO(accountId);
 			
 			if(team.getEssence() > match.getEssence()) {
 				respuesta.put("error-1", "El equipo supera la cantidad de esencia maxima");
@@ -461,7 +461,7 @@ public class CombatControllerV3 {
 		
 		String roomId = this.account_room.get(accountId);
 		Match match = this.matchs.get(roomId);
-		TeamDTO team = match.getPlayerTeamDTO(accountId);
+		TeamDTO team = match.getTeamDTO(accountId);
 		
 		if(!match.getCards().containsKey(cardId)) {
 			respuesta.put("error", "La carta no existe.");
@@ -492,7 +492,7 @@ public class CombatControllerV3 {
 		
 		String roomId = this.account_room.get(accountId);
 		Match match = this.matchs.get(roomId);
-		TeamDTO team = match.getPlayerTeamDTO(accountId);
+		TeamDTO team = match.getTeamDTO(accountId);
 		
 		team.removeCharacter(characterId);		
 		
@@ -515,7 +515,7 @@ public class CombatControllerV3 {
 		
 		String roomId = this.account_room.get(accountId);
 		Match match = this.matchs.get(roomId);
-		TeamDTO team = match.getPlayerTeamDTO(accountId);
+		TeamDTO team = match.getTeamDTO(accountId);
 		if(!team.getCharacters().containsKey(characterId)) {
 			respuesta.put("error", "El personaje no existe.");						
 		} else if(!match.getCards().containsKey(cardId)) {

@@ -53,7 +53,7 @@ public class MatchServiceTest {
     	Match m = mockMatch();
     	m.addPlayer("caca");
     
-    	assertNotNull(m.getPlayerTeamDTO("caca"));
+    	assertNotNull(m.getTeamDTO("caca"));
     }    
 
     @Test
@@ -65,7 +65,7 @@ public class MatchServiceTest {
     	
     	mockCharacters(team);
     	
-    	CharacterDTO ch = m.getPlayerTeamDTO("caca").getCharacter(1); 
+    	CharacterDTO ch = m.getTeamDTO("caca").getCharacter(1); 
     	
     	assertNotNull(ch);
     	
@@ -108,7 +108,7 @@ public class MatchServiceTest {
     	
     	assertTrue(matchService.start(m.getId()));
     	
-    	assertEquals(m.getId(), matchService.findByAccount("caca").getId());
+    	assertEquals(m.getId(), matchService.get("caca").getId());
     	
     }
     

@@ -20,7 +20,6 @@ import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
-import farguito.sarlanga.tournament.combat.Team;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.Match;
@@ -49,19 +48,20 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
 
 			if(request.getMethod().equals("action_request")) {
-				send(session, stringify(action(request)));
+				send(session, action(request));
 
 			} else if(request.getMethod().equals("reconnect_request")){
 				reconnect(request, session.getId());	
 
 			} else if(request.getMethod().equals("status_request")){
-				send(session, stringify(status()));
+				send(session, status());
 
 			} else if(request.getMethod().equals("teams_request")){
-				send(session, stringify(teams()));
+				send(session, teams());
 				
-			} else if(request.getMethod().equals("connection_request")){
-				connect(request);
+			} else if(request.getMethod().equals("account_link_request")){
+				accountLink(request);
+				send(session, teamNumber(request));
 				
 			}
 
@@ -75,27 +75,27 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	private void init() {
 		this.cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
 		this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
+				
+		Match match = matchs.create(10, cards.getCards());
 		
-		matchs.create(10, cards.getCards());
+		buildTeam(match, "eb105bc783cf4e22bdce6bff61ad5a431090728985");
+		buildTeam(match, "caca");
 		
-		List<Team> teams = new ArrayList<>();
+		matchs.start(match.getId());
 		
-		teams.add(buildTeam(1));
-		teams.add(buildTeam(3));
-		
-		this.system = new CombatSystem(teams);		
+		this.system = match.getSystem();
 	}
 	
-	private Team buildTeam(int n) {
-		TeamDTO team = new TeamDTO();
-		team.setTeamNumber(n);
-		int j = 1;
-		for(int i = n-1; i <= n; i++) {
-			team.addCharacter(j, i%2+1, cards.getCriatures().get(i));
-			team.getCharacter(j).addAction(cards.getActions().get(i));
-			j++;
-		}
-		return team.create();		
+	private void buildTeam(Match match, String accountId) {
+		match.addPlayer(accountId);
+
+		TeamDTO team = match.getTeamDTO(accountId);
+    	team.addCharacter(1, 1, cards.getCriatures().get(0));
+    	team.addCharacter(2, 2, cards.getCriatures().get(1));
+    	team.getCharacter(1).addAction(cards.getActions().get(0));
+    	team.getCharacter(2).addAction(cards.getActions().get(0));
+    	
+		match.confirmTeam(accountId);	
 	}
 	
 
@@ -188,12 +188,21 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		return response;		
 	}
 
+	private DefoldResponse teamNumber(DefoldRequest request) {
+		DefoldResponse response = new DefoldResponse("team_number_response");	
+		
+		String accountId = (String) request.get("account_id");
+		
+		response.put("team_number", this.matchs.get(accountId).getTeamNumber(accountId));		
+		
+		return response;	
+		
+	}
 	
-	private void connect(DefoldRequest request) {		
+	private void accountLink(DefoldRequest request) {			
 		String sessionId = (String) request.get("session_id");
 		String accountId = (String) request.get("account_id");
-		session_account.put(sessionId, accountId);
-		
+		session_account.put(sessionId, accountId);			
 	}
 
 	
@@ -213,7 +222,6 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		List<Map<String, Object>> teams = new ArrayList<>();
 		this.system.getTeams().stream().forEach(t -> {
 			Map<String, Object> team = new HashMap<>();
-			team.put("owner", t.getOwner());
 			team.put("number", t.getNumber());
 			
 			List<Map<String, Object>> characters = new ArrayList<>();
@@ -250,6 +258,11 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		sessions.values().stream().forEach(s -> {
 			send(s, message);
 		});
+	}
+	
+
+	public void send(WebSocketSession session, DefoldResponse response) {
+		send(session, stringify(response));
 	}
 	
 	public void send(WebSocketSession session, String message) {

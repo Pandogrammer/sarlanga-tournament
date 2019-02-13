@@ -105,11 +105,11 @@ public class Match {
 	}
 	
 	
-	public Integer getPlayerTeamNumber(String accountId) {
+	public Integer getTeamNumber(String accountId) {
 		return this.player_teamNumber.get(accountId);
 	}	
 	
-	public TeamDTO getPlayerTeamDTO(String accountId) {
+	public TeamDTO getTeamDTO(String accountId) {
 		return this.player_teamDto.get(accountId);
 	}
 	

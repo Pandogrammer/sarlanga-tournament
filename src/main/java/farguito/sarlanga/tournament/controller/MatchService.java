@@ -40,13 +40,12 @@ public class MatchService {
 		return false;
 	}
 	
-	public Match findByAccount(String accountId) {
-		return this.matchs.get(this.account_match.get(accountId));
-	}
-	
-	
 	public Match get(Integer id) {
 		return this.matchs.get(id);
+	}
+	
+	public Match get(String accountId) {
+		return this.matchs.get(this.account_match.get(accountId));
 	}
 
 	private int nextId() {
