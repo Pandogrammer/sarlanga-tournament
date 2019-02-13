@@ -31,8 +31,6 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	
 	private ObjectMapper mapper = new ObjectMapper();
 	
-	private CombatSystem system;
-	
 	private CardFactory cards;
 	private MatchService matchs;	
 
@@ -45,19 +43,20 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 			throws InterruptedException, IOException {
 		try { 
 			System.out.println(message.getPayload());
-			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);
-
+			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);			
+			
 			if(request.getMethod().equals("action_request")) {
-				send(session, action(request));
+				send(session, action(request, session.getId()));
 
 			} else if(request.getMethod().equals("reconnect_request")){
 				reconnect(request, session.getId());	
 
 			} else if(request.getMethod().equals("status_request")){
-				send(session, status());
+				send(session, status(session.getId()));
 
 			} else if(request.getMethod().equals("teams_request")){
-				send(session, teams());
+				send(session, teams(session.getId()));
+				send(session, status(session.getId()));
 				
 			} else if(request.getMethod().equals("account_link_request")){
 				accountLink(request);
@@ -76,14 +75,12 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		this.cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
 		this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
 				
-		Match match = matchs.create(10, cards.getCards());
+		Match match = this.matchs.create(10, cards.getCards());
 		
 		buildTeam(match, "eb105bc783cf4e22bdce6bff61ad5a431090728985");
-		buildTeam(match, "caca");
+		buildTeam(match, "7c5dd7987b93456db87a2a7e2ea9420c1090728985");
 		
-		matchs.start(match.getId());
-		
-		this.system = match.getSystem();
+		this.matchs.start(match.getId());
 	}
 	
 	private void buildTeam(Match match, String accountId) {
@@ -99,47 +96,63 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	}
 	
 
-	private DefoldResponse action(DefoldRequest request) {
+	private DefoldResponse action(DefoldRequest request, String sessionId) {
 		DefoldResponse response = new DefoldResponse("action_response");
+		CombatSystem system = getSystem(sessionId);
 		
-		Integer actionId = (int) request.get("action");
-		List<Integer> objectiveIds = (List) request.get("objectives");
+		int team = system.getActiveCharacter().getTeam()-1;
+		boolean validTurn = system.getTeams().get(team).getOwner().equals(this.session_account.get(sessionId));
 		
-		Action action = this.system.getActiveCharacter().getActions().get(actionId);
-		List<Character> objectives = new ArrayList<>();
-		
-		for(int i = 0; i < objectiveIds.size(); i++) {
-			objectives.add(this.system.getCharacter(objectiveIds.get(i)));
-		}
+		if(validTurn) {
+			Integer actionId = (int) request.get("action");
+			List<Integer> objectiveIds = (List) request.get("objectives");
 			
-		
-		this.system.prepareAction(action, objectives);
-		if(this.system.validateObjectives(action)) {
-			this.system.executeAction(action);
-			this.system.nextTurn();
-			broadcast(stringify(results()));
-			this.system.getLogger().deleteResults();
-			broadcast(stringify(status()));			
-			response.put("success", true);
+			Action action = system.getActiveCharacter().getActions().get(actionId);
+			List<Character> objectives = new ArrayList<>();
+			
+			for(int i = 0; i < objectiveIds.size(); i++) {
+				objectives.add(system.getCharacter(objectiveIds.get(i)));
+			}
+				
+			
+			system.prepareAction(action, objectives);
+			if(system.validateObjectives(action)) {
+				system.executeAction(action);
+				system.nextTurn();
+				broadcast(stringify(results(sessionId)));
+				system.getLogger().deleteResults();
+				broadcast(stringify(status(sessionId)));			
+				response.put("success", true);
+			} else {
+				response.put("success", false);
+				response.put("reason", "Invalid target.");
+			}	
 		} else {
 			response.put("success", false);
-			response.put("reason", "Invalid target.");
+			response.put("reason", "Not your turn.");
 		}	
-		
 		return response;			
 	}
 	
-	private DefoldResponse status() {		
+	private DefoldResponse status(String sessionId) {		
 		DefoldResponse response = new DefoldResponse("status_response");
-
+		CombatSystem system = getSystem(sessionId);
+		
 		//estado del turno
 		//estado de los personajes
 		//estado efectos duraderos
 
-		response.put("character_active", this.system.getActiveCharacter().getId());
+
+		response.put("active_team", system.getActiveCharacter().getTeam());
+		
+		Map<String, Object> activeCharacter = new LinkedHashMap<>();
+		activeCharacter.put("id", system.getActiveCharacter().getId());				
+		activeCharacter.put("actions", system.getActiveCharacter().getActions());
+		
+		response.put("active_character", activeCharacter);
 		
 		List<Object> charactersStatus = new ArrayList<>();
-		this.system.getTeams().stream().forEach(t -> {
+		system.getTeams().stream().forEach(t -> {
 			List<Character> character = t.getCharacters();
 			for(int i = 0; i < character.size(); i++){
 				Character c = character.get(i);
@@ -166,11 +179,12 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 	}
 	
 	
-	private DefoldResponse results() {
+	private DefoldResponse results(String sessionId) {
 		DefoldResponse response = new DefoldResponse("result_response");
+		CombatSystem system = getSystem(sessionId);
 		
 		List<Object> results = new ArrayList<>();
-		this.system.getLogger().getResults().stream().forEach(r -> {
+		system.getLogger().getResults().stream().forEach(r -> {
 			results.add(r);
 		});
 		
@@ -216,11 +230,12 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		System.out.println(newSessionId+": RECONNECTED - WAS ["+oldSessionId+"]");
 	}
 
-	private DefoldResponse teams(){
+	private DefoldResponse teams(String sessionId){
 		DefoldResponse response = new DefoldResponse("teams_response");
+		CombatSystem system = getSystem(sessionId);
 		
 		List<Map<String, Object>> teams = new ArrayList<>();
-		this.system.getTeams().stream().forEach(t -> {
+		system.getTeams().stream().forEach(t -> {
 			Map<String, Object> team = new HashMap<>();
 			team.put("number", t.getNumber());
 			
@@ -284,6 +299,10 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		}		
 	}
 	
+	private CombatSystem getSystem(String sessionId) {
+		return this.matchs.get(this.session_account.get(sessionId)).getSystem();
+	}
+	
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
 		sessions.put(sessionId, session);
@@ -292,8 +311,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		//test
 		init();
 				
-		send(session, stringify(session(session)));
-		//send(session, stringify(status()));
+		send(session, session(session));
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
