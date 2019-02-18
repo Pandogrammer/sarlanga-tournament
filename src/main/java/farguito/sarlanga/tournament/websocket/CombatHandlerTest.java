@@ -75,7 +75,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		this.cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
 		this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
 				
-		Match match = this.matchs.create(10, cards.getCards());
+		Match match = this.matchs.create(100, cards.getCards());
 		
 		buildTeam(match, "eb105bc783cf4e22bdce6bff61ad5a431090728985");
 		buildTeam(match, "7c5dd7987b93456db87a2a7e2ea9420c1090728985");
@@ -88,9 +88,18 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 
 		TeamDTO team = match.getTeamDTO(accountId);
     	team.addCharacter(1, 1, cards.getCriatures().get(0));
-    	team.addCharacter(2, 2, cards.getCriatures().get(1));
+    	if(accountId.equals("7c5dd7987b93456db87a2a7e2ea9420c1090728985"))
+    		team.addCharacter(2, 2, cards.getCriatures().get(3));
+    	else
+    		team.addCharacter(2, 2, cards.getCriatures().get(1));    	
+		team.addCharacter(1, 2, cards.getCriatures().get(2));    		
     	team.getCharacter(1).addAction(cards.getActions().get(0));
+    	team.getCharacter(1).addAction(cards.getActions().get(2));
     	team.getCharacter(2).addAction(cards.getActions().get(0));
+    	team.getCharacter(2).addAction(cards.getActions().get(1));
+    	team.getCharacter(2).addAction(cards.getActions().get(2));
+    	team.getCharacter(2).addAction(cards.getActions().get(3));	
+    	team.getCharacter(3).addAction(cards.getActions().get(0));
     	
 		match.confirmTeam(accountId);	
 	}
