@@ -27,7 +27,7 @@ import farguito.sarlanga.tournament.connection.TeamDTO;
 import farguito.sarlanga.tournament.controller.MatchService;
 
 @Component
-public class CombatHandlerTest extends TextWebSocketHandler {	
+public class CombatHandler extends TextWebSocketHandler {	
 	
 	private ObjectMapper mapper = new ObjectMapper();
 	
@@ -95,7 +95,7 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		team.addCharacter(1, 2, cards.getCriatures().get(2));    		
     	team.getCharacter(1).addAction(cards.getActions().get(0));
     	team.getCharacter(1).addAction(cards.getActions().get(2));
-    	team.getCharacter(2).addAction(cards.getActions().get(0));
+    	team.getCharacter(2).addAction(cards.getActions().get(4));
     	team.getCharacter(2).addAction(cards.getActions().get(1));
     	team.getCharacter(2).addAction(cards.getActions().get(2));
     	team.getCharacter(2).addAction(cards.getActions().get(3));	
@@ -155,8 +155,16 @@ public class CombatHandlerTest extends TextWebSocketHandler {
 		response.put("active_team", system.getActiveCharacter().getTeam());
 		
 		Map<String, Object> activeCharacter = new LinkedHashMap<>();
-		activeCharacter.put("id", system.getActiveCharacter().getId());				
-		activeCharacter.put("actions", system.getActiveCharacter().getActions());
+		activeCharacter.put("id", system.getActiveCharacter().getId());	
+		
+		List<Object> activeCharacterActions = new ArrayList<>();
+		system.getActiveCharacter().getActions().stream().forEach(a -> {
+			Map<String, Object> action = new HashMap<>();
+			action.put("name", a.getName());
+			
+			activeCharacterActions.add(action);
+		});
+		activeCharacter.put("actions", activeCharacterActions);
 		
 		response.put("active_character", activeCharacter);
 		

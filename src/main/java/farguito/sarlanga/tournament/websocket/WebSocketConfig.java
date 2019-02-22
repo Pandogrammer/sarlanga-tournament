@@ -13,7 +13,7 @@ import farguito.sarlanga.tournament.falopa.ZLibSocket;
 public class WebSocketConfig implements WebSocketConfigurer {
 
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new CombatHandlerTest(), "/test");
+		registry.addHandler(new CombatHandler(), "/test");
 		registry.addHandler(new ZLibSocket(), "/zlib");
 	}
 

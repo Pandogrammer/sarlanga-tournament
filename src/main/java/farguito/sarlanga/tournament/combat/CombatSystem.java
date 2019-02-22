@@ -107,17 +107,29 @@ public class CombatSystem {
 		logger.addResult(action);
 	}
 	
-	
+	//cancer
 	public boolean validateObjectives(Action action) {
 		try {
+			boolean success = false;
 			if(action.getTarget().equals(Target.SELF)) {
-				return action.getObjectives().get(0).equals(action.getActor());
+				success = action.getObjectives().size() == 1 && action.getObjectives().get(0).equals(action.getActor());
 			} else if(action.getTarget().equals(Target.OBJECTIVE)) {
-				return action.getObjectives().size() == 1;
-			} else if (action.isMelee()) {
-				return !hasBlockers(action.getObjectives().get(0));
+				success = action.getObjectives().size() == 1;
+			} else if(action.getTarget().equals(Target.LINE)) {
+				int line = action.getObjectives().get(0).getLine();
+				success = action.getObjectives().stream().allMatch(c -> c.getLine() == line );
 			}
-			return true;
+			
+			if(action.isMelee()) {
+				success = !action.getObjectives().stream().anyMatch(c -> hasBlockers(c));
+			}
+			
+			if(success) {
+				int team = action.getObjectives().get(0).getTeam();
+				success = action.getObjectives().stream().allMatch(c -> c.getTeam() == team );
+			}
+			
+			return success;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
