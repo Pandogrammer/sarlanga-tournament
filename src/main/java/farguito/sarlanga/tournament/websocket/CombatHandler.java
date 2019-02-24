@@ -31,10 +31,10 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 	private ObjectMapper mapper = new ObjectMapper();
 	
-	private CardFactory cards;
 	private MatchService matchs;	
 
 	private Map<String, String> session_account = new HashMap<>();
+	private Map<String, Integer> account_team = new HashMap<>();
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
 
@@ -42,7 +42,6 @@ public class CombatHandler extends TextWebSocketHandler {
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
 			throws InterruptedException, IOException {
 		try { 
-			System.out.println(message.getPayload());
 			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);			
 			
 			if(request.getMethod().equals("action_request")) {
@@ -72,38 +71,10 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 	
 	private void init() {
-		this.cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
-		this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
-				
-		Match match = this.matchs.create(100, cards.getCards());
-		
-		buildTeam(match, "eb105bc783cf4e22bdce6bff61ad5a431090728985");
-		buildTeam(match, "7c5dd7987b93456db87a2a7e2ea9420c1090728985");
-		
-		this.matchs.start(match.getId());
+		if(this.matchs == null)
+			this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");
 	}
-	
-	private void buildTeam(Match match, String accountId) {
-		match.addPlayer(accountId);
-
-		TeamDTO team = match.getTeamDTO(accountId);
-    	team.addCharacter(1, 1, cards.getCriatures().get(0));
-    	if(accountId.equals("7c5dd7987b93456db87a2a7e2ea9420c1090728985"))
-    		team.addCharacter(2, 2, cards.getCriatures().get(3));
-    	else
-    		team.addCharacter(2, 2, cards.getCriatures().get(1));    	
-		team.addCharacter(1, 2, cards.getCriatures().get(2));    		
-    	team.getCharacter(1).addAction(cards.getActions().get(0));
-    	team.getCharacter(1).addAction(cards.getActions().get(2));
-    	team.getCharacter(2).addAction(cards.getActions().get(4));
-    	team.getCharacter(2).addAction(cards.getActions().get(1));
-    	team.getCharacter(2).addAction(cards.getActions().get(2));
-    	team.getCharacter(2).addAction(cards.getActions().get(3));	
-    	team.getCharacter(3).addAction(cards.getActions().get(0));
-    	
-		match.confirmTeam(accountId);	
-	}
-	
+		
 
 	private DefoldResponse action(DefoldRequest request, String sessionId) {
 		DefoldResponse response = new DefoldResponse("action_response");
@@ -154,20 +125,23 @@ public class CombatHandler extends TextWebSocketHandler {
 
 		response.put("active_team", system.getActiveCharacter().getTeam());
 		
+		int teamNumber = this.account_team.get(this.session_account.get(sessionId));
+		
 		Map<String, Object> activeCharacter = new LinkedHashMap<>();
-		activeCharacter.put("id", system.getActiveCharacter().getId());	
-		
-		List<Object> activeCharacterActions = new ArrayList<>();
-		system.getActiveCharacter().getActions().stream().forEach(a -> {
-			Map<String, Object> action = new HashMap<>();
-			action.put("name", a.getName());
+		if (teamNumber == system.getActiveCharacter().getTeam()) {
+			activeCharacter.put("id", system.getActiveCharacter().getId());	
 			
-			activeCharacterActions.add(action);
-		});
-		activeCharacter.put("actions", activeCharacterActions);
+			List<Object> activeCharacterActions = new ArrayList<>();
+			system.getActiveCharacter().getActions().stream().forEach(a -> {
+				Map<String, Object> action = new HashMap<>();
+				action.put("name", a.getName());
+				
+				activeCharacterActions.add(action);
+			});
+			activeCharacter.put("actions", activeCharacterActions);
 		
-		response.put("active_character", activeCharacter);
-		
+			response.put("active_character", activeCharacter);
+		}
 		List<Object> charactersStatus = new ArrayList<>();
 		system.getTeams().stream().forEach(t -> {
 			List<Character> character = t.getCharacters();
@@ -223,8 +197,9 @@ public class CombatHandler extends TextWebSocketHandler {
 		DefoldResponse response = new DefoldResponse("team_number_response");	
 		
 		String accountId = (String) request.get("account_id");
-		
-		response.put("team_number", this.matchs.get(accountId).getTeamNumber(accountId));		
+		Integer teamNumber = this.matchs.get(accountId).getTeamNumber(accountId);
+		this.account_team.put(accountId, teamNumber);
+		response.put("team_number", teamNumber);		
 		
 		return response;	
 		
@@ -299,7 +274,6 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 	public void send(WebSocketSession session, String message) {
 		try {
-			System.out.println(session.getId()+": "+message);
 			session.sendMessage(new TextMessage(message));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -327,7 +301,7 @@ public class CombatHandler extends TextWebSocketHandler {
 		
 		//test
 		init();
-				
+		
 		send(session, session(session));
 	}
 

@@ -23,24 +23,20 @@ import farguito.sarlanga.tournament.cards.criatures.Sapurai;
 @ApplicationScope
 public class CardFactory {
 
-	public enum CardType {
-		ACTION, CRIATURE
-	}
-	
 	private List<Card> cards = new ArrayList<>();
 		
 	@PostConstruct
 	public void init() {
-		this.cards.add(new Card(this.cards.size(), 1, "Ortivactus", Ortivactus.class, CardType.CRIATURE, "HIGH HP, LOW SPEED."));
-		this.cards.add(new Card(this.cards.size(), 1, "Sapurai", Sapurai.class, CardType.CRIATURE, "HIGH SPEED."));
-		this.cards.add(new Card(this.cards.size(), 1, "Peludientes", Peludientes.class, CardType.CRIATURE, "HIGH ATTACK."));
-		this.cards.add(new Card(this.cards.size(), 1, "Lombrisable", Lombrisable.class, CardType.CRIATURE, "LOW HP, VERY HIGH SPEED."));
+		this.cards.add(new CriatureCard(this.cards.size(), 1, new Ortivactus(), "HIGH HP, LOW SPEED."));
+		this.cards.add(new CriatureCard(this.cards.size(), 1, new Sapurai(), "HIGH SPEED."));
+		this.cards.add(new CriatureCard(this.cards.size(), 1, new Peludientes(), "HIGH ATTACK."));
+		this.cards.add(new CriatureCard(this.cards.size(), 1, new Lombrisable(), "LOW HP, VERY HIGH SPEED."));
 		
-		this.cards.add(new Card(this.cards.size(), 1, "Punch", Punch.class, CardType.ACTION, "Inflicts damage in the objective."));
-		this.cards.add(new Card(this.cards.size(), 2, "Poison Spit", PoisonSpit.class, CardType.ACTION, "Inflicts damage and poison in the objective."));	
-		this.cards.add(new Card(this.cards.size(), 2, "Battle Cry", BattleCry.class, CardType.ACTION, "Boosts user attack bonus."));	
-		this.cards.add(new Card(this.cards.size(), 2, "Ensnare", Ensnare.class, CardType.ACTION, "Inflicts damage, slow and fatigation in the objective."));	
-		this.cards.add(new Card(this.cards.size(), 2, "Cleave", Cleave.class, CardType.ACTION, "Inflicts damage in a line of objectives."));				
+		this.cards.add(new ActionCard(this.cards.size(), 1, new Punch(), "Inflicts damage in the objective."));
+		this.cards.add(new ActionCard(this.cards.size(), 2, new PoisonSpit(), "Inflicts damage and poison in the objective."));	
+		this.cards.add(new ActionCard(this.cards.size(), 2, new BattleCry(), "Boosts user attack bonus."));	
+		this.cards.add(new ActionCard(this.cards.size(), 2, new Ensnare(), "Inflicts damage, slow and fatigation in the objective."));	
+		this.cards.add(new ActionCard(this.cards.size(), 2, new Cleave(), "Inflicts damage in a line of objectives."));				
 	}
 
 	public List<Card> getCards() {
@@ -48,11 +44,11 @@ public class CardFactory {
 	}
 
 	public List<Card> getCriatures(){
-		return cards.stream().filter(c -> c.getType().equals(CardType.CRIATURE)).collect(Collectors.toList());
+		return cards.stream().filter(c -> c instanceof CriatureCard).collect(Collectors.toList());
 	}
 	
 	public List<Card> getActions(){
-		return cards.stream().filter(c -> c.getType().equals(CardType.ACTION)).collect(Collectors.toList());
+		return cards.stream().filter(c ->  c instanceof ActionCard).collect(Collectors.toList());
 	}
 	
 	

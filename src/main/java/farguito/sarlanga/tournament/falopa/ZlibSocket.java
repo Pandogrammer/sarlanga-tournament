@@ -8,7 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
-public class ZLibSocket extends TextWebSocketHandler {	
+public class ZlibSocket extends TextWebSocketHandler {	
 	
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
 		try { 

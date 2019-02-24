@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.SarlangaTournamentApplication;
 import farguito.sarlanga.tournament.cards.Action;
+import farguito.sarlanga.tournament.cards.ActionCard;
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
+import farguito.sarlanga.tournament.cards.CriatureCard;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.connection.CharacterDTO;
@@ -467,7 +468,7 @@ public class CombatControllerV3 {
 			respuesta.put("error", "La carta no existe.");
 		} else {
 			Card card = match.getCards().get(cardId); 
-			if(!card.getType().equals("Criature")) {
+			if(!(card instanceof CriatureCard)) {
 				respuesta.put("error", "La carta no es una criatura");
 			} else if (!team.validatePosition(line, position)){
 				respuesta.put("error", "La posicion ya esta ocupada");				
@@ -524,7 +525,7 @@ public class CombatControllerV3 {
 			CharacterDTO character = team.getCharacter(characterId);
 			Card card = match.getCards().get(cardId); 
 			if(method.equalsIgnoreCase("add")) {
-				if(!card.getType().equals("Action")) {
+				if(!(card instanceof ActionCard)) {
 					respuesta.put("error", "La carta no es una acción.");
 				} else {
 					if(character.containsAction(card)) {

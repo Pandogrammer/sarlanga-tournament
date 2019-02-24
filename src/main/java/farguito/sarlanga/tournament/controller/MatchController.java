@@ -25,10 +25,10 @@ public class MatchController {
 	
 	
 	@PostMapping
-	public DefoldResponse create(@RequestBody Map secret) {
+	public DefoldResponse create(@RequestBody Map request) {
 		DefoldResponse response = new DefoldResponse("create_match_response");
 		
-		Match match = matchService.create(10, cardFactory.getCards());
+		Match match = matchService.create((int) request.get("essence"), cardFactory.getCards());
 				
 		response.put("match_id", match.getId());
 		response.put("cards", match.getCards());

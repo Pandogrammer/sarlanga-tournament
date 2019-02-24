@@ -120,6 +120,8 @@ public class CombatSystem {
 				success = action.getObjectives().stream().allMatch(c -> c.getLine() == line );
 			}
 			
+			if(!success) return success;
+			
 			if(action.isMelee()) {
 				success = !action.getObjectives().stream().anyMatch(c -> hasBlockers(c));
 			}
