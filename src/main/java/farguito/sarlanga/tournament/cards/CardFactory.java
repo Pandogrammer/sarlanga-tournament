@@ -19,8 +19,6 @@ import farguito.sarlanga.tournament.cards.criatures.Ortivactus;
 import farguito.sarlanga.tournament.cards.criatures.Peludientes;
 import farguito.sarlanga.tournament.cards.criatures.Sapurai;
 
-@Service
-@ApplicationScope
 public class CardFactory {
 
 	private List<Card> cards = new ArrayList<>();

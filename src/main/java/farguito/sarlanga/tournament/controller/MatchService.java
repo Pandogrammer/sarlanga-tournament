@@ -10,8 +10,6 @@ import org.springframework.web.context.annotation.ApplicationScope;
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.connection.Match;
 
-@Service
-@ApplicationScope
 public class MatchService {
 
 	private int matchId = 0;

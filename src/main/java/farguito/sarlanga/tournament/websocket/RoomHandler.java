@@ -4,7 +4,6 @@ package farguito.sarlanga.tournament.websocket;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -12,14 +11,12 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import farguito.sarlanga.tournament.SarlangaContext;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.Match;
 import farguito.sarlanga.tournament.connection.TeamDTO;
 import farguito.sarlanga.tournament.controller.MatchService;
 
-@Component
 public class RoomHandler extends TextWebSocketHandler {	
 	private ObjectMapper mapper = new ObjectMapper();
 	
@@ -27,6 +24,11 @@ public class RoomHandler extends TextWebSocketHandler {
 	
 	private MatchService matchs;	
 	private CardFactory cards;
+	
+	public RoomHandler(CardFactory cards, MatchService matchs) {
+		this.cards = cards;
+		this.matchs = matchs;
+	}
 	
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
 		try { 
@@ -45,13 +47,7 @@ public class RoomHandler extends TextWebSocketHandler {
 		}		
 	}	
 	
-	private void init() {
-		if(this.cards == null)
-			this.cards = (CardFactory) SarlangaContext.getAppContext().getBean("cardFactory");	
-		if(this.matchs == null)
-			this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");	
-	}
-	
+		
 	private void start() {
 		Match match = this.matchs.create(100, cards.getCards());
 		
@@ -107,7 +103,6 @@ public class RoomHandler extends TextWebSocketHandler {
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
 		System.out.println(sessionId+": CONNECTED");
-		init();
 	}
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
@@ -115,6 +110,16 @@ public class RoomHandler extends TextWebSocketHandler {
 		System.out.println(sessionId+": DISCONNECTED");
 		System.out.println(status.getReason());
 	}
+
+
+	public void setMatchs(MatchService matchs) {
+		this.matchs = matchs;
+	}
+
+	public void setCards(CardFactory cards) {
+		this.cards = cards;
+	}
+	
 	
 	
 	

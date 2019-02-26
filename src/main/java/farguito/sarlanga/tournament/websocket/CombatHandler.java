@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -15,18 +14,13 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import farguito.sarlanga.tournament.SarlangaContext;
 import farguito.sarlanga.tournament.cards.Action;
-import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
-import farguito.sarlanga.tournament.connection.Match;
-import farguito.sarlanga.tournament.connection.TeamDTO;
 import farguito.sarlanga.tournament.controller.MatchService;
 
-@Component
 public class CombatHandler extends TextWebSocketHandler {	
 	
 	private ObjectMapper mapper = new ObjectMapper();
@@ -37,6 +31,9 @@ public class CombatHandler extends TextWebSocketHandler {
 	private Map<String, Integer> account_team = new HashMap<>();
 	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
+	public CombatHandler(MatchService matchs) {
+		this.matchs = matchs;
+	}
 
 	//todo entra por aca
 	public void handleTextMessage(WebSocketSession session, TextMessage message)
@@ -68,13 +65,6 @@ public class CombatHandler extends TextWebSocketHandler {
 			System.out.println(message.getPayload());
 		}
 	}
-	
-	
-	private void init() {
-		if(this.matchs == null)
-			this.matchs = (MatchService) SarlangaContext.getAppContext().getBean("matchService");
-	}
-		
 
 	private DefoldResponse action(DefoldRequest request, String sessionId) {
 		DefoldResponse response = new DefoldResponse("action_response");
@@ -299,9 +289,6 @@ public class CombatHandler extends TextWebSocketHandler {
 		sessions.put(sessionId, session);
 		System.out.println(sessionId+": CONNECTED");
 		
-		//test
-		init();
-		
 		send(session, session(session));
 	}
 
@@ -309,6 +296,11 @@ public class CombatHandler extends TextWebSocketHandler {
 		String sessionId = session.getId();
 		sessions.remove(sessionId);
 		System.out.println(sessionId+": DISCONNECTED");
+	}
+
+
+	public void setMatchs(MatchService matchs) {
+		this.matchs = matchs;
 	}
 	
 	
