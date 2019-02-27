@@ -110,17 +110,6 @@ public class RoomHandler extends TextWebSocketHandler {
 		System.out.println(sessionId+": DISCONNECTED");
 		System.out.println(status.getReason());
 	}
-
-
-	public void setMatchs(MatchService matchs) {
-		this.matchs = matchs;
-	}
-
-	public void setCards(CardFactory cards) {
-		this.cards = cards;
-	}
-	
-	
 	
 	
 }

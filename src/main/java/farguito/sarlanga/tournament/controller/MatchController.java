@@ -1,15 +1,13 @@
 package farguito.sarlanga.tournament.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.CardFactory;
+import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.Match;
 
@@ -25,7 +23,7 @@ public class MatchController {
 	
 	
 	@PostMapping
-	public DefoldResponse create(@RequestBody Map request) {
+	public DefoldResponse create(@RequestBody DefoldRequest request) {
 		DefoldResponse response = new DefoldResponse("create_match_response");
 		
 		Match match = matchService.create((int) request.get("essence"), cardFactory.getCards());
@@ -35,7 +33,6 @@ public class MatchController {
 		
 		return response;
 	}
-	
 	
 	
 }

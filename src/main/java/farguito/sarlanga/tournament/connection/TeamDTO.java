@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.combat.Character;
@@ -78,8 +79,20 @@ public class TeamDTO {
 
 
 	public boolean validateCharacters() {
-		return !characters.values().stream().anyMatch( c -> c.getActions().size() == 0 );
+		boolean hasCharactersWithNoActions = characters.values().stream().anyMatch( c -> c.getActions().size() == 0 );
+				
+		return !hasCharactersWithNoActions;
 	}
+	
+	
+	public boolean validate(Integer essence) {
+		boolean hasCharacters = !this.getCharacters().isEmpty();
+		boolean hasValidCharacters = this.validateCharacters();
+		boolean hasValidEssence = this.getEssence() <= essence;
+		
+		return (hasCharacters && hasValidCharacters && hasValidEssence);
+	}
+	
 
 	public int getTeamNumber() {
 		return teamNumber;
