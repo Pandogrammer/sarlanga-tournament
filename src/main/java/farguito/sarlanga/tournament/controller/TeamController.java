@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.CardFactory;
-import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.TeamDTO;
 
@@ -30,6 +29,7 @@ public class TeamController {
 		
 		List<Map<String, Object>> teamMap = (List<Map<String, Object>>) request.get("team");
 		Integer essence = (Integer) request.get("essence");
+		String accountId = (String) request.get("account_id");
 		
 		TeamDTO team =  new TeamDTO();
 		
@@ -45,6 +45,11 @@ public class TeamController {
 		}
 		
 		boolean valid = team.validate(essence);
+		
+		if(valid) {
+			team.setOwner(accountId);
+			matchService.addToQueue(essence, accountId, team);
+		}
 		
 		response.put("success", valid);
 		

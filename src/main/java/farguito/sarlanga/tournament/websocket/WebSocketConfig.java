@@ -40,7 +40,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 	@Bean
 	public MatchService matchService() {
-		return new MatchService();
+		return new MatchService(cardFactory());
 	}
 
 	@Bean
