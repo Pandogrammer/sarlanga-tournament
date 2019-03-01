@@ -13,6 +13,7 @@ import farguito.sarlanga.tournament.connection.TeamDTO;
 
 public class MatchService {
 
+	public static String IA = "IA";
 	private CardFactory cards;
 	
 	private int matchId = 0;
@@ -118,5 +119,35 @@ public class MatchService {
 		}
 		return false;
 		
+	}
+
+	public void createIAMatch(Integer essence, TeamDTO team) {
+		Match match = create(essence);
+		
+		match.addTeam(team);
+		match.confirmTeam(team.getOwner());
+		
+		TeamDTO iaTeam = iaTeam();
+		match.addTeam(iaTeam);
+		match.confirmTeam(iaTeam.getOwner());
+		
+		this.start(match.getId());		
+	}
+	
+	private TeamDTO iaTeam() {
+		TeamDTO team = new TeamDTO();
+		team.setOwner(MatchService.IA);
+		
+		team.addCharacter(1, 1, cards.getCriatures().get(0));
+		team.addCharacter(1, 2, cards.getCriatures().get(0));
+		team.addCharacter(2, 2, cards.getCriatures().get(0));
+		team.addCharacter(1, 3, cards.getCriatures().get(0));
+		
+		team.getCharacter(1).addAction(cards.getActions().get(0));
+		team.getCharacter(2).addAction(cards.getActions().get(0));
+		team.getCharacter(3).addAction(cards.getActions().get(0));
+		team.getCharacter(4).addAction(cards.getActions().get(0));
+		
+		return team;
 	}
 }

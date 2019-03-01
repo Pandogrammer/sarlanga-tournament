@@ -1,6 +1,7 @@
 package farguito.sarlanga.tournament.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.Match;
 
+@CrossOrigin
 @RestController
 @RequestMapping("match")
 public class MatchController {

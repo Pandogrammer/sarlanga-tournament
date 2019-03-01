@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.TeamDTO;
 
+@CrossOrigin
 @RestController
 @RequestMapping("team")
 public class TeamController {
@@ -30,8 +32,10 @@ public class TeamController {
 		List<Map<String, Object>> teamMap = (List<Map<String, Object>>) request.get("team");
 		Integer essence = (Integer) request.get("essence");
 		String accountId = (String) request.get("account_id");
+		boolean iaMatch = (Boolean) request.get("ia_match");
 		
 		TeamDTO team =  new TeamDTO();
+		team.setOwner(accountId);
 		
 		for(int i = 0; i < teamMap.size(); i++) {
     		team.addCharacter((int) teamMap.get(i).get("line")
@@ -47,8 +51,11 @@ public class TeamController {
 		boolean valid = team.validate(essence);
 		
 		if(valid) {
-			team.setOwner(accountId);
-			matchService.addToQueue(essence, team);
+			if(iaMatch) {
+				matchService.createIAMatch(essence, team);
+			} else {
+				matchService.addToQueue(essence, team);
+			}
 		}
 		
 		response.put("success", valid);

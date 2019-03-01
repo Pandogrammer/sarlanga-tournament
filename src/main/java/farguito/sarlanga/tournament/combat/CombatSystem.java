@@ -122,7 +122,7 @@ public class CombatSystem {
 			
 			if(!success) return success;
 			
-			if(action.isMelee()) {
+			if(action.isMelee() && action.getObjectives().get(0).getTeam() != action.getActor().getTeam()) {
 				success = !action.getObjectives().stream().anyMatch(c -> hasBlockers(c));
 			}
 			

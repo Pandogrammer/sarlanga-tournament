@@ -85,6 +85,7 @@ public class MatchMaker extends TextWebSocketHandler {
 	private void broadcastInMatch(String sessionId, String message) {
 		Match match = this.matchs.get(this.session_account.get(sessionId));
 		match.getPlayers().stream().forEach(p -> {
+			if(!p.equals(MatchService.IA))
 			send(this.session_websocketsession.get(this.account_session.get(p)), message);
 		});
 	}

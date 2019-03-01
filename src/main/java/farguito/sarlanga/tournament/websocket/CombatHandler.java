@@ -106,12 +106,14 @@ public class CombatHandler extends TextWebSocketHandler {
 			for(int i = 0; i < objectiveIds.size(); i++) {
 				objectives.add(system.getCharacter(objectiveIds.get(i)));
 			}
-				
-			
+						
 			system.prepareAction(action, objectives);
 			if(system.validateObjectives(action)) {
 				system.executeAction(action);
 				system.nextTurn();
+
+				iaTurn(system);//caca				
+				
 			} else {
 				throw new ActionExecutionException("Invalid target.");
 			}	
@@ -120,6 +122,27 @@ public class CombatHandler extends TextWebSocketHandler {
 		}				
 	}
 	
+	private void iaTurn(CombatSystem system) {
+		int team = system.getActiveCharacter().getTeam()-1;
+		boolean iaTurn = system.getTeams().get(team).getOwner().equals(MatchService.IA);
+		
+		if(iaTurn) {
+			Action action = system.getActiveCharacter().getActions().get(0);
+			List<Character> objectives = new ArrayList<>();
+			
+			objectives.add(system.getActiveCharacter());
+						
+			system.prepareAction(action, objectives);
+			if(system.validateObjectives(action)) {
+				system.executeAction(action);
+				system.nextTurn();	
+				
+				iaTurn(system);//caca			
+			}
+				
+		} 		
+	}
+
 	private DefoldResponse status(String sessionId) {		
 		DefoldResponse response = new DefoldResponse("status_response");
 		CombatSystem system = getSystem(sessionId);
@@ -282,6 +305,7 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 	private void broadcastInMatch(CombatSystem system, String message) {
 		system.getTeams().stream().forEach(t -> {
+			if(!t.getOwner().equals(MatchService.IA))
 			send(this.session_websocketsession.get(this.account_session.get(t.getOwner())), message);
 		});		
 	}

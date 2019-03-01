@@ -56,9 +56,7 @@ public class Match {
 	public boolean confirmTeam(String accountId) {
 		if(this.player_teamDTO.containsKey(accountId)) {
 			TeamDTO team = this.player_teamDTO.get(accountId);
-			if(!team.getCharacters().isEmpty() 
-			&& team.validateCharacters() 
-			&& team.getEssence() <= this.essence) {
+			if(team.validate(essence)) {
 				team.setReady(true);
 				return true;		
 			}	

@@ -14,8 +14,8 @@ import farguito.sarlanga.tournament.controller.MatchService;
 public class WebSocketConfig implements WebSocketConfigurer {
 
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(combatHandler(), "/combat");
-		registry.addHandler(matchMaker(), "/match-maker");
+		registry.addHandler(combatHandler(), "/combat").setAllowedOrigins("*");
+		registry.addHandler(matchMaker(), "/match-maker").setAllowedOrigins("*");
 	}
 
 
