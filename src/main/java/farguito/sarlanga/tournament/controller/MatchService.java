@@ -69,7 +69,8 @@ public class MatchService {
 		return this.matchId;
 	}
 
-	public void addToQueue(Integer essence, String accountId, TeamDTO team) {
+	public void addToQueue(Integer essence, TeamDTO team) {
+		String accountId = team.getOwner();
 		this.account_queue.put(accountId, essence);
 
 		Map<String, TeamDTO> teams;
@@ -84,25 +85,38 @@ public class MatchService {
 	}
 	
 	public void removeFromQueue(String accountId) {
-		Integer queue = this.account_queue.get(accountId);
-						
-		this.queue_team.get(queue).remove(accountId);
-		this.account_queue.remove(accountId);
+		if(this.account_queue.containsKey(accountId)) {
+			Integer queue = this.account_queue.get(accountId);
+							
+			this.queue_team.get(queue).remove(accountId);
+			this.account_queue.remove(accountId);
+		}
 	}
 
-	public void queueReady(String accountId) {
+	public boolean queueReady(String accountId) {
 		Integer queue = this.account_queue.get(accountId);
 		
 		if(this.queue_team.get(queue).size() > 1) {
-			TeamDTO firstTeam = this.queue_team.get(queue).get(accountId);			
-			removeFromQueue(accountId);
-			
-			TeamDTO secondTeam = this.queue_team.get(queue).values().iterator().next();
-			
 			Match match = create(queue);
-			//match.addPlayer(firstTeam.getOwner?)
+
+			int numberOfTeams = 2;
 			
+			TeamDTO team = this.queue_team.get(queue).get(accountId);	
+			
+			for(int i = 0; i < numberOfTeams; i++) {
+				removeFromQueue(team.getOwner());
+				match.addTeam(team);
+				match.confirmTeam(team.getOwner());
+				
+				if(this.queue_team.get(queue).values().iterator().hasNext())
+					team = this.queue_team.get(queue).values().iterator().next();			
+			}
+			
+			this.start(match.getId());
+			
+			return true;
 		}
+		return false;
 		
 	}
 }

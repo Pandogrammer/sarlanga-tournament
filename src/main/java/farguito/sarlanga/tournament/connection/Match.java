@@ -22,7 +22,7 @@ public class Match {
 	private CombatSystem system;
 	private Map<Integer, Card> cards = new LinkedHashMap<>();
 	private List<Team> teams = new ArrayList<>();
-	private Map<String, TeamDTO> player_teamDto = new HashMap<>();
+	private Map<String, TeamDTO> player_teamDTO = new HashMap<>();
 	private Map<String, Integer> player_teamNumber = new HashMap<>();
 	
 	private String state;
@@ -38,7 +38,7 @@ public class Match {
 	}
 	
 	public boolean start() {
-		Collection<TeamDTO> teams = player_teamDto.values();
+		Collection<TeamDTO> teams = player_teamDTO.values();
 		if(!teams.stream().anyMatch(t -> !t.isReady())) {
 			this.state = "PLAYING";
 			teams.stream().forEach(t -> {
@@ -54,8 +54,8 @@ public class Match {
 	}
 
 	public boolean confirmTeam(String accountId) {
-		if(this.player_teamDto.containsKey(accountId)) {
-			TeamDTO team = this.player_teamDto.get(accountId);
+		if(this.player_teamDTO.containsKey(accountId)) {
+			TeamDTO team = this.player_teamDTO.get(accountId);
 			if(!team.getCharacters().isEmpty() 
 			&& team.validateCharacters() 
 			&& team.getEssence() <= this.essence) {
@@ -67,13 +67,15 @@ public class Match {
 	}
 	
 	public boolean unconfirmTeam(String accountId) {
-		if(this.player_teamDto.containsKey(accountId)) {
-			TeamDTO team = this.player_teamDto.get(accountId);
+		if(this.player_teamDTO.containsKey(accountId)) {
+			TeamDTO team = this.player_teamDTO.get(accountId);
 			team.setReady(false);		
 			return true;			
 		}		
 		return false;
 	}
+	
+	
 	
 	public void addTeam(String accountId, Team team) {
 		//hacer la validacion mas piola
@@ -91,8 +93,14 @@ public class Match {
 		TeamDTO team = new TeamDTO();
 		team.setOwner(accountId);
 		this.players.add(accountId);
-		this.player_teamDto.put(accountId, team);
+		this.player_teamDTO.put(accountId, team);
 		return team;
+	}
+
+	public void addTeam(TeamDTO team) {
+		String accountId = team.getOwner();
+		this.players.add(accountId);
+		this.player_teamDTO.put(accountId, team);		
 	}
 	
 	public void deletePlayer(String accountId) {
@@ -100,7 +108,7 @@ public class Match {
 		if(this.player_teamNumber.containsKey(accountId)) {
 			this.teams.remove(this.player_teamNumber.get(accountId).intValue());
 			this.player_teamNumber.remove(accountId);
-			this.player_teamDto.remove(accountId);
+			this.player_teamDTO.remove(accountId);
 		}
 	}
 	
@@ -110,7 +118,7 @@ public class Match {
 	}	
 	
 	public TeamDTO getTeamDTO(String accountId) {
-		return this.player_teamDto.get(accountId);
+		return this.player_teamDTO.get(accountId);
 	}
 	
 	private Integer nextTeamNumber() {
@@ -152,6 +160,7 @@ public class Match {
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	
 	
 	

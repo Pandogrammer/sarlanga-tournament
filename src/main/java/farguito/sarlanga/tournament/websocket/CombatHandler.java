@@ -26,10 +26,12 @@ public class CombatHandler extends TextWebSocketHandler {
 	private ObjectMapper mapper = new ObjectMapper();
 	
 	private MatchService matchs;	
-
+	
+	private Map<String, WebSocketSession> session_websocketsession = new HashMap<>();
 	private Map<String, String> session_account = new HashMap<>();
+	private Map<String, String> account_session = new HashMap<>();
+	
 	private Map<String, Integer> account_team = new HashMap<>();
-	private Map<String, WebSocketSession> sessions = new HashMap<>();
 	
 	public CombatHandler(MatchService matchs) {
 		this.matchs = matchs;
@@ -41,8 +43,15 @@ public class CombatHandler extends TextWebSocketHandler {
 		try { 
 			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);			
 			
-			if(request.getMethod().equals("action_request")) {
-				send(session, action(request, session.getId()));
+			if(request.getMethod().equals("action_request")) {				
+				try {
+					action(request, session.getId());
+					send(session, actionExecution(true));
+					broadcastInMatch(getSystem(session.getId()), stringify(results(session.getId())));
+					broadcastInMatch(getSystem(session.getId()), stringify(status(session.getId())));					
+				} catch (ActionExecutionException e) {
+					send(session, actionExecution(false, e.getMessage()));					
+				}
 
 			} else if(request.getMethod().equals("reconnect_request")){
 				reconnect(request, session.getId());	
@@ -66,8 +75,22 @@ public class CombatHandler extends TextWebSocketHandler {
 		}
 	}
 
-	private DefoldResponse action(DefoldRequest request, String sessionId) {
+	private DefoldResponse actionExecution(boolean success) {
+		return this.actionExecution(success, null);
+	}
+	private DefoldResponse actionExecution(boolean success, String message) {
 		DefoldResponse response = new DefoldResponse("action_response");
+		
+		response.put("success", success);
+		
+		if(message != null) {
+			response.put("reason", message);
+		}
+		
+		return response;		
+	}
+
+	private void action(DefoldRequest request, String sessionId) throws ActionExecutionException{
 		CombatSystem system = getSystem(sessionId);
 		
 		int team = system.getActiveCharacter().getTeam()-1;
@@ -89,19 +112,12 @@ public class CombatHandler extends TextWebSocketHandler {
 			if(system.validateObjectives(action)) {
 				system.executeAction(action);
 				system.nextTurn();
-				broadcast(stringify(results(sessionId)));
-				system.getLogger().deleteResults();
-				broadcast(stringify(status(sessionId)));			
-				response.put("success", true);
 			} else {
-				response.put("success", false);
-				response.put("reason", "Invalid target.");
+				throw new ActionExecutionException("Invalid target.");
 			}	
 		} else {
-			response.put("success", false);
-			response.put("reason", "Not your turn.");
-		}	
-		return response;			
+			throw new ActionExecutionException("Not your turn.");
+		}				
 	}
 	
 	private DefoldResponse status(String sessionId) {		
@@ -118,7 +134,10 @@ public class CombatHandler extends TextWebSocketHandler {
 		int teamNumber = this.account_team.get(this.session_account.get(sessionId));
 		
 		Map<String, Object> activeCharacter = new LinkedHashMap<>();
-		if (teamNumber == system.getActiveCharacter().getTeam()) {
+		//se saca la validacion porque hay que mejorar el broadcast
+		//deberia mandar mensajes diferentes para cada jugador, pero al ser broadcast chequea desde el jugador 
+		//que hizo la accion en vez de cada uno
+		//if (teamNumber == system.getActiveCharacter().getTeam()) {
 			activeCharacter.put("id", system.getActiveCharacter().getId());	
 			
 			List<Object> activeCharacterActions = new ArrayList<>();
@@ -131,7 +150,7 @@ public class CombatHandler extends TextWebSocketHandler {
 			activeCharacter.put("actions", activeCharacterActions);
 		
 			response.put("active_character", activeCharacter);
-		}
+		//}
 		List<Object> charactersStatus = new ArrayList<>();
 		system.getTeams().stream().forEach(t -> {
 			List<Character> character = t.getCharacters();
@@ -169,6 +188,8 @@ public class CombatHandler extends TextWebSocketHandler {
 			results.add(r);
 		});
 		
+		system.getLogger().deleteResults();	
+		
 		response.put("results", results);
 		
 		return response;
@@ -198,7 +219,8 @@ public class CombatHandler extends TextWebSocketHandler {
 	private void accountLink(DefoldRequest request) {			
 		String sessionId = (String) request.get("session_id");
 		String accountId = (String) request.get("account_id");
-		session_account.put(sessionId, accountId);			
+		session_account.put(sessionId, accountId);
+		account_session.put(accountId, sessionId);
 	}
 
 	
@@ -207,6 +229,7 @@ public class CombatHandler extends TextWebSocketHandler {
 		if(session_account.containsKey(oldSessionId)) {
 			String accountId = session_account.get(oldSessionId);
 			session_account.put(newSessionId, accountId);
+			account_session.put(accountId, newSessionId);
 		}
 
 		System.out.println(newSessionId+": RECONNECTED - WAS ["+oldSessionId+"]");
@@ -252,11 +275,16 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 
 	private void broadcast(String message) {
-		sessions.values().stream().forEach(s -> {
+		session_websocketsession.values().stream().forEach(s -> {
 			send(s, message);
 		});
 	}
 	
+	private void broadcastInMatch(CombatSystem system, String message) {
+		system.getTeams().stream().forEach(t -> {
+			send(this.session_websocketsession.get(this.account_session.get(t.getOwner())), message);
+		});		
+	}
 
 	public void send(WebSocketSession session, DefoldResponse response) {
 		send(session, stringify(response));
@@ -286,7 +314,7 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		String sessionId = session.getId();
-		sessions.put(sessionId, session);
+		session_websocketsession.put(sessionId, session);
 		System.out.println(sessionId+": CONNECTED");
 		
 		send(session, session(session));
@@ -294,7 +322,7 @@ public class CombatHandler extends TextWebSocketHandler {
 
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 		String sessionId = session.getId();
-		sessions.remove(sessionId);
+		session_websocketsession.remove(sessionId);
 		System.out.println(sessionId+": DISCONNECTED");
 	}
 

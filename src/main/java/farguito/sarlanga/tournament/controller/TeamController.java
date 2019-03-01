@@ -48,7 +48,7 @@ public class TeamController {
 		
 		if(valid) {
 			team.setOwner(accountId);
-			matchService.addToQueue(essence, accountId, team);
+			matchService.addToQueue(essence, team);
 		}
 		
 		response.put("success", valid);

@@ -14,20 +14,14 @@ import farguito.sarlanga.tournament.controller.MatchService;
 public class WebSocketConfig implements WebSocketConfigurer {
 
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(combatHandler(), "/match");
+		registry.addHandler(combatHandler(), "/combat");
 		registry.addHandler(matchMaker(), "/match-maker");
 	}
 
-	@Bean
-	public RoomHandler roomHandler() {
-		RoomHandler rh = new RoomHandler(cardFactory(), matchService());		
-		return rh;		
-	}
-	
 
 	@Bean
 	public MatchMaker matchMaker() {
-		MatchMaker mm = new MatchMaker(cardFactory(), matchService());		
+		MatchMaker mm = new MatchMaker(matchService());		
 		return mm;		
 	}
 	
