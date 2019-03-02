@@ -130,7 +130,6 @@ public class CombatSystem {
 				int team = action.getObjectives().get(0).getTeam();
 				success = action.getObjectives().stream().allMatch(c -> c.getTeam() == team );
 			}
-			
 			return success;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -158,7 +157,7 @@ public class CombatSystem {
 			
 			Team team = this.teams.get(i);
 			
-			return team.lineCharacters(line-1).stream().anyMatch(c -> c.isAlive() && (c.getPosition() >= position-1 && c.getPosition() <= position+1));		
+			return team.lineCharacters(line-1).stream().anyMatch(c -> c.isAlive() && (c.getPosition() == position));		
 		}		
 	}
 	
@@ -178,9 +177,12 @@ public class CombatSystem {
 		});		
 		*/
 		eventListener.modifyImmediateEffect(effect);
+		effect.execute();
+		
 		logger.log(effect.message());
 		logger.addResult(effect);
-		effect.execute();
+		if(!effect.getObjective().isAlive())
+			logger.log(effect.getObjective().getName()+" has died.");
 	}
 	
 	public void executeLastingEffect(LastingEffect effect) {
@@ -331,9 +333,9 @@ public class CombatSystem {
 		applyImmediateEffects();
 		removeActiveCharacter();
 		checkPlayers();
-		if(this.winningTeam == -1) {
+		if(this.isInProgress()) {
 			while(this.activeCharacter == null) {
-				status();
+				//status();
 				checkLastingEffectReady();
 				applyImmediateEffects();
 				checkCharacterReady();
@@ -351,6 +353,10 @@ public class CombatSystem {
 		}
 	}
 	
+	
+	public boolean isInProgress() {
+		return winningTeam == -1;
+	}
 	
 	public int getWinningTeam() {
 		return winningTeam;

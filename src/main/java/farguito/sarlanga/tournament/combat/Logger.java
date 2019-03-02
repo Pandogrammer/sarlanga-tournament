@@ -17,7 +17,7 @@ public class Logger {
 	private List<Map<String, Object>> results = new ArrayList<>(); 
 	
 	public void log(String message) {
-		//System.out.println(message);
+		System.out.println(message);
 		messages.add(message);
 	}	
 
@@ -32,6 +32,32 @@ public class Logger {
 		objective.put("id", ef.getObjective().getId());
 		
 		map.put("objective", objective);
+		
+		this.results.add(map);
+
+		addResult(ef.getObjective());
+	}
+	
+	public void addResult(Character c) {
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("type", "status");
+		map.put("id", c.getId());
+		
+		Map<String, Object> status = new HashMap<>();
+
+		status.put("alive", c.isAlive());
+		status.put("line", c.getLine());
+		status.put("position", c.getPosition());
+		status.put("hp", c.getHp());
+		status.put("hp_max", c.getHpMax());
+		status.put("fatigue", c.getFatigue());
+		status.put("attack", c.getAttack());
+		status.put("attack_bonus", c.getAttackBonus());				
+		status.put("speed", c.getSpeed());
+		status.put("speed_bonus", c.getSpeedBonus());
+
+		map.put("status", status);
 		
 		this.results.add(map);
 	}
