@@ -12,6 +12,7 @@ import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.combat.effects.Effect;
 import farguito.sarlanga.tournament.combat.effects.ImmediateEffect;
 import farguito.sarlanga.tournament.combat.effects.LastingEffect;
+import farguito.sarlanga.tournament.websocket.ActionExecutionException;
 
 public class CombatSystem {
 	
@@ -108,33 +109,30 @@ public class CombatSystem {
 	}
 	
 	//cancer
-	public boolean validateObjectives(Action action) {
-		try {
-			boolean success = false;
-			if(action.getTarget().equals(Target.SELF)) {
-				success = action.getObjectives().size() == 1 && action.getObjectives().get(0).equals(action.getActor());
-			} else if(action.getTarget().equals(Target.OBJECTIVE)) {
-				success = action.getObjectives().size() == 1;
-			} else if(action.getTarget().equals(Target.LINE)) {
-				int line = action.getObjectives().get(0).getLine();
-				success = action.getObjectives().stream().allMatch(c -> c.getLine() == line );
-			}
-			
-			if(!success) return success;
-			
-			if(action.isMelee() && action.getObjectives().get(0).getTeam() != action.getActor().getTeam()) {
-				success = !action.getObjectives().stream().anyMatch(c -> hasBlockers(c));
-			}
-			
-			if(success) {
-				int team = action.getObjectives().get(0).getTeam();
-				success = action.getObjectives().stream().allMatch(c -> c.getTeam() == team );
-			}
-			return success;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+	public void validateObjectives(Action action) throws ActionExecutionException {
+		if(action.getTarget().equals(Target.SELF)) {
+			if(!(action.getObjectives().size() == 1 && action.getObjectives().get(0).equals(action.getActor())))
+			throw new ActionExecutionException("Objective must be self.");
+		} else if(action.getTarget().equals(Target.OBJECTIVE)) {
+			if(!(action.getObjectives().size() == 1))
+			throw new ActionExecutionException("Must select one objective.");
+		} else if(action.getTarget().equals(Target.LINE)) {
+			int line = action.getObjectives().get(0).getLine();
+			if(!(action.getObjectives().stream().allMatch(c -> c.getLine() == line )))
+			throw new ActionExecutionException("Objectives must be of the same line.");
 		}
+		
+		
+		if(action.isMelee() && action.getObjectives().get(0).getTeam() != action.getActor().getTeam()) {
+			if(action.getObjectives().stream().anyMatch(c -> hasBlockers(c)))
+			throw new ActionExecutionException("Objective has blockers.");
+		}
+		
+		
+		int team = action.getObjectives().get(0).getTeam();
+		if(!(action.getObjectives().stream().allMatch(c -> c.getTeam() == team )))
+		throw new ActionExecutionException("All objectives must be from the same team.");;
+			
 	}
 	
 	
@@ -330,17 +328,19 @@ public class CombatSystem {
 	
 	
 	public void nextTurn() {
-		applyImmediateEffects();
-		removeActiveCharacter();
-		checkPlayers();
 		if(this.isInProgress()) {
-			while(this.activeCharacter == null) {
-				//status();
-				checkLastingEffectReady();
-				applyImmediateEffects();
-				checkCharacterReady();
-				if(this.activeCharacter == null)
-					advancingTurns();
+			applyImmediateEffects();
+			removeActiveCharacter();
+			checkPlayers();
+			if(this.isInProgress()) {
+				while(this.activeCharacter == null) {
+					//status();
+					checkLastingEffectReady();
+					applyImmediateEffects();
+					checkCharacterReady();
+					if(this.activeCharacter == null)
+						advancingTurns();
+				}
 			}
 		}
 	}

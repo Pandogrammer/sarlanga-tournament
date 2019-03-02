@@ -32,7 +32,7 @@ public class TeamController {
 		List<Map<String, Object>> teamMap = (List<Map<String, Object>>) request.get("team");
 		Integer essence = (Integer) request.get("essence");
 		String accountId = (String) request.get("account_id");
-		boolean iaMatch = (Boolean) request.get("ia_match");
+		boolean versus = (Boolean) request.get("versus");
 		
 		TeamDTO team =  new TeamDTO();
 		team.setOwner(accountId);
@@ -49,12 +49,13 @@ public class TeamController {
 		}
 		
 		boolean valid = team.validate(essence);
+		System.out.println(versus);
 		
 		if(valid) {
-			if(iaMatch) {
-				matchService.createIAMatch(essence, team);
-			} else {
+			if(versus) {
 				matchService.addToQueue(essence, team);
+			} else {
+				matchService.createIAMatch(essence, team);
 			}
 		}
 		

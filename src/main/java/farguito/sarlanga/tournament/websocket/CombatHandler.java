@@ -97,59 +97,57 @@ public class CombatHandler extends TextWebSocketHandler {
 	private void action(DefoldRequest request, String sessionId) throws ActionExecutionException{
 		CombatSystem system = getSystem(sessionId);
 		
-		if(system.isInProgress()) {
-			int team = system.getActiveCharacter().getTeam()-1;
-			boolean validTurn = system.getTeams().get(team).getOwner().equals(this.session_account.get(sessionId));
-			
-			if(validTurn) {
-				Integer actionId = (int) request.get("action");
-				List<Integer> objectiveIds = (List) request.get("objectives");
-				
-				Action action = system.getActiveCharacter().getActions().get(actionId);
-				List<Character> objectives = new ArrayList<>();
-				
-				for(int i = 0; i < objectiveIds.size(); i++) {
-					objectives.add(system.getCharacter(objectiveIds.get(i)));
-				}
-							
-				system.prepareAction(action, objectives);
-				if(system.validateObjectives(action)) {
-					system.executeAction(action);
-					system.nextTurn();
-	
-					iaTurn(system);//caca				
-					
-				} else {
-					throw new ActionExecutionException("Invalid target.");
-				}	
-			} else {
-				throw new ActionExecutionException("Not your turn.");
-			}	
-		} else {
+		if(!system.isInProgress()) 
 			throw new ActionExecutionException("Match has ended.");
-		}	
+		
+		int team = system.getActiveCharacter().getTeam()-1;
+		boolean validTurn = system.getTeams().get(team).getOwner().equals(this.session_account.get(sessionId));
+		
+		if(!validTurn) 
+			throw new ActionExecutionException("Not your turn.");
+		
+		Integer actionId = (int) request.get("action");
+		List<Integer> objectiveIds = (List) request.get("objectives");
+		
+		Action action = system.getActiveCharacter().getActions().get(actionId);
+		List<Character> objectives = new ArrayList<>();
+		
+		for(int i = 0; i < objectiveIds.size(); i++) {
+			objectives.add(system.getCharacter(objectiveIds.get(i)));
+		}
+					
+		system.prepareAction(action, objectives);
+		system.validateObjectives(action);
+		system.executeAction(action);
+		system.nextTurn();
+
+		iaTurn(system);//caca				
+				
 	}
 	
 	private void iaTurn(CombatSystem system) {
-		if(system.isInProgress()) {
-			int team = system.getActiveCharacter().getTeam()-1;
-			boolean iaTurn = system.getTeams().get(team).getOwner().equals(MatchService.IA);
-			
-			if(iaTurn) {
-				Action action = system.getActiveCharacter().getActions().get(0);
-				List<Character> objectives = new ArrayList<>();
+		try {
+			if(system.isInProgress()) {
+				int team = system.getActiveCharacter().getTeam()-1;
+				boolean iaTurn = system.getTeams().get(team).getOwner().equals(MatchService.IA);
 				
-				objectives.add(system.getActiveCharacter());
-							
-				system.prepareAction(action, objectives);
-				if(system.validateObjectives(action)) {
+				if(iaTurn) {
+					Action action = system.getActiveCharacter().getActions().get(0);
+					List<Character> objectives = new ArrayList<>();
+					
+					objectives.add(system.getActiveCharacter());
+								
+					system.prepareAction(action, objectives);
+					system.validateObjectives(action);
 					system.executeAction(action);
 					system.nextTurn();	
 					
-					iaTurn(system);//caca			
+					iaTurn(system);//caca
+						
 				}
-					
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -161,30 +159,6 @@ public class CombatHandler extends TextWebSocketHandler {
 		//estado de los personajes
 		//estado efectos duraderos
 
-		if(system.isInProgress()) {
-			response.put("active_team", system.getActiveCharacter().getTeam());
-			
-			int teamNumber = this.account_team.get(this.session_account.get(sessionId));
-			
-			Map<String, Object> activeCharacter = new LinkedHashMap<>();
-			//se saca la validacion porque hay que mejorar el broadcast
-			//deberia mandar mensajes diferentes para cada jugador, pero al ser broadcast chequea desde el jugador 
-			//que hizo la accion en vez de cada uno
-			//if (teamNumber == system.getActiveCharacter().getTeam()) {
-				activeCharacter.put("id", system.getActiveCharacter().getId());	
-				
-				List<Object> activeCharacterActions = new ArrayList<>();
-				system.getActiveCharacter().getActions().stream().forEach(a -> {
-					Map<String, Object> action = new HashMap<>();
-					action.put("name", a.getName());
-					
-					activeCharacterActions.add(action);
-				});
-				activeCharacter.put("actions", activeCharacterActions);
-			
-				response.put("active_character", activeCharacter);
-			//}
-		}
 		List<Object> charactersStatus = new ArrayList<>();
 		system.getTeams().stream().forEach(t -> {
 			List<Character> character = t.getCharacters();
@@ -208,6 +182,33 @@ public class CombatHandler extends TextWebSocketHandler {
 		});
 		
 		response.put("characters", charactersStatus);
+		
+		if(system.isInProgress()) {
+			response.put("active_team", system.getActiveCharacter().getTeam());
+			
+			int teamNumber = this.account_team.get(this.session_account.get(sessionId));
+			
+			Map<String, Object> activeCharacter = new LinkedHashMap<>();
+			//se saca la validacion porque hay que mejorar el broadcast
+			//deberia mandar mensajes diferentes para cada jugador, pero al ser broadcast chequea desde el jugador 
+			//que hizo la accion en vez de cada uno
+			//if (teamNumber == system.getActiveCharacter().getTeam()) {
+				activeCharacter.put("id", system.getActiveCharacter().getId());	
+				
+				List<Object> activeCharacterActions = new ArrayList<>();
+				system.getActiveCharacter().getActions().stream().forEach(a -> {
+					Map<String, Object> action = new HashMap<>();
+					action.put("name", a.getName());
+					
+					activeCharacterActions.add(action);
+				});
+				activeCharacter.put("actions", activeCharacterActions);
+			
+				response.put("active_character", activeCharacter);
+			//}
+		} else {
+			response.put("winning_team", system.getWinningTeam());
+		}
 		
 		return response;
 	}
