@@ -30,36 +30,26 @@ public class Logger {
 		Map<String,Object> objective = new HashMap<>();
 		objective.put("team", ef.getObjective().getTeam());
 		objective.put("id", ef.getObjective().getId());
+
+		Map<String, Object> status = new HashMap<>();
+
+		status.put("alive", ef.getObjective().isAlive());
+		status.put("line", ef.getObjective().getLine());
+		status.put("position", ef.getObjective().getPosition());
+		status.put("hp", ef.getObjective().getHp());
+		status.put("hp_max", ef.getObjective().getHpMax());
+		status.put("fatigue", ef.getObjective().getFatigue());
+		status.put("attack", ef.getObjective().getAttack());
+		status.put("attack_bonus", ef.getObjective().getAttackBonus());				
+		status.put("speed", ef.getObjective().getSpeed());
+		status.put("speed_bonus", ef.getObjective().getSpeedBonus());
+
+		objective.put("status", status);
 		
 		map.put("objective", objective);
 		
 		this.results.add(map);
 
-		addResult(ef.getObjective());
-	}
-	
-	public void addResult(Character c) {
-		Map<String, Object> map = new HashMap<>();
-		
-		map.put("type", "status");
-		map.put("id", c.getId());
-		
-		Map<String, Object> status = new HashMap<>();
-
-		status.put("alive", c.isAlive());
-		status.put("line", c.getLine());
-		status.put("position", c.getPosition());
-		status.put("hp", c.getHp());
-		status.put("hp_max", c.getHpMax());
-		status.put("fatigue", c.getFatigue());
-		status.put("attack", c.getAttack());
-		status.put("attack_bonus", c.getAttackBonus());				
-		status.put("speed", c.getSpeed());
-		status.put("speed_bonus", c.getSpeedBonus());
-
-		map.put("status", status);
-		
-		this.results.add(map);
 	}
 	
 	public void addResult(Action ac) {

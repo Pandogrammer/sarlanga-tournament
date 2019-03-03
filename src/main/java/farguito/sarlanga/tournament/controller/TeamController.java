@@ -49,7 +49,6 @@ public class TeamController {
 		}
 		
 		boolean valid = team.validate(essence);
-		System.out.println(versus);
 		
 		if(valid) {
 			if(versus) {
