@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.TeamDTO;
+import farguito.sarlanga.tournament.connection.TeamValidationException;
 
 @CrossOrigin
 @RestController
@@ -25,9 +26,9 @@ public class TeamController {
 	@Autowired
 	private CardFactory cardFactory;
 	
-	@PostMapping("validate")
-	public DefoldResponse validate(@RequestBody Map request) {
-		DefoldResponse response = new DefoldResponse("team_validate_response");
+	@PostMapping("confirm")
+	public DefoldResponse confirm(@RequestBody Map request) {
+		DefoldResponse response = new DefoldResponse("confirm_team_response");
 		
 		List<Map<String, Object>> teamMap = (List<Map<String, Object>>) request.get("team");
 		Integer essence = (Integer) request.get("essence");
@@ -37,28 +38,36 @@ public class TeamController {
 		TeamDTO team =  new TeamDTO();
 		team.setOwner(accountId);
 		
-		for(int i = 0; i < teamMap.size(); i++) {
-    		team.addCharacter((int) teamMap.get(i).get("line")
-					 ,(int) teamMap.get(i).get("position")
-					 , cardFactory.getCriatures().get((int) teamMap.get(i).get("card_id")));
-    		
-    		List<Integer> actions =  (List<Integer>) teamMap.get(i).get("actions");
-    		
-    		for(int j = 0; j < actions.size(); j++)
-    			team.getCharacter(i+1).addAction(cardFactory.getActions().get(actions.get(j)));
-		}
-		
-		boolean valid = team.validate(essence);
-		
-		if(valid) {
-			if(versus) {
-				matchService.addToQueue(essence, team);
-			} else {
-				matchService.createIAMatch(essence, team);
+		try {
+			for(int i = 0; i < teamMap.size(); i++) {
+	    		team.addCharacter((int) teamMap.get(i).get("line")
+						 ,(int) teamMap.get(i).get("position")
+						 , cardFactory.getCriatures().get((int) teamMap.get(i).get("card_id")));
+	    		
+	    		List<Integer> actions =  (List<Integer>) teamMap.get(i).get("actions");
+	    		
+	    		for(int j = 0; j < actions.size(); j++)
+	    			team.getCharacter(i+1).addAction(cardFactory.getActions().get(actions.get(j)));
 			}
+			
+			try{
+				team.validate(essence);
+			
+				if(versus) {
+					matchService.addToQueue(essence, team);
+				} else {
+					matchService.createIAMatch(essence, team);
+				}
+				response.put("success", true);
+			} catch (TeamValidationException e) {
+				response.put("reason", e.getMessage());		
+				response.put("success", false);	
+			}
+		} catch (Exception e) {
+			response.put("reason", "");		
+			response.put("success", false);				
 		}
 		
-		response.put("success", valid);
 		
 		return response;
 	}

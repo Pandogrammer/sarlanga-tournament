@@ -56,10 +56,13 @@ public class Match {
 	public boolean confirmTeam(String accountId) {
 		if(this.player_teamDTO.containsKey(accountId)) {
 			TeamDTO team = this.player_teamDTO.get(accountId);
-			if(team.validate(essence)) {
+			try{
+				team.validate(essence);
 				team.setReady(true);
 				return true;		
-			}	
+			} catch (Exception e) {
+				return false;
+			}				
 		}		
 		return false;
 	}

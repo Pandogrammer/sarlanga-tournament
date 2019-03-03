@@ -1,10 +1,10 @@
 package farguito.sarlanga.tournament.connection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.combat.Character;
@@ -78,19 +78,32 @@ public class TeamDTO {
 	}
 
 
-	public boolean validateCharacters() {
+	public boolean validateActions() {
 		boolean hasCharactersWithNoActions = characters.values().stream().anyMatch( c -> c.getActions().size() == 0 );
 				
 		return !hasCharactersWithNoActions;
 	}
-	
-	
-	public boolean validate(Integer essence) {
-		boolean hasCharacters = !this.getCharacters().isEmpty();
-		boolean hasValidCharacters = this.validateCharacters();
-		boolean hasValidEssence = this.getEssence() <= essence;
+	public boolean validatePositions() {
+		List<String> occupiedPositions = new ArrayList<>();
 		
-		return (hasCharacters && hasValidCharacters && hasValidEssence);
+		characters.values().stream().forEach(c -> {
+			String linePosition = c.getLine()+"|"+c.getPosition();
+				occupiedPositions.add(linePosition);
+			
+		});
+		
+		if(occupiedPositions.size() != occupiedPositions.stream().distinct().count())
+			return false;
+		else 
+			return true;
+	}
+	
+	
+	public void validate(Integer essence) throws TeamValidationException {
+		if(this.getCharacters().isEmpty()) throw new TeamValidationException("Team empty.");
+		if(!this.validateActions())  throw new TeamValidationException("All characters must have actions.");
+		if(!this.validatePositions())  throw new TeamValidationException("Two or more characters occupy the same position");
+		if(this.getEssence() > essence)   throw new TeamValidationException("Team excedes maximum essence.");
 	}
 	
 
