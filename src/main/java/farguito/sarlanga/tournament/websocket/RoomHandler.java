@@ -66,7 +66,7 @@ public class RoomHandler extends TextWebSocketHandler {
     		for(int i = 0; i < this.team.size(); i++) {
         		team.addCharacter((int) this.team.get(i).get("line")
 						 ,(int) this.team.get(i).get("position")
-						 , cards.getCriatures().get((int) this.team.get(i).get("card_id")));
+						 , cards.getCreatures().get((int) this.team.get(i).get("card_id")));
         		
         		List<Integer> actions =  (List<Integer>) this.team.get(i).get("actions");
         		
@@ -75,9 +75,9 @@ public class RoomHandler extends TextWebSocketHandler {
     		}
     		
     	} else {
-        	team.addCharacter(1, 1, cards.getCriatures().get(0));
-    		team.addCharacter(2, 2, cards.getCriatures().get(1));    	
-			team.addCharacter(1, 2, cards.getCriatures().get(2));    		
+        	team.addCharacter(1, 1, cards.getCreatures().get(0));
+    		team.addCharacter(2, 2, cards.getCreatures().get(1));    	
+			team.addCharacter(1, 2, cards.getCreatures().get(2));    		
 	    	team.getCharacter(1).addAction(cards.getActions().get(0));
 	    	team.getCharacter(1).addAction(cards.getActions().get(2));
 	    	team.getCharacter(2).addAction(cards.getActions().get(4));

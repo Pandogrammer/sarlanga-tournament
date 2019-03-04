@@ -138,10 +138,10 @@ public class MatchService {
 		TeamDTO team = new TeamDTO();
 		team.setOwner(MatchService.IA);
 		
-		team.addCharacter(1, 1, cards.getCriatures().get(3));
-		team.addCharacter(1, 2, cards.getCriatures().get(3));
-		team.addCharacter(2, 2, cards.getCriatures().get(3));
-		team.addCharacter(1, 3, cards.getCriatures().get(3));
+		team.addCharacter(1, 1, cards.getCreatures().get(3));
+		team.addCharacter(1, 2, cards.getCreatures().get(3));
+		team.addCharacter(2, 2, cards.getCreatures().get(3));
+		team.addCharacter(1, 3, cards.getCreatures().get(3));
 		
 		team.getCharacter(1).addAction(cards.getActions().get(0));
 		team.getCharacter(2).addAction(cards.getActions().get(0));

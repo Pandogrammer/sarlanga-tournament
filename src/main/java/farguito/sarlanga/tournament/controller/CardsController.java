@@ -21,7 +21,7 @@ public class CardsController {
 	public DefoldResponse cards() {
 		DefoldResponse response = new DefoldResponse("cards_response");
 
-		response.put("criatures", cardFactory.getCriatures());
+		response.put("creatures", cardFactory.getCreatures());
 		response.put("actions", cardFactory.getActions());
 		
 		return response;

@@ -3,7 +3,7 @@ package farguito.sarlanga.tournament.combat;
 import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
-import farguito.sarlanga.tournament.cards.Criature;
+import farguito.sarlanga.tournament.cards.Creature;
 
 public class Character {
 
@@ -22,19 +22,19 @@ public class Character {
 	
 	private List<Action> actions;
 	
-	public Character (Criature criature) {
-		this.name = criature.getName();
-		this.hp = criature.getHp();
-		this.hpMax = criature.getHp();
-		this.speed = criature.getSpeed();
-		this.attack = criature.getAttack();
+	public Character (Creature creature) {
+		this.name = creature.getName();
+		this.hp = creature.getHp();
+		this.hpMax = creature.getHp();
+		this.speed = creature.getSpeed();
+		this.attack = creature.getAttack();
 		this.fatigue = 0;
 		this.attackBonus = 0;
 		this.speedBonus = 0;
 	}
 	
-	public Character (int team, Criature criature, List<Action> actions) {
-		this(criature);
+	public Character (int team, Creature creature, List<Action> actions) {
+		this(creature);
 		this.team = team;
 		this.actions = actions;		
 	}

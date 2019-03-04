@@ -112,7 +112,7 @@
  control del tiempo de la partida, no le importe el estado en el que esta, sino que solo avance, accione, etc.
  Que las validaciones se hagan del lado del controlador?
  Sacar los sout
- Separar Action en dos, como Criature -> Character, hay que separar Cartas de Objetos vivos en combate
+ Separar Action en dos, como Creature -> Character, hay que separar Cartas de Objetos vivos en combate
 
  
  

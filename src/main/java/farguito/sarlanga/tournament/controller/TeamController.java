@@ -42,7 +42,7 @@ public class TeamController {
 			for(int i = 0; i < teamMap.size(); i++) {
 	    		team.addCharacter((int) teamMap.get(i).get("line")
 						 ,(int) teamMap.get(i).get("position")
-						 , cardFactory.getCriatures().get((int) teamMap.get(i).get("card_id")));
+						 , cardFactory.getCreatures().get((int) teamMap.get(i).get("card_id")));
 	    		
 	    		List<Integer> actions =  (List<Integer>) teamMap.get(i).get("actions");
 	    		

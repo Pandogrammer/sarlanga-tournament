@@ -1,7 +1,7 @@
 package farguito.sarlanga.tournament.cards;
 
 //@Entity
-public abstract class Criature {
+public abstract class Creature {
 
 	private String name;
 	private int hp;

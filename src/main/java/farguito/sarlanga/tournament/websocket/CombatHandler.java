@@ -294,6 +294,7 @@ public class CombatHandler extends TextWebSocketHandler {
 				character.put("attack_bonus", ch.getAttackBonus());
 				character.put("speed", ch.getSpeed());
 				character.put("speed_bonus", ch.getSpeedBonus());
+				character.put("name", ch.getName());
 				
 				characters.add(character);
 			});			

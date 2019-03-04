@@ -1,22 +1,22 @@
 package farguito.sarlanga.tournament.cards;
 
-public class CriatureCard extends Card {
+public class CreatureCard extends Card {
 
 	private int hp;
 	private int speed;
 	private int attack;
 	
-	public CriatureCard(int id, int essence, Criature criature, String description) {
+	public CreatureCard(int id, int essence, Creature creature, String description) {
 		super();
 		this.id = id;
 		this.essence = essence;
-		this.object = criature.getClass();
-		this.name = criature.getName();
+		this.object = creature.getClass();
+		this.name = creature.getName();
 		this.description = description;
 		
-		this.hp = criature.getHp();
-		this.speed = criature.getSpeed();
-		this.attack = criature.getAttack();
+		this.hp = creature.getHp();
+		this.speed = creature.getSpeed();
+		this.attack = creature.getAttack();
 	}
 
 	public int getHp() {

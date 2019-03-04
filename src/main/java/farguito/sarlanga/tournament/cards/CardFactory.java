@@ -14,10 +14,10 @@ import farguito.sarlanga.tournament.cards.actions.Cleave;
 import farguito.sarlanga.tournament.cards.actions.Ensnare;
 import farguito.sarlanga.tournament.cards.actions.PoisonSpit;
 import farguito.sarlanga.tournament.cards.actions.Punch;
-import farguito.sarlanga.tournament.cards.criatures.Lombrisable;
-import farguito.sarlanga.tournament.cards.criatures.Ortivactus;
-import farguito.sarlanga.tournament.cards.criatures.Peludientes;
-import farguito.sarlanga.tournament.cards.criatures.Sapurai;
+import farguito.sarlanga.tournament.cards.creatures.Lombrisable;
+import farguito.sarlanga.tournament.cards.creatures.Ortivactus;
+import farguito.sarlanga.tournament.cards.creatures.Peludientes;
+import farguito.sarlanga.tournament.cards.creatures.Sapurai;
 
 public class CardFactory {
 
@@ -25,10 +25,10 @@ public class CardFactory {
 		
 	@PostConstruct
 	public void init() {
-		this.cards.add(new CriatureCard(this.cards.size(), 1, new Ortivactus(), "HIGH HP, LOW SPEED."));
-		this.cards.add(new CriatureCard(this.cards.size(), 1, new Sapurai(), "HIGH SPEED."));
-		this.cards.add(new CriatureCard(this.cards.size(), 1, new Peludientes(), "HIGH ATTACK."));
-		this.cards.add(new CriatureCard(this.cards.size(), 1, new Lombrisable(), "LOW HP, VERY HIGH SPEED."));
+		this.cards.add(new CreatureCard(this.cards.size(), 1, new Ortivactus(), "HIGH HP, LOW SPEED."));
+		this.cards.add(new CreatureCard(this.cards.size(), 1, new Sapurai(), "HIGH SPEED."));
+		this.cards.add(new CreatureCard(this.cards.size(), 1, new Peludientes(), "HIGH ATTACK."));
+		this.cards.add(new CreatureCard(this.cards.size(), 1, new Lombrisable(), "LOW HP, VERY HIGH SPEED."));
 		
 		this.cards.add(new ActionCard(this.cards.size(), 1, new Punch(), "Inflicts damage in the objective."));
 		this.cards.add(new ActionCard(this.cards.size(), 2, new PoisonSpit(), "Inflicts damage and poison in the objective."));	
@@ -41,8 +41,8 @@ public class CardFactory {
 		return cards;
 	}
 
-	public List<Card> getCriatures(){
-		return cards.stream().filter(c -> c instanceof CriatureCard).collect(Collectors.toList());
+	public List<Card> getCreatures(){
+		return cards.stream().filter(c -> c instanceof CreatureCard).collect(Collectors.toList());
 	}
 	
 	public List<Card> getActions(){

@@ -5,7 +5,7 @@ import java.util.List;
 
 import farguito.sarlanga.tournament.cards.Action;
 import farguito.sarlanga.tournament.cards.Card;
-import farguito.sarlanga.tournament.cards.Criature;
+import farguito.sarlanga.tournament.cards.Creature;
 import farguito.sarlanga.tournament.combat.Character;
 
 public class CharacterDTO {
@@ -20,7 +20,7 @@ public class CharacterDTO {
 	public CharacterDTO() {}
 	
 	public Character create() {
-		Character character = new Character((Criature) this.character.getObject());
+		Character character = new Character((Creature) this.character.getObject());
 		
 		List<Action> actions = new ArrayList<>();
 		
