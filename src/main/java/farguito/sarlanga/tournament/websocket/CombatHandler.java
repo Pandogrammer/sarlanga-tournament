@@ -42,7 +42,7 @@ public class CombatHandler extends TextWebSocketHandler {
 			throws InterruptedException, IOException {
 		try { 
 			DefoldRequest request = mapper.readValue(message.getPayload(), DefoldRequest.class);			
-			
+			System.out.println(request.getMethod());
 			if(request.getMethod().equals("action_request")) {				
 				try {
 					action(request, session.getId());

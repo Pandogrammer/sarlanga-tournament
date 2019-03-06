@@ -115,7 +115,7 @@ public class CombatSystem {
 			throw new ActionExecutionException("Objective must be self.");
 		} else if(action.getTarget().equals(Target.OBJECTIVE)) {
 			if(!(action.getObjectives().size() == 1))
-			throw new ActionExecutionException("Must select one objective.");
+			throw new ActionExecutionException("Must select only one objective.");
 		} else if(action.getTarget().equals(Target.LINE)) {
 			int line = action.getObjectives().get(0).getLine();
 			if(!(action.getObjectives().stream().allMatch(c -> c.getLine() == line )))

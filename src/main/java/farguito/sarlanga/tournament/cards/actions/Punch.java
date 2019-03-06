@@ -20,7 +20,7 @@ public class Punch extends Action {
 		this.setMelee(true);
 
 		this.setName("Punch");
-		this.setDescription("Inflicts damage in the objective.");
+		this.setDescription("Inflicts damage to one objective.");
 	}
 	
 	public List<Effect> execute(){

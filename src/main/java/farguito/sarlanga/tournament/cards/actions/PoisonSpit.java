@@ -24,7 +24,7 @@ public class PoisonSpit extends Action {
 		this.setMelee(false);
 
 		this.setName("Poison Spit");
-		this.setDescription("Inflicts damage and poison in the objective.");
+		this.setDescription("Inflicts damage and poison to one objective.");
 	}
 		
 	public List<Effect> execute() {

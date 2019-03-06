@@ -24,7 +24,7 @@ public class BattleCry extends Action {
 		this.setMelee(false);
 		
 		this.setName("Battle Cry");		
-		this.setDescription("Boosts user attack bonus.");
+		this.setDescription("Boosts self attack bonus.");
 	}
 	
 	@Override

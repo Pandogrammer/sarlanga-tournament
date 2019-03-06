@@ -20,7 +20,7 @@ public class Cleave extends Action {
 		this.setMelee(true);
 
 		this.setName("Cleave");
-		this.setDescription("Inflicts damage in a line of objectives.");
+		this.setDescription("Inflicts damage in a line.");
 	}
 	
 	public List<Effect> execute(){

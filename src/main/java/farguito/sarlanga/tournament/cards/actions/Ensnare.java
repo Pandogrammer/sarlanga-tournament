@@ -24,7 +24,7 @@ public class Ensnare extends Action {
 		this.setMelee(false);
 
 		this.setName("Ensnare");
-		this.setDescription("Inflicts damage, slow and fatigation in the objective.");
+		this.setDescription("Inflicts damage, slow and fatigation to one objective.");
 	}
 	
 	public List<Effect> execute(){

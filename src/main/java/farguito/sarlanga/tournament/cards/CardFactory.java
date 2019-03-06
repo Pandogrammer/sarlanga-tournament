@@ -30,11 +30,11 @@ public class CardFactory {
 		this.cards.add(new CreatureCard(this.cards.size(), 1, new Peludientes(), "HIGH ATTACK."));
 		this.cards.add(new CreatureCard(this.cards.size(), 1, new Lombrisable(), "LOW HP, VERY HIGH SPEED."));
 		
-		this.cards.add(new ActionCard(this.cards.size(), 1, new Punch(), "Inflicts damage in the objective."));
-		this.cards.add(new ActionCard(this.cards.size(), 2, new PoisonSpit(), "Inflicts damage and poison in the objective."));	
-		this.cards.add(new ActionCard(this.cards.size(), 2, new BattleCry(), "Boosts user attack bonus."));	
-		this.cards.add(new ActionCard(this.cards.size(), 2, new Ensnare(), "Inflicts damage, slow and fatigation in the objective."));	
-		this.cards.add(new ActionCard(this.cards.size(), 2, new Cleave(), "Inflicts damage in a line of objectives."));				
+		this.cards.add(new ActionCard(this.cards.size(), 1, new Punch()));
+		this.cards.add(new ActionCard(this.cards.size(), 2, new PoisonSpit()));	
+		this.cards.add(new ActionCard(this.cards.size(), 2, new BattleCry()));	
+		this.cards.add(new ActionCard(this.cards.size(), 2, new Ensnare()));	
+		this.cards.add(new ActionCard(this.cards.size(), 2, new Cleave()));				
 	}
 
 	public List<Card> getCards() {
