@@ -48,6 +48,9 @@ public class CombatHandler extends TextWebSocketHandler {
 					action(request, session.getId());
 					send(session, actionExecution(true));
 					broadcastInMatch(getSystem(session.getId()), stringify(results(session.getId())));
+
+					handleIaTurn(session.getId());//caca
+					
 					broadcastInMatch(getSystem(session.getId()), stringify(status(session.getId())));					
 				} catch (ActionExecutionException e) {
 					send(session, actionExecution(false, e.getMessage()));					
@@ -62,8 +65,7 @@ public class CombatHandler extends TextWebSocketHandler {
 			} else if(request.getMethod().equals("teams_request")){
 				send(session, teams(session.getId()));		
 				
-				iaTurn(getSystem(session.getId())); //caca
-				broadcastInMatch(getSystem(session.getId()), stringify(results(session.getId())));		
+				handleIaTurn(session.getId());//caca
 				
 				send(session, status(session.getId()));
 				
@@ -77,6 +79,12 @@ public class CombatHandler extends TextWebSocketHandler {
 			e.printStackTrace();
 			System.out.println(message.getPayload());
 		}
+	}
+
+	private void handleIaTurn(String id) { //caca y encima buguea
+		boolean wasIaTurn = iaTurn(getSystem(id));
+		while(iaTurn(getSystem(id))) {}
+		if(wasIaTurn) broadcastInMatch(getSystem(id), stringify(results(id)));		
 	}
 
 	private DefoldResponse actionExecution(boolean success) {
@@ -119,13 +127,11 @@ public class CombatHandler extends TextWebSocketHandler {
 		system.prepareAction(action, objectives);
 		system.validateObjectives(action);
 		system.executeAction(action);
-		system.nextTurn();
-
-		iaTurn(system);//caca				
+		system.nextTurn();		
 				
 	}
 	
-	private void iaTurn(CombatSystem system) {
+	private boolean iaTurn(CombatSystem system) {
 		try {
 			if(system.isInProgress()) {
 				int team = system.getActiveCharacter().getTeam()-1;
@@ -139,16 +145,18 @@ public class CombatHandler extends TextWebSocketHandler {
 								
 					system.prepareAction(action, objectives);
 					system.validateObjectives(action);
-					system.executeAction(action);
-					system.nextTurn();	
-					
-					iaTurn(system);//caca
-						
+					system.executeAction(action);	
+					system.nextTurn();
+					return true;
 				}
+				return false;
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
+		return false;
 	}
 
 	private DefoldResponse status(String sessionId) {		
