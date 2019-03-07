@@ -27,6 +27,7 @@ public class CombatHandler extends TextWebSocketHandler {
 	
 	private MatchService matchs;	
 	
+	//estos tres deberia pasarlos a otro lado, ya que el otro socket tambien los usa
 	private Map<String, WebSocketSession> session_websocketsession = new HashMap<>();
 	private Map<String, String> session_account = new HashMap<>();
 	private Map<String, String> account_session = new HashMap<>();
@@ -216,12 +217,17 @@ public class CombatHandler extends TextWebSocketHandler {
 			//}
 		} else {
 			response.put("winning_team", system.getWinningTeam());
+			endMatch(sessionId);
 		}
 		
 		return response;
 	}
 	
 	
+	private void endMatch(String sessionId) {
+		this.matchs.remove(this.matchs.get(this.session_account.get(sessionId)).getId());		
+	}
+
 	private DefoldResponse results(String sessionId) {
 		DefoldResponse response = new DefoldResponse("result_response");
 		CombatSystem system = getSystem(sessionId);

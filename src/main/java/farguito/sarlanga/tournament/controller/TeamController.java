@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.TeamDTO;
@@ -40,29 +41,33 @@ public class TeamController {
 		
 		try {
 			for(int i = 0; i < teamMap.size(); i++) {
+				Card cr = cardFactory.getCreatures().get((int) teamMap.get(i).get("card_id"));
 	    		team.addCharacter((int) teamMap.get(i).get("line")
 						 ,(int) teamMap.get(i).get("position")
-						 , cardFactory.getCreatures().get((int) teamMap.get(i).get("card_id")));
-	    		
-	    		List<Integer> actions =  (List<Integer>) teamMap.get(i).get("actions");
+						 , cr);
+	    		List<Integer> actions;
+	    		try {
+	    			actions =  (List<Integer>) teamMap.get(i).get("actions");
+	    		} catch (Exception e) {
+	    			throw new TeamValidationException(cr.getName()+" doesn't have actions."); //atajarlo en el front
+	    		}
 	    		
 	    		for(int j = 0; j < actions.size(); j++)
 	    			team.getCharacter(i+1).addAction(cardFactory.getActions().get(actions.get(j)));
 			}
 			
-			try{
-				team.validate(essence);
-			
-				if(versus) {
-					matchService.addToQueue(essence, team);
-				} else {
-					matchService.createIAMatch(essence, team);
-				}
-				response.put("success", true);
-			} catch (TeamValidationException e) {
-				response.put("reason", e.getMessage());		
-				response.put("success", false);	
+			team.validate(essence);
+		
+			if(versus) {
+				matchService.addToQueue(essence, team);
+			} else {
+				matchService.createIAMatch(essence, team);
 			}
+			response.put("success", true);
+
+		} catch (TeamValidationException e) {
+			response.put("reason", e.getMessage());		
+			response.put("success", false);	
 		} catch (Exception e) {
 			response.put("reason", "");		
 			response.put("success", false);				

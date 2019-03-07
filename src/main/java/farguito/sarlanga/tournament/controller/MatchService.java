@@ -27,6 +27,14 @@ public class MatchService {
 		this.cards = cardFactory;
 	}
 	
+	public Integer size() {
+		return matchs.size();
+	}
+	
+	public void remove(Integer id) {
+		matchs.remove(id);
+	}
+	
 	public Match create(int essence) {
 		return this.create(essence, cards.getCards());
 	}

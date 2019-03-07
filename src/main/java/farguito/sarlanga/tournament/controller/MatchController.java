@@ -2,6 +2,7 @@ package farguito.sarlanga.tournament.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,15 @@ public class MatchController {
 	
 	@Autowired
 	private CardFactory cardFactory;
-	
+
+	@GetMapping
+	public DefoldResponse online() {
+		DefoldResponse response = new DefoldResponse("matchs_online_response");
+
+		response.put("online", matchService.size());		
+		
+		return response;		
+	}
 	
 	@PostMapping
 	public DefoldResponse create(@RequestBody DefoldRequest request) {

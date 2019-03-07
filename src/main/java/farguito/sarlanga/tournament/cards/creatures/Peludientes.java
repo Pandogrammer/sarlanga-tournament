@@ -6,7 +6,7 @@ public class Peludientes extends Creature {
 
 	public Peludientes() {
 		this.setName("Peludientes");
-		this.setAttack(20);
+		this.setAttack(16);
 		this.setHp(55);
 		this.setSpeed(10);		
 	}	
