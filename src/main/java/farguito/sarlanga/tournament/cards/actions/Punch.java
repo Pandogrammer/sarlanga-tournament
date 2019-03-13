@@ -15,12 +15,10 @@ public class Punch extends Action {
 	private float damageModifier = 1; 
 	
 	public Punch() {
+		this.setName("Punch");
 		this.setTarget(Target.OBJECTIVE);
 		this.setFatigue(fatigue);
 		this.setMelee(true);
-
-		this.setName("Punch");
-		this.setDescription("Inflicts damage to one objective.");
 	}
 	
 	public List<Effect> execute(){

@@ -11,25 +11,23 @@ import farguito.sarlanga.tournament.combat.effects.immediate.Damage;
 
 public class PoisonSpit extends Action {
 	
-	private int fatigue = 90;
-	private int duration = 3;
-	private int cooldown = 5;
+	private int fatigue = 80;
+	private int duration = 2;
+	private int cooldown = 3;
 
 	private float immediateDamageModifier = 0.5f;
-	private float lastingDamageModifier = 0.25f;
+	private float lastingDamageModifier = 0.35f;
 	
 	public PoisonSpit() {
+		this.setName("Poison Spit");
 		this.setTarget(Target.OBJECTIVE);
 		this.setFatigue(fatigue);
 		this.setMelee(false);
-
-		this.setName("Poison Spit");
-		this.setDescription("Inflicts damage and poison to one objective.");
 	}
 		
 	public List<Effect> execute() {
-		int lastingDamage = (int) (this.getActor().getAttack() * lastingDamageModifier);
-		int damage = (int) (this.getActor().getAttack() * immediateDamageModifier);
+		int lastingDamage = (int) ((this.getActor().getAttack() + this.getActor().getAttackBonus()) * lastingDamageModifier);
+		int damage = (int) ((this.getActor().getAttack() + this.getActor().getAttackBonus()) * immediateDamageModifier);
 		
 		List<Effect> ef = new ArrayList<>();
 		this.getObjectives().stream().forEach(o -> {

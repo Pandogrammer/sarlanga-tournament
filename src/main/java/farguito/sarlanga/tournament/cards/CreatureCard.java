@@ -5,14 +5,16 @@ public class CreatureCard extends Card {
 	private int hp;
 	private int speed;
 	private int attack;
+	private String lore;
 	
-	public CreatureCard(int id, int essence, Creature creature, String description) {
+	public CreatureCard(int id, int essence, Creature creature, String description, String lore) {
 		super();
 		this.id = id;
 		this.essence = essence;
 		this.object = creature.getClass();
 		this.name = creature.getName();
 		this.description = description;
+		this.lore = lore;
 		
 		this.hp = creature.getHp();
 		this.speed = creature.getSpeed();
@@ -30,6 +32,12 @@ public class CreatureCard extends Card {
 	public int getAttack() {
 		return attack;
 	}
+
+	public String getLore() {
+		return lore;
+	}
+	
+	
 	
 	
 

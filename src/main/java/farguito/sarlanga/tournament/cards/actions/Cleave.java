@@ -12,19 +12,17 @@ public class Cleave extends Action {
 	
 	private int fatigue = 100; 
 	
-	private float damageModifier = 0.75f; 
+	private float damageModifier = 0.55f; 
 	
 	public Cleave() {
+		this.setName("Cleave");
 		this.setTarget(Target.LINE);
 		this.setFatigue(fatigue);
 		this.setMelee(true);
-
-		this.setName("Cleave");
-		this.setDescription("Inflicts damage in a line.");
 	}
 	
 	public List<Effect> execute(){
-		int damage = (int) (this.getActor().getAttack() * damageModifier);
+		int damage = (int) ((this.getActor().getAttack() + this.getActor().getAttackBonus()) * damageModifier);
 		
 		List<Effect> ef = new ArrayList<>();
 		this.getObjectives().stream().forEach(o -> {

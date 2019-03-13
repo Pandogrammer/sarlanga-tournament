@@ -7,7 +7,7 @@ public class Sapurai extends Creature {
 	public Sapurai() {
 		this.setName("Sapurai");
 		this.setAttack(12);
-		this.setHp(40);
+		this.setHp(45);
 		this.setSpeed(16);		
 	}	
 }

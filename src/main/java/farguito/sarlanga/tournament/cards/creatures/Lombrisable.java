@@ -8,6 +8,6 @@ public class Lombrisable extends Creature{
 		this.setName("Lombrisable");
 		this.setAttack(10);
 		this.setHp(35);
-		this.setSpeed(19);		
+		this.setSpeed(21);		
 	}	
 }

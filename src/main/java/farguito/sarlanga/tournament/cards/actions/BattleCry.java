@@ -16,15 +16,13 @@ public class BattleCry extends Action {
 
 	private int fatigue = 120;	
 	
-	private float attackBonusModifier = 0.3f;
+	private float attackBonusModifier = 0.8f;
 	
 	public BattleCry() {
+		this.setName("Battle Cry");	
 		this.setTarget(Target.SELF);
 		this.setFatigue(fatigue);
 		this.setMelee(false);
-		
-		this.setName("Battle Cry");		
-		this.setDescription("Boosts self attack bonus.");
 	}
 	
 	@Override

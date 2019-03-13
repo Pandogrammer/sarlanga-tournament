@@ -1,0 +1,44 @@
+13/03/19
+
+== Creatures ==
+Peludientes
++ attack: 16 -> 19
+
+Ortivactus
++ hp: 65 -> 75
+
+Lombrisable
++ speed: 19 -> 21
+
+Sapurai
++ hp: 40 -> 45
+
+
+== Actions ==
+Posion Spit
++ fatigue : 90 -> 80
++ cooldown : 5 -> 3
++ duration : 4 -> 2
++ lasting damage modifier:  0.25f ->  0.35f
++ Added damage bonus to damage calculation
+
+Ensnare
++ fatigation : 10 -> 35
++ fatigue : 110 -> 120
++ damage modifier : 0.3f -> 0.45f
+
+Cleave
++ damage modifier : 0.75f -> 0.55f
++ Added damage bonus to damage calculation
+
+BattleCry
++ attack bonus modifier : 0.3f -> 0.8f
+
+== Essence ==
+
+
+== General ==
+All creatures now costs 3 essence
+All actions now costs 1 essence
+Changed the description of all cards
+Added lore to creature cards

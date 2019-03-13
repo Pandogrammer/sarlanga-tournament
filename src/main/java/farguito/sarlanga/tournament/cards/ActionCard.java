@@ -8,13 +8,13 @@ public class ActionCard extends Card {
 	private Target target;
 	private boolean melee;
 	
-	public ActionCard(int id, int essence, Action action) {
+	public ActionCard(int id, int essence, Action action, String description) {
 		super();
 		this.id = id;
 		this.essence = essence;
 		this.object = action.getClass();
 		this.name = action.getName();
-		this.description = action.getDescription();
+		this.description = description;
 		
 		this.fatigue = action.getFatigue();
 		this.target = action.getTarget();
