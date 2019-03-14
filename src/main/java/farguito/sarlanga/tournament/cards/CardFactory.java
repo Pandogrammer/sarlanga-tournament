@@ -32,7 +32,6 @@ public class CardFactory {
 		try {
 			prop.load(CardFactory.class.getResourceAsStream("/creature_cards.properties"));
 
-			System.out.println(prop.getProperty("ortivactus.description"));
 			this.cards.add(new CreatureCard(this.cards.size(), 3, new Ortivactus()
 					, prop.getProperty("ortivactus.description"), prop.getProperty("ortivactus.lore")));
 			this.cards.add(new CreatureCard(this.cards.size(), 3, new Sapurai()

@@ -32,6 +32,9 @@ public class MatchService {
 	}
 	
 	public void remove(Integer id) {
+		for(String accountId : matchs.get(id).getPlayers()){
+			this.account_match.remove(accountId);
+		}
 		matchs.remove(id);
 	}
 	
@@ -157,5 +160,9 @@ public class MatchService {
 		team.getCharacter(4).addAction(cards.getActions().get(0));
 		
 		return team;
+	}
+
+	public boolean isInMatch(String accountId) {
+		return account_match.containsKey(accountId);		
 	}
 }

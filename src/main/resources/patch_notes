@@ -1,3 +1,16 @@
+14/03/19
+
+== Creatures ==
+Sapurai
++ attack: 12 -> 14
+
+== Actions ==
+BattleCry
++ attack bonus modifier : 0.8f -> 0.6f
+
+=========================
+
+
 13/03/19
 
 == Creatures ==
@@ -33,8 +46,6 @@ Cleave
 
 BattleCry
 + attack bonus modifier : 0.3f -> 0.8f
-
-== Essence ==
 
 
 == General ==

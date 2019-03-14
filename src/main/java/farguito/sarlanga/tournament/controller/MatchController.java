@@ -1,5 +1,7 @@
 package farguito.sarlanga.tournament.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +46,17 @@ public class MatchController {
 		
 		return response;
 	}
+	
+	
+	@PostMapping("is-in-match")
+	public DefoldResponse inMatch(@RequestBody Map<String, Object> request) {
+		DefoldResponse response = new DefoldResponse("is_in_match_response");
+		
+		response.put("in_match", matchService.isInMatch((String) request.get("account_id")));
+		
+		return response;
+	}
+	
 	
 	
 }
