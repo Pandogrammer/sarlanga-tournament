@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.connection;
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
-import farguito.sarlanga.tournament.connection.DefoldResponse;
-import farguito.sarlanga.tournament.connection.TeamDTO;
-import farguito.sarlanga.tournament.connection.TeamValidationException;
 
 @CrossOrigin
 @RestController

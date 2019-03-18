@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.connection;
+package farguito.sarlanga.tournament.connection.account;
 
 public class Account {
 	

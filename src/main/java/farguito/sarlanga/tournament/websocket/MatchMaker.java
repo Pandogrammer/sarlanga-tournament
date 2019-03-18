@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
 import farguito.sarlanga.tournament.connection.Match;
-import farguito.sarlanga.tournament.controller.MatchService;
+import farguito.sarlanga.tournament.connection.MatchService;
 
 public class MatchMaker extends TextWebSocketHandler {
 	private ObjectMapper mapper = new ObjectMapper();

@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import farguito.sarlanga.tournament.connection.Account;
-import farguito.sarlanga.tournament.controller.AccountService;
+import farguito.sarlanga.tournament.connection.account.Account;
+import farguito.sarlanga.tournament.connection.account.AccountService;
 
 @RunWith(SpringRunner.class)
 public class AccountServiceTest {

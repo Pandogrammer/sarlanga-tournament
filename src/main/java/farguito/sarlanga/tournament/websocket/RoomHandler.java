@@ -15,7 +15,7 @@ import farguito.sarlanga.tournament.cards.CardFactory;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.Match;
 import farguito.sarlanga.tournament.connection.TeamDTO;
-import farguito.sarlanga.tournament.controller.MatchService;
+import farguito.sarlanga.tournament.connection.MatchService;
 
 public class RoomHandler extends TextWebSocketHandler {	
 	private ObjectMapper mapper = new ObjectMapper();

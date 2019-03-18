@@ -1,15 +1,12 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.connection;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import farguito.sarlanga.tournament.cards.Card;
 import farguito.sarlanga.tournament.cards.CardFactory;
-import farguito.sarlanga.tournament.connection.Match;
-import farguito.sarlanga.tournament.connection.TeamDTO;
 
 public class MatchService {
 

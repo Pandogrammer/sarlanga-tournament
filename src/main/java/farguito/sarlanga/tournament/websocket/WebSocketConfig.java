@@ -7,7 +7,7 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import farguito.sarlanga.tournament.cards.CardFactory;
-import farguito.sarlanga.tournament.controller.MatchService;
+import farguito.sarlanga.tournament.connection.MatchService;
 
 @Configuration
 @EnableWebSocket

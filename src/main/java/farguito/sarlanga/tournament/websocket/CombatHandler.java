@@ -19,7 +19,7 @@ import farguito.sarlanga.tournament.combat.Character;
 import farguito.sarlanga.tournament.combat.CombatSystem;
 import farguito.sarlanga.tournament.connection.DefoldRequest;
 import farguito.sarlanga.tournament.connection.DefoldResponse;
-import farguito.sarlanga.tournament.controller.MatchService;
+import farguito.sarlanga.tournament.connection.MatchService;
 
 public class CombatHandler extends TextWebSocketHandler {	
 	

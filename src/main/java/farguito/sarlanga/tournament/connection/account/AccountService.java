@@ -1,4 +1,4 @@
-package farguito.sarlanga.tournament.controller;
+package farguito.sarlanga.tournament.connection.account;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,8 +6,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
-
-import farguito.sarlanga.tournament.connection.Account;
 
 @Service
 @ApplicationScope
